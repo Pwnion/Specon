@@ -1,0 +1,82 @@
+/// Initialises project-level things and redirects to the [Landing] page.
+
+import 'package:flutter/material.dart';
+import 'package:url_strategy/url_strategy.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'page/landing_page.dart';
+import 'page/loading_page.dart';
+import 'page/error_page.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  setPathUrlStrategy();
+  runApp(const App());
+}
+
+class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  bool _initialized = false;
+  bool _error = false;
+
+  Future<void> _initialiseFirebase() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform
+    );
+    await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  }
+
+  Future<void> _initialise() async {
+    try {
+      await dotenv.load(fileName: '.env');
+      await initializeDateFormatting('en_AU');
+      await _initialiseFirebase();
+
+      setState(() {
+        _initialized = true;
+      });
+    } catch(e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  Widget _getPage() {
+    if(_error) {
+      return const Error();
+    }
+
+    if(!_initialized) {
+      return const Loading();
+    }
+
+    return const Landing();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initialise();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Specon',
+      home: _getPage()
+    );
+  }
+}
