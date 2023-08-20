@@ -44,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
               )
           ),
           Expanded(
-            flex: 5,
+            flex: 4,
               child: Container(
                 color: Colors.black12,
               )
