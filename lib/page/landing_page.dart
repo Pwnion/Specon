@@ -22,6 +22,9 @@ class Landing extends StatelessWidget {
         if(snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if(user == null) {
+            return const Dashboard(
+              userType: UserType.student, // TODO: Get actual type from Canvas.
+            );
             return const Login();
           }
           return const Dashboard(
