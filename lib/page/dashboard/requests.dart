@@ -19,6 +19,15 @@ class _RequestsState extends State<Requests> {
   List<Map<String, dynamic>> allRequests = [
     {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
     {"ID": 2, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 3, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 4, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 5, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 6, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 7, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 8, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 9, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 10, "name": 'Bob', "subject": "COMP30024", "type": "Project 1"},
+
   ];
 
   List<Map<String, dynamic>> _foundRequests = [];
@@ -44,8 +53,7 @@ class _RequestsState extends State<Requests> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+      return Scaffold(
         //backgroundColor: Color(0xFF333333),
         body: Padding(
           padding: const EdgeInsets.all(1.0),
@@ -135,8 +143,7 @@ class _RequestsState extends State<Requests> {
               ),
             ],
           ),
-        ),
-      ),
+        )
     );
   }
 }
