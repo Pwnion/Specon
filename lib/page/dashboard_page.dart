@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../user_type.dart';
 import 'dashboard/requests.dart';
+import 'package:specon/form.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;
@@ -33,8 +34,17 @@ class _DashboardState extends State<Dashboard> {
           Expanded(
             flex: 1,
               child: Container(
-                color: Colors.black12,
-                child: Text('subject')
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 10),
+
+                    OutlinedButton(
+                      onPressed: (){},
+                      child: Text('New Form'),
+                    ),
+                  ],
+                )
               )
           ),
           Expanded(
@@ -46,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
           Expanded(
             flex: 4,
               child: Container(
-                color: Colors.black12,
+                child: MyApp(),
               )
           ),
         ],
