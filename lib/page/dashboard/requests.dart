@@ -8,13 +8,15 @@ import 'package:flutter/material.dart';
 import '../dashboard_page.dart';
 
 class Requests extends StatefulWidget {
-  const Requests({Key? key}) : super(key: key);
+
+  final Function getCurrentSubject;
+
+  const Requests({Key? key, required this.getCurrentSubject}) : super(key: key);
 
   @override
   State<Requests> createState() => _RequestsState();
 }
 
-enum FilterType {subject, assignment}
 List<String> filterSelections = [
   "All",
   "Project 1",
@@ -27,16 +29,26 @@ class _RequestsState extends State<Requests> {
   // for testing
   List<Map<String, dynamic>> allRequests = [
     {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
-    {"ID": 2, "name": 'Bob', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 3, "name": 'Aren', "subject": "COMP30024", "type": "Final Exam"},
-    {"ID": 4, "name": 'Aden', "subject": "COMP30024", "type": "Mid Semester Exam"},
-    {"ID": 5, "name": 'Lo', "subject": "COMP30024", "type": "Project 1"},
-    {"ID": 6, "name": 'Harry', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 7, "name": 'Drey', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 8, "name": 'Brian', "subject": "COMP30024", "type": "Final Exam"},
-    {"ID": 9, "name": 'David', "subject": "COMP30024", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30024", "type": "Project 1"},
+    {"ID": 2, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
+    {"ID": 3, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
+    {"ID": 4, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
+    {"ID": 5, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
+    {"ID": 6, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
+    {"ID": 7, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
+    {"ID": 8, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
+    {"ID": 9, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
+    {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
   ];
+
   // should get information from canvas
   // List<DropdownMenuItem<String>> filterSelections = [
   //   DropdownMenuItem<String>(child: Text("All"), value: "All",),
@@ -46,9 +58,7 @@ class _RequestsState extends State<Requests> {
   //   DropdownMenuItem<String>(child: Text("Mid Semester Exam"), value: "Mid Semester Exam",),
   // ];
 
-  List<Map<String, dynamic>> _foundRequests = [];
-  List<Map<String, dynamic>> _filtered_S_Requests = [];
-  List<Map<String, dynamic>> _filtered_A_Requests = [];
+  List _foundRequests = [];
 
   final onPrimary = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
@@ -57,61 +67,120 @@ class _RequestsState extends State<Requests> {
   final mainBodyColor = const Color(0xFF333333);
   final requestColor = const Color(0xFFD4D4D4);
   final ScrollController _scrollController = ScrollController();
+  String currentSubject = '';
+  String dropdownValue = filterSelections.first;
+  String searchString = '';
 
-  @override
-  void initState() {
-    _foundRequests = allRequests;
-    _filtered_S_Requests = allRequests; // 1st layer filter, Subject
-    _filtered_A_Requests = allRequests; // 2nd layer filter, Assignment
-    super.initState();
+  // First filter
+  void filterBySubject() {
+
+    List filteredBySubject = [];
+
+    if (widget.getCurrentSubject() != currentSubject){
+      currentSubject = widget.getCurrentSubject();
+      dropdownValue = filterSelections.first;
+    }
+
+    for (var request in allRequests) {
+      if (request['subject'] == currentSubject) {
+        filteredBySubject.add(request);
+      }
+    }
+    setState(() {
+      _foundRequests = filteredBySubject;
+    });
   }
-  // function that updates _foundRequests when search, search in 2nd layer filter
-  void _searchRequest(String searchString){
-    List<Map<String, dynamic>> result = [];
+
+  // Second filter
+  void filterByAssignment() {
+
+    List filteredByAssignment = [];
+
+    if (dropdownValue != "All") {
+      filteredByAssignment = _foundRequests.where((request) =>
+          request['type'].contains(dropdownValue)).toList();
+
+    }else{
+      filteredByAssignment = _foundRequests.where((request) =>
+          request['type'].contains("")).toList();
+    }
+    setState(() {
+      _foundRequests = filteredByAssignment;
+    });
+  }
+
+  // Third filter
+  void filterBySearch() {
+
+    List searchResult = [];
+
     if(searchString.isEmpty) {
-      result = _filtered_A_Requests;
+      searchResult = _foundRequests;
+
     }else{
       // apply search logic, should change later or not?
-      result = _filtered_A_Requests.where((request) =>
+      searchResult = _foundRequests.where((request) =>
           request['name'].toLowerCase().contains(searchString.toLowerCase())).toList();
     }
     setState(() {
-      _foundRequests = result;
+      _foundRequests = searchResult;
     });
   }
-  // filter out requests whenever we change filter type
-  void filterCallback(String value, FilterType type){
-    List<Map<String, dynamic>> result = [];
 
-    if (value != "All") {
-      if(type == FilterType.assignment){
-        result = _filtered_S_Requests.where((request) =>
-            request['type'].contains(value)).toList();
-        _filtered_A_Requests = result;
-      }
-      if(type == FilterType.subject){
-        // should get called in dashboard (selection is in first column)
-      }
-    }else{
-      if(type == FilterType.assignment){
-        result = _filtered_S_Requests.where((request) =>
-            request['type'].contains("")).toList();
-        _filtered_A_Requests = result;
-      }
-      if(type == FilterType.subject){
-        result = allRequests.where((request) =>
-            request['subject'].contains("")).toList();
-        _filtered_S_Requests = result;
-      }
+  Widget buildRequestCards(List requests) {
+
+    return ListView.builder(
+        itemCount: _foundRequests.length,
+        controller: _scrollController,
+        itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.only(right: 6.0),
+            child: InkWell(
+              onTap: () {},
+              child: Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      // request first row
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const SizedBox(width: 4),
+                          const Icon(Icons.album, size: 20.0),
+                          const SizedBox(width: 12),
+                          Text(requests[index]['name']),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 10),
+                      // bottom row
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 8),
+                          Text(requests[index]['type']),
+                          const SizedBox(width: 8),
+                          const Text('4h'),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+      );
     }
-    setState(() {
-      _foundRequests = result;
-    });
-  }
 
-  String dropdownValue = filterSelections.first;
   @override
   Widget build(BuildContext context) {
+
+    filterBySubject();
+    filterByAssignment();
+    filterBySearch();
 
     return Scaffold(
       //backgroundColor: Color(0xFF333333),
@@ -129,7 +198,13 @@ class _RequestsState extends State<Requests> {
                   height: 45.0,
                   child: TextField(
 
-                    onChanged: (value) => _searchRequest(value),
+                    onChanged: (value) {
+                      setState(() {
+                        searchString = value;
+                      });
+                    },
+
+                    style: const TextStyle(color: Colors.white),
 
                     decoration: InputDecoration(
 
@@ -180,10 +255,10 @@ class _RequestsState extends State<Requests> {
                         child: Text(value),
                       );
                     }).toList(),
-                    onChanged:(String? value) {
-                      filterCallback(value!, FilterType.assignment);
+                    onChanged:(value) {
+                      filterByAssignment();
                       setState(() {
-                        dropdownValue = value;
+                        dropdownValue = value!;
                       });
                     },
                   ),
@@ -208,50 +283,7 @@ class _RequestsState extends State<Requests> {
                   thumbColor: Colors.white38,
                   radius: const Radius.circular(20),
                   thickness: 5,
-                  child: ListView.builder(
-                    itemCount: _foundRequests.length,
-                    controller: _scrollController,
-                    itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.only(right: 6.0),
-                      child: InkWell(
-                        onTap: () {},
-                        child: Card(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                // request first row
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.album, size: 20.0),
-                                    const SizedBox(width: 12),
-                                    Text(_foundRequests[index]["name"]),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(top: 10, bottom: 10),
-                                // bottom row
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(width: 8),
-                                    Text(_foundRequests[index]["type"]),
-                                    const SizedBox(width: 8),
-                                    const Text('4h'),
-                                    const SizedBox(width: 8),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: buildRequestCards(_foundRequests),
                 ),
               ),
             ],

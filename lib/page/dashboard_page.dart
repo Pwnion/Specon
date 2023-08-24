@@ -35,6 +35,11 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   String userType = 'student';
+  Widget? requestWidget;
+
+  String getCurrentSubject() {
+    return currentSubject;
+  }
 
   void openNewRequestForm() {
     setState(() {
@@ -51,6 +56,7 @@ class _DashboardState extends State<Dashboard> {
   void setCurrentSubject(String subject) {
     setState(() {
       currentSubject = subject;
+      requestWidget;
     });
   }
 
@@ -140,9 +146,9 @@ class _DashboardState extends State<Dashboard> {
             ),
 
             // Dashboard column 2
-            const Expanded(
+            Expanded(
                 flex: 2,
-                child: Requests()
+                child: requestWidget = Requests(getCurrentSubject: getCurrentSubject),
             ),
 
             VerticalDivider(

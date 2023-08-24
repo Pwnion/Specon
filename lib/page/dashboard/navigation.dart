@@ -25,6 +25,8 @@ class _NavigationState extends State<Navigation> {
 
 
   final requestButtonColor = const Color(0xFFDF6C00);
+
+  // TODO: Get user's enrolled subject
   static const List<String> subjectList = [
     "COMP30019",
     "COMP30020",
@@ -57,6 +59,7 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
