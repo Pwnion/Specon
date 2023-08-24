@@ -50,6 +50,13 @@ class _RequestsState extends State<Requests> {
   List<Map<String, dynamic>> _filtered_S_Requests = [];
   List<Map<String, dynamic>> _filtered_A_Requests = [];
 
+  final onPrimary = const Color(0xFFDF6C00);
+  final topBarColor = const Color(0xFF385F71);
+  final filterContainerColor = Colors.white10;
+  final dividerColor = Colors.white30;
+  final mainBodyColor = const Color(0xFF333333);
+  final requestColor = const Color(0xFFD4D4D4);
+
   @override
   void initState() {
     _foundRequests = allRequests;
@@ -111,77 +118,113 @@ class _RequestsState extends State<Requests> {
           padding: const EdgeInsets.all(1.0),
           child: Column(
             children: [
-              // search bar is here
+
+              // Search Bar
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  onChanged: (value) => _searchRequest(value),
-                  style: const TextStyle(color: Color(0xFFD4D4D4)),
-                  cursorColor: const Color(0xFFD4D4D4),
-                  //cursorHeight: 15,
-                  decoration: const InputDecoration(
-                      labelText: '  Search Name', suffixIcon: Icon(Icons.search),
-                      iconColor: Color(0xFFD4D4D4),
-                      hoverColor: Color(0xFFDF6C00),
-                      labelStyle: TextStyle(color: Color(0xFFD4D4D4), fontSize: 10, wordSpacing: 2.0),
-                      focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Color(0xFFD4D4D4), width: 0.3))
 
+                padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+                child: SizedBox(
+
+                  height: 45.0,
+                  child: TextField(
+
+                    onChanged: (value) => _searchRequest(value),
+
+                    decoration: InputDecoration(
+
+                      labelText: 'Name Search',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      suffixIcon: const Icon(Icons.search, color: Colors.white),
+                      filled: true,
+                      fillColor: mainBodyColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: mainBodyColor,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: topBarColor,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  // filter drop down button
-                  children: <Widget>[DropdownButton<String>(
-                    //dropdownColor: Color(0xFFD4D4D4),
-                    iconDisabledColor: Color(0xFF333333), // need this
-                    focusColor: Color(0xFF333333),
 
-                    style: const TextStyle(color: Color(0xFFDF6C00), fontSize: 13),
-                    padding: const EdgeInsets.all(1),
-                    value: dropdownValue,
-                    items: filterSelections.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged:(String? value) {
-                      filterCallback(value!, FilterType.assignment);
-                      setState(() {
-                        dropdownValue = value!;
-                      });
-                    },
-                  ),
-                  ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Divider(
+                  color: dividerColor,
+                  thickness: 3,
+                  height: 1,
                 ),
               ),
 
+              // Filter Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                // filter drop down button
+                children: <Widget>[DropdownButton<String>(
+                  //dropdownColor: Color(0xFFD4D4D4),
+                  iconDisabledColor: mainBodyColor,
+                  focusColor: mainBodyColor,
+
+                  style: TextStyle(color: onPrimary, fontSize: 13),
+                  padding: const EdgeInsets.all(1),
+                  value: dropdownValue,
+                  items: filterSelections.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged:(String? value) {
+                    filterCallback(value!, FilterType.assignment);
+                    setState(() {
+                      dropdownValue = value;
+                    });
+                  },
+                ),
+                ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Divider(
+                  color: dividerColor,
+                  thickness: 3,
+                  height: 1,
+                ),
+              ),
+
+              // Display request
               Expanded(
                 // viewing all request
-                child: Container(
-                  child: ListView.builder(
-                    itemCount: _foundRequests.length,
-                    itemBuilder: (context, index) => Card(
+                child: ListView.builder(
+                  itemCount: _foundRequests.length,
+                  itemBuilder: (context, index) => InkWell(
+                    onTap: () {},
+                    child: Card(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.only(top: 10),
+                            margin: const EdgeInsets.only(top: 10),
                             // request first row
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 const SizedBox(width: 4),
-                                Icon(Icons.album, size: 20.0,),
+                                const Icon(Icons.album, size: 20.0),
                                 const SizedBox(width: 12),
                                 Text(_foundRequests[index]["name"]),
                               ],
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 10, bottom: 10),
+                            margin: const EdgeInsets.only(top: 10, bottom: 10),
                             // bottom row
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -189,7 +232,7 @@ class _RequestsState extends State<Requests> {
                                 const SizedBox(width: 8),
                                 Text(_foundRequests[index]["type"]),
                                 const SizedBox(width: 8),
-                                Text('4h'),
+                                const Text('4h'),
                                 const SizedBox(width: 8),
                               ],
                             ),
@@ -197,7 +240,6 @@ class _RequestsState extends State<Requests> {
                         ],
                       ),
                     ),
-
                   ),
                 ),
               ),
