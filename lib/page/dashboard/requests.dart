@@ -72,7 +72,7 @@ class _RequestsState extends State<Requests> {
   String searchString = '';
 
   // First filter
-  void filterBySubject() {
+  void _filterBySubject() {
 
     List filteredBySubject = [];
 
@@ -92,7 +92,7 @@ class _RequestsState extends State<Requests> {
   }
 
   // Second filter
-  void filterByAssignment() {
+  void _filterByAssignment() {
 
     List filteredByAssignment = [];
 
@@ -110,7 +110,7 @@ class _RequestsState extends State<Requests> {
   }
 
   // Third filter
-  void filterBySearch() {
+  void _filterBySearch() {
 
     List searchResult = [];
 
@@ -127,7 +127,7 @@ class _RequestsState extends State<Requests> {
     });
   }
 
-  Widget buildRequestCards(List requests) {
+  Widget _buildRequestCards() {
 
     return ListView.builder(
         itemCount: _foundRequests.length,
@@ -149,7 +149,7 @@ class _RequestsState extends State<Requests> {
                           const SizedBox(width: 4),
                           const Icon(Icons.album, size: 20.0),
                           const SizedBox(width: 12),
-                          Text(requests[index]['name']),
+                          Text(_foundRequests[index]['name']),
                         ],
                       ),
                     ),
@@ -160,7 +160,7 @@ class _RequestsState extends State<Requests> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const SizedBox(width: 8),
-                          Text(requests[index]['type']),
+                          Text(_foundRequests[index]['type']),
                           const SizedBox(width: 8),
                           const Text('4h'),
                           const SizedBox(width: 8),
@@ -178,12 +178,11 @@ class _RequestsState extends State<Requests> {
   @override
   Widget build(BuildContext context) {
 
-    filterBySubject();
-    filterByAssignment();
-    filterBySearch();
+    _filterBySubject();
+    _filterByAssignment();
+    _filterBySearch();
 
     return Scaffold(
-      //backgroundColor: Color(0xFF333333),
         body: Padding(
           padding: const EdgeInsets.all(1.0),
           child: Column(
@@ -256,7 +255,6 @@ class _RequestsState extends State<Requests> {
                       );
                     }).toList(),
                     onChanged:(value) {
-                      filterByAssignment();
                       setState(() {
                         dropdownValue = value!;
                       });
@@ -277,13 +275,12 @@ class _RequestsState extends State<Requests> {
 
               // Display request
               Expanded(
-                // viewing all request
                 child: RawScrollbar(
                   controller: _scrollController,
                   thumbColor: Colors.white38,
                   radius: const Radius.circular(20),
                   thickness: 5,
-                  child: buildRequestCards(_foundRequests),
+                  child: _buildRequestCards(),
                 ),
               ),
             ],
