@@ -56,6 +56,7 @@ class _RequestsState extends State<Requests> {
   final dividerColor = Colors.white30;
   final mainBodyColor = const Color(0xFF333333);
   final requestColor = const Color(0xFFD4D4D4);
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -153,41 +154,41 @@ class _RequestsState extends State<Requests> {
                 ),
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Divider(
-                  color: dividerColor,
-                  thickness: 3,
-                  height: 1,
-                ),
+              Divider(
+                color: dividerColor,
+                thickness: 3,
+                height: 1,
               ),
 
               // Filter Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                // filter drop down button
-                children: <Widget>[DropdownButton<String>(
-                  //dropdownColor: Color(0xFFD4D4D4),
-                  iconDisabledColor: mainBodyColor,
-                  focusColor: mainBodyColor,
+              Container(
+                decoration: BoxDecoration(color: filterContainerColor),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  // filter drop down button
+                  children: <Widget>[DropdownButton<String>(
+                    //dropdownColor: Color(0xFFD4D4D4),
+                    iconDisabledColor: mainBodyColor,
+                    focusColor: mainBodyColor,
 
-                  style: TextStyle(color: onPrimary, fontSize: 13),
-                  padding: const EdgeInsets.all(1),
-                  value: dropdownValue,
-                  items: filterSelections.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged:(String? value) {
-                    filterCallback(value!, FilterType.assignment);
-                    setState(() {
-                      dropdownValue = value;
-                    });
-                  },
+                    style: TextStyle(color: onPrimary, fontSize: 13),
+                    padding: const EdgeInsets.all(1),
+                    value: dropdownValue,
+                    items: filterSelections.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged:(String? value) {
+                      filterCallback(value!, FilterType.assignment);
+                      setState(() {
+                        dropdownValue = value;
+                      });
+                    },
+                  ),
+                  ],
                 ),
-                ],
               ),
 
               Padding(
@@ -202,42 +203,52 @@ class _RequestsState extends State<Requests> {
               // Display request
               Expanded(
                 // viewing all request
-                child: ListView.builder(
-                  itemCount: _foundRequests.length,
-                  itemBuilder: (context, index) => InkWell(
-                    onTap: () {},
-                    child: Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.only(top: 10),
-                            // request first row
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const SizedBox(width: 4),
-                                const Icon(Icons.album, size: 20.0),
-                                const SizedBox(width: 12),
-                                Text(_foundRequests[index]["name"]),
-                              ],
-                            ),
+                child: RawScrollbar(
+                  controller: _scrollController,
+                  thumbColor: Colors.white38,
+                  radius: const Radius.circular(20),
+                  thickness: 5,
+                  child: ListView.builder(
+                    itemCount: _foundRequests.length,
+                    controller: _scrollController,
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.only(right: 6.0),
+                      child: InkWell(
+                        onTap: () {},
+                        child: Card(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                // request first row
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.album, size: 20.0),
+                                    const SizedBox(width: 12),
+                                    Text(_foundRequests[index]["name"]),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                // bottom row
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index]["type"]),
+                                    const SizedBox(width: 8),
+                                    const Text('4h'),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 10, bottom: 10),
-                            // bottom row
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(width: 8),
-                                Text(_foundRequests[index]["type"]),
-                                const SizedBox(width: 8),
-                                const Text('4h'),
-                                const SizedBox(width: 8),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
