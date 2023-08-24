@@ -112,23 +112,34 @@ class _RequestsState extends State<Requests> {
           child: Column(
             children: [
               // search bar is here
-              TextField(
-                onChanged: (value) => _searchRequest(value),
-                style: TextStyle(color: Colors.white30),
-                decoration: const InputDecoration(
-                  labelText: 'Search', suffixIcon: Icon(Icons.search),
-                  filled: true,
-                  fillColor: Colors.black54,
-                  hoverColor: Colors.blueGrey,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) => _searchRequest(value),
+                  style: const TextStyle(color: Color(0xFFD4D4D4)),
+                  cursorColor: const Color(0xFFD4D4D4),
+                  //cursorHeight: 15,
+                  decoration: const InputDecoration(
+                    labelText: '  Search Name', suffixIcon: Icon(Icons.search),
+                    iconColor: Color(0xFFD4D4D4),
+                    hoverColor: Color(0xFFDF6C00),
+                    labelStyle: TextStyle(color: Color(0xFFD4D4D4), fontSize: 10, wordSpacing: 2.0),
+                    focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Color(0xFFD4D4D4), width: 0.3))
 
+                  ),
                 ),
               ),
               Container(
-                color: Colors.black38,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   // filter drop down button
                   children: <Widget>[DropdownButton<String>(
+                    //dropdownColor: Color(0xFFD4D4D4),
+                    iconDisabledColor: Color(0xFF333333), // need this
+                    focusColor: Color(0xFF333333),
+
+                    style: const TextStyle(color: Color(0xFFDF6C00), fontSize: 13),
+                      padding: const EdgeInsets.all(1),
                       value: dropdownValue,
                       items: filterSelections.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
@@ -150,7 +161,6 @@ class _RequestsState extends State<Requests> {
               Expanded(
                 // viewing all request
                 child: Container(
-                  color: Colors.black54,
                   child: ListView.builder(
                     itemCount: _foundRequests.length,
                       itemBuilder: (context, index) => Card(
