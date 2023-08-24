@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../user_type.dart';
 import 'dashboard/requests.dart';
+import 'dashboard/navigation.dart';
 import 'package:specon/form.dart';
 
 class Dashboard extends StatefulWidget {
@@ -19,12 +20,21 @@ class Dashboard extends StatefulWidget {
   ) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<Dashboard> createState() => DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+// changed to singleton class for temporary fix
+class DashboardState extends State<Dashboard> {
 
-  final requestButtonColor = const Color(0xFFDF6C00);
+  // singleton stuff--------------------------------------------
+  // static final DashboardState _instance = DashboardState._internal();
+  // factory DashboardState() {
+  //   return _instance;
+  // }
+  // DashboardState._internal();
+  // end of singleton stuff--------------------------------------
+
+  //final requestButtonColor = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final avatarBackgroundColor = const Color(0xFFD78521);
   final mainBodyColor = const Color(0xFF333333);
@@ -34,36 +44,20 @@ class _DashboardState extends State<Dashboard> {
   String currentSubject = '';
   bool avatarIsPressed = false;
   bool newRequest = false;
-  String userType = 'student';
-  static const List<String> subjectList = [
-    "COMP30019",
-    "COMP30020",
-    "COMP30021",
-    "COMP30022",
-    "COMP30023"
-  ];
+  //String userType = 'student';
 
-  List<Widget> _buildSubjectsColumn(List<String> subjects) {
-
-    List<Widget> subjectWidgets = [];
-
-    for (var subject in subjects) {
-      subjectWidgets.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: MaterialButton(
-              onPressed: () {
-                setState(() {
-                  currentSubject = subject;
-                });
-              },
-              child: Text(subject),
-          ),
-        ),
-      );
-    }
-    return subjectWidgets;
+  // setters for temporary fix, can't use (can't pass instance?)
+  setCurrentSubject(String currentSubject){
+    // setState(() {
+    //   this.currentSubject = currentSubject;
+    // });
   }
+  setNewRequest(bool newRequest){
+    // setState(() {
+    //   this.newRequest = newRequest;
+    // });
+  }
+
 
   void closeNewRequestForm() {
     setState(() {
@@ -145,34 +139,9 @@ class _DashboardState extends State<Dashboard> {
           children: [
 
             // Dashboard column 1
-            Expanded(
+            const Expanded(
                 flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-
-                    // Display new request button only if user is a student
-                    if (userType == 'student')
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: ElevatedButton (
-                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(requestButtonColor)),
-                        onPressed: () {
-                          setState(() {
-                            newRequest = true;
-                          });
-                        },
-                        child: const Text(
-                          'New Request',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-
-                    // TODO: Get user's subject list from database
-                    ..._buildSubjectsColumn(subjectList),
-                  ],
-                ),
+                child: Navigation()
             ),
 
             VerticalDivider(
@@ -193,10 +162,11 @@ class _DashboardState extends State<Dashboard> {
               width: 3,
             ),
 
-            // Dashboard column 3
+            // Dashboard column 3, make submit form always open for now
             Expanded(
-              flex: 5,
-              child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
+              flex: 4,
+              child: SpeconForm(closeNewRequestForm: closeNewRequestForm)
+              //child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
               ),
             ],
           ),
