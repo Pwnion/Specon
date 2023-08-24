@@ -3,6 +3,7 @@
 /// Content changes based on the [UserType] that is authenticated.
 
 import 'package:flutter/material.dart';
+import 'package:specon/page/dashboard/navigation.dart';
 
 import '../user_type.dart';
 import 'dashboard/requests.dart';
@@ -24,7 +25,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
 
-  final requestButtonColor = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final avatarBackgroundColor = const Color(0xFFD78521);
   final mainBodyColor = const Color(0xFF333333);
@@ -35,39 +35,22 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   String userType = 'student';
-  static const List<String> subjectList = [
-    "COMP30019",
-    "COMP30020",
-    "COMP30021",
-    "COMP30022",
-    "COMP30023"
-  ];
 
-  List<Widget> _buildSubjectsColumn(List<String> subjects) {
-
-    List<Widget> subjectWidgets = [];
-
-    for (var subject in subjects) {
-      subjectWidgets.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: MaterialButton(
-              onPressed: () {
-                setState(() {
-                  currentSubject = subject;
-                });
-              },
-              child: Text(subject),
-          ),
-        ),
-      );
-    }
-    return subjectWidgets;
+  void openNewRequestForm() {
+    setState(() {
+      newRequest = true;
+    });
   }
 
   void closeNewRequestForm() {
     setState(() {
       newRequest = false;
+    });
+  }
+
+  void setCurrentSubject(String subject) {
+    setState(() {
+      currentSubject = subject;
     });
   }
 
@@ -147,32 +130,7 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 1
             Expanded(
                 flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-
-                    // Display new request button only if user is a student
-                    if (userType == 'student')
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: ElevatedButton (
-                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(requestButtonColor)),
-                        onPressed: () {
-                          setState(() {
-                            newRequest = true;
-                          });
-                        },
-                        child: const Text(
-                          'New Request',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-
-                    // TODO: Get user's subject list from database
-                    ..._buildSubjectsColumn(subjectList),
-                  ],
-                ),
+                child: Navigation(openNewRequestForm: openNewRequestForm, setCurrentSubject: setCurrentSubject, userType: userType)
             ),
 
             VerticalDivider(
