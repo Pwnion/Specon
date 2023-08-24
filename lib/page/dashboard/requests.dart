@@ -105,8 +105,13 @@ class _RequestsState extends State<Requests> {
   @override
   Widget build(BuildContext context) {
 
+<<<<<<< HEAD
     return Scaffold(
       //backgroundColor: Color(0xFF333333),
+=======
+      return Scaffold(
+        //backgroundColor: Color(0xFF333333),
+>>>>>>> dashboard-request-and-discussion-
         body: Padding(
           padding: const EdgeInsets.all(1.0),
           child: Column(
@@ -120,11 +125,19 @@ class _RequestsState extends State<Requests> {
                   cursorColor: const Color(0xFFD4D4D4),
                   //cursorHeight: 15,
                   decoration: const InputDecoration(
+<<<<<<< HEAD
                       labelText: '  Search Name', suffixIcon: Icon(Icons.search),
                       iconColor: Color(0xFFD4D4D4),
                       hoverColor: Color(0xFFDF6C00),
                       labelStyle: TextStyle(color: Color(0xFFD4D4D4), fontSize: 10, wordSpacing: 2.0),
                       focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Color(0xFFD4D4D4), width: 0.3))
+=======
+                    labelText: '  Search Name', suffixIcon: Icon(Icons.search),
+                    iconColor: Color(0xFFD4D4D4),
+                    hoverColor: Color(0xFFDF6C00),
+                    labelStyle: TextStyle(color: Color(0xFFD4D4D4), fontSize: 10, wordSpacing: 2.0),
+                    focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Color(0xFFD4D4D4), width: 0.3))
+>>>>>>> dashboard-request-and-discussion-
 
                   ),
                 ),
@@ -139,6 +152,7 @@ class _RequestsState extends State<Requests> {
                     focusColor: Color(0xFF333333),
 
                     style: const TextStyle(color: Color(0xFFDF6C00), fontSize: 13),
+<<<<<<< HEAD
                     padding: const EdgeInsets.all(1),
                     value: dropdownValue,
                     items: filterSelections.map<DropdownMenuItem<String>>((String value) {
@@ -153,6 +167,22 @@ class _RequestsState extends State<Requests> {
                         dropdownValue = value!;
                       });
                     },
+=======
+                      padding: const EdgeInsets.all(1),
+                      value: dropdownValue,
+                      items: filterSelections.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged:(String? value) {
+                        filterCallback(value!, FilterType.assignment);
+                        setState(() {
+                          dropdownValue = value!;
+                        });
+                      },
+>>>>>>> dashboard-request-and-discussion-
                   ),
                   ],
                 ),
@@ -163,6 +193,7 @@ class _RequestsState extends State<Requests> {
                 child: Container(
                   child: ListView.builder(
                     itemCount: _foundRequests.length,
+<<<<<<< HEAD
                     itemBuilder: (context, index) => Card(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -197,6 +228,42 @@ class _RequestsState extends State<Requests> {
                         ],
                       ),
                     ),
+=======
+                      itemBuilder: (context, index) => Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(top: 10),
+                              // request first row
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const SizedBox(width: 4),
+                                  Icon(Icons.album, size: 20.0,),
+                                  const SizedBox(width: 12),
+                                  Text(_foundRequests[index]["name"]),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              // bottom row
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                               children: [
+                                 const SizedBox(width: 8),
+                                 Text(_foundRequests[index]["type"]),
+                                  const SizedBox(width: 8),
+                                  Text('4h'),
+                                  const SizedBox(width: 8),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+>>>>>>> dashboard-request-and-discussion-
 
                   ),
                 ),
