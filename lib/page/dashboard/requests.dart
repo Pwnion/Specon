@@ -17,17 +17,17 @@ class Requests extends StatefulWidget {
   State<Requests> createState() => _RequestsState();
 }
 
-List<String> filterSelections = [
-  "All",
-  "Project 1",
-  "Project 2",
-  "Final Exam",
-  "Mid Semester Exam",
-];
-
 class _RequestsState extends State<Requests> {
-  // for testing
-  List<Map<String, dynamic>> allRequests = [
+
+  List<String> filterSelections = [
+    "All",
+    "Project 1",
+    "Project 2",
+    "Final Exam",
+    "Mid Semester Exam",
+  ];
+
+  List allRequests = [
     {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
     {"ID": 2, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
     {"ID": 3, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
@@ -49,6 +49,12 @@ class _RequestsState extends State<Requests> {
     {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
   ];
 
+  @override
+  void initState() {
+    dropdownValue = filterSelections.first;
+    super.initState();
+  }
+
   // should get information from canvas
   // List<DropdownMenuItem<String>> filterSelections = [
   //   DropdownMenuItem<String>(child: Text("All"), value: "All",),
@@ -58,8 +64,6 @@ class _RequestsState extends State<Requests> {
   //   DropdownMenuItem<String>(child: Text("Mid Semester Exam"), value: "Mid Semester Exam",),
   // ];
 
-  List _foundRequests = [];
-
   final onPrimary = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final filterContainerColor = Colors.white10;
@@ -68,8 +72,9 @@ class _RequestsState extends State<Requests> {
   final requestColor = const Color(0xFFD4D4D4);
   final ScrollController _scrollController = ScrollController();
   String currentSubject = '';
-  String dropdownValue = filterSelections.first;
+  String dropdownValue = '';
   String searchString = '';
+  List _foundRequests = [];
 
   // First filter
   void _filterBySubject() {
@@ -126,54 +131,6 @@ class _RequestsState extends State<Requests> {
       _foundRequests = searchResult;
     });
   }
-
-  Widget _buildRequestCards() {
-
-    return ListView.builder(
-        itemCount: _foundRequests.length,
-        controller: _scrollController,
-        itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.only(right: 6.0),
-            child: InkWell(
-              onTap: () {},
-              child: Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      // request first row
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const SizedBox(width: 4),
-                          const Icon(Icons.album, size: 20.0),
-                          const SizedBox(width: 12),
-                          Text(_foundRequests[index]['name']),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10, bottom: 10),
-                      // bottom row
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(width: 8),
-                          Text(_foundRequests[index]['type']),
-                          const SizedBox(width: 8),
-                          const Text('4h'),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-      );
-    }
 
   @override
   Widget build(BuildContext context) {
@@ -273,14 +230,57 @@ class _RequestsState extends State<Requests> {
                 ),
               ),
 
-              // Display request
+              // Display requests
               Expanded(
                 child: RawScrollbar(
                   controller: _scrollController,
                   thumbColor: Colors.white38,
                   radius: const Radius.circular(20),
                   thickness: 5,
-                  child: _buildRequestCards(),
+                  child: ListView.builder(
+                      itemCount: _foundRequests.length,
+                      controller: _scrollController,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.only(right: 6.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Card(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  // request first row
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      const SizedBox(width: 4),
+                                      const Icon(Icons.album, size: 20.0),
+                                      const SizedBox(width: 12),
+                                      Text(_foundRequests[index]['name']),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                  // bottom row
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(width: 8),
+                                      Text(_foundRequests[index]['type']),
+                                      const SizedBox(width: 8),
+                                      const Text('4h'),
+                                      const SizedBox(width: 8),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                  ),
                 ),
               ),
             ],
