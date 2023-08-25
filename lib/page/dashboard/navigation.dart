@@ -48,6 +48,7 @@ class _NavigationState extends State<Navigation> {
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
+            elevation: 0.0,
             color: subject == selectedSubject ? onSecondary : secondary,
             onPressed: () {
               setState(() {
@@ -73,7 +74,7 @@ class _NavigationState extends State<Navigation> {
         // Display new request button only if user is a student
         if (widget.userType == 'student')
           Padding(
-            padding: const EdgeInsets.only(top: 10.0),
+            padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
             child: ElevatedButton (
               style: ButtonStyle(backgroundColor: MaterialStateProperty.all(requestButtonColor)),
               onPressed: () {
