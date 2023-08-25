@@ -30,33 +30,44 @@ class _NavigationState extends State<Navigation> {
   String selectedSubject = '';
 
   // TODO: Get user's enrolled subject
-  static const List<String> subjectList = [
-    "COMP30019",
-    "COMP30020",
-    "COMP30021",
-    "COMP30022",
-    "COMP30023"
+  List<Map<String, String>> subjectList = [
+    {'code': 'COMP10001', 'name': 'Foundations of Computing'},
+    {'code': 'COMP10002', 'name': 'Foundations of Algorithms'},
+    {'code': 'COMP20003', 'name': 'Algorithms and Data Structures'},
+    {'code': 'COMP20005', 'name': 'Intro. to Numerical Computation in C'},
+    {'code': 'COMP20007', 'name': 'Design of Algorithms'},
+    {'code': 'COMP20008', 'name': 'Elements of Data Processing'},
+    {'code': 'SWEN20003', 'name': 'Object Oriented Software Development'},
+    {'code': 'COMP30013', 'name': 'Advanced Studies in Computing'},
+    {'code': 'COMP30019', 'name': 'Graphics and Interaction'},
+    {'code': 'COMP30020', 'name': 'Declarative Programming'},
+    {'code': 'COMP30022', 'name': 'IT Project'},
+    {'code': 'COMP30023', 'name': 'Computer Systems'},
+    {'code': 'COMP30024', 'name': 'Artificial Intelligence'},
+    {'code': 'COMP30026', 'name': 'Models of Computation'},
+    {'code': 'COMP30027', 'name': 'Machine Learning'},
+    {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
   ];
 
-  List<Widget> _buildSubjectsColumn(List<String> subjects) {
+  List<Widget> _buildSubjectsColumn() {
 
     List<Widget> subjectWidgets = [];
 
-    for (var subject in subjects) {
+    for (var subject in subjectList) {
 
       subjectWidgets.add(
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
             elevation: 0.0,
-            color: subject == selectedSubject ? onSecondary : secondary,
+            color: subject['code'] == selectedSubject ? onSecondary : secondary,
             onPressed: () {
               setState(() {
-                selectedSubject = subject;
+                selectedSubject = subject['code']!;
                 widget.setCurrentSubject(subject);
               });
             },
-            child: Text(subject),
+            child: Text(subject['code']!),
           ),
         ),
       );
@@ -90,7 +101,7 @@ class _NavigationState extends State<Navigation> {
           ),
 
         // TODO: Get user's subject list from database
-        ..._buildSubjectsColumn(subjectList),
+        ..._buildSubjectsColumn(),
       ],
     );
   }

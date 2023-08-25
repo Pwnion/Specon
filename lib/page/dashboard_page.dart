@@ -31,14 +31,14 @@ class _DashboardState extends State<Dashboard> {
   final menuColor = const Color(0xFFD4D4D4);
   final dividerColor = Colors.white;
   final stopwatch = Stopwatch();
-  String currentSubject = '';
+  Map<String, String> currentSubject = {'code': '', 'name': ''};
   bool avatarIsPressed = false;
   bool newRequest = false;
   String userType = 'student';
   Widget? requestWidget;
 
-  String getCurrentSubject() {
-    return currentSubject;
+  String getCurrentSubjectCode() {
+    return currentSubject['code']!;
   }
 
   void openNewRequestForm() {
@@ -53,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void setCurrentSubject(String subject) {
+  void setCurrentSubject(Map<String, String> subject) {
     setState(() {
       currentSubject = subject;
       requestWidget;
@@ -80,7 +80,7 @@ class _DashboardState extends State<Dashboard> {
 
         leadingWidth: 110.0,
 
-        title: Text(currentSubject, style: const TextStyle(color: Colors.white,fontSize: 20.0,)),
+        title: Text('${currentSubject['code']!} - ${currentSubject['name']!}', style: const TextStyle(color: Colors.white,fontSize: 20.0,)),
         centerTitle: true,
 
         actions: [
@@ -148,7 +148,7 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 2
             Expanded(
                 flex: 2,
-                child: requestWidget = Requests(getCurrentSubject: getCurrentSubject),
+                child: requestWidget = Requests(getCurrentSubject: getCurrentSubjectCode),
             ),
 
             VerticalDivider(
