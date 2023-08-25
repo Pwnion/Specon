@@ -79,7 +79,12 @@ class _DashboardState extends State<Dashboard> {
 
     } else if (showSubmittedRequest) {
       // TODO: Need to think how to display it
-      return Center(child: Text('Show $studentName\'s Submitted Request!', style: TextStyle(fontSize: 40, color: Colors.white)));
+      return Center(
+        child: Text(
+          'Show $studentName\'s Submitted Request!',
+          style: const TextStyle(fontSize: 40, color: Colors.white)
+          )
+        );
 
     } else {
       return Container();
@@ -106,7 +111,10 @@ class _DashboardState extends State<Dashboard> {
 
         leadingWidth: 110.0,
 
-        title: Text('${currentSubject['code']!} - ${currentSubject['name']!}', style: const TextStyle(color: Colors.white,fontSize: 20.0,)),
+        title: Text(
+                '${currentSubject['code']!} - ${currentSubject['name']!}',
+                style: const TextStyle(color: Colors.white,fontSize: 20.0)
+                ),
         centerTitle: true,
 
         actions: [
@@ -162,7 +170,11 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 1
             Expanded(
                 flex: 1,
-                child: Navigation(openNewRequestForm: openNewRequestForm, setCurrentSubject: setCurrentSubject, userType: userType)
+                child: Navigation(
+                  openNewRequestForm: openNewRequestForm,
+                  setCurrentSubject: setCurrentSubject,
+                  userType: userType
+                )
             ),
 
             VerticalDivider(
@@ -174,7 +186,10 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 2
             Expanded(
                 flex: 2,
-                child: requestWidget = Requests(getCurrentSubject: getCurrentSubjectCode, openSubmittedRequest: openSubmittedRequest,),
+                child: requestWidget = Requests(
+                  getCurrentSubject: getCurrentSubjectCode,
+                  openSubmittedRequest: openSubmittedRequest
+                ),
             ),
 
             VerticalDivider(

@@ -15,7 +15,14 @@ class Navigation extends StatefulWidget {
   final Function setCurrentSubject;
   final String userType;
 
-  const Navigation({Key? key, required this.openNewRequestForm, required this.setCurrentSubject, required, required this.userType}) : super(key: key);
+  const Navigation(
+    {
+    Key? key,
+    required this.openNewRequestForm,
+    required this.setCurrentSubject,
+    required, required this.userType
+    }
+  ) : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
@@ -43,7 +50,7 @@ class _NavigationState extends State<Navigation> {
     {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
   ];
 
-  final requestButtonColor = const Color(0xFFDF6C00);
+  final requestButtonColor = MaterialStateProperty.all(const Color(0xFFDF6C00));
   final secondary = const Color(0xFF333333);
   final onSecondary = const Color(0xFFA7A7A7);
   String selectedSubject = '';
@@ -86,7 +93,7 @@ class _NavigationState extends State<Navigation> {
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
             child: ElevatedButton (
-              style: ButtonStyle(backgroundColor: MaterialStateProperty.all(requestButtonColor)),
+              style: ButtonStyle(backgroundColor: requestButtonColor),
               onPressed: () {
                 setState(() {
                   widget.openNewRequestForm();
