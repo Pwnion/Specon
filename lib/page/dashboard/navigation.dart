@@ -25,6 +25,9 @@ class _NavigationState extends State<Navigation> {
 
 
   final requestButtonColor = const Color(0xFFDF6C00);
+  final secondary = const Color(0xFF333333);
+  final onSecondary = const Color(0xFFA7A7A7);
+  String selectedSubject = '';
 
   // TODO: Get user's enrolled subject
   static const List<String> subjectList = [
@@ -40,12 +43,15 @@ class _NavigationState extends State<Navigation> {
     List<Widget> subjectWidgets = [];
 
     for (var subject in subjects) {
+
       subjectWidgets.add(
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
+            color: subject == selectedSubject ? onSecondary : secondary,
             onPressed: () {
               setState(() {
+                selectedSubject = subject;
                 widget.setCurrentSubject(subject);
               });
             },
