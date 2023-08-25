@@ -23,13 +23,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
 
-
-  final requestButtonColor = const Color(0xFFDF6C00);
-  final secondary = const Color(0xFF333333);
-  final onSecondary = const Color(0xFFA7A7A7);
-  String selectedSubject = '';
-
-  // TODO: Get user's enrolled subject
+  // TODO: Get user's enrolled subject from canvas
   List<Map<String, String>> subjectList = [
     {'code': 'COMP10001', 'name': 'Foundations of Computing'},
     {'code': 'COMP10002', 'name': 'Foundations of Algorithms'},
@@ -48,6 +42,11 @@ class _NavigationState extends State<Navigation> {
     {'code': 'COMP30027', 'name': 'Machine Learning'},
     {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
   ];
+
+  final requestButtonColor = const Color(0xFFDF6C00);
+  final secondary = const Color(0xFF333333);
+  final onSecondary = const Color(0xFFA7A7A7);
+  String selectedSubject = '';
 
   List<Widget> _buildSubjectsColumn() {
 
@@ -100,7 +99,6 @@ class _NavigationState extends State<Navigation> {
             ),
           ),
 
-        // TODO: Get user's subject list from database
         ..._buildSubjectsColumn(),
       ],
     );

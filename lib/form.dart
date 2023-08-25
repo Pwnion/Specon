@@ -18,6 +18,7 @@ class _SpeconFormState extends State<SpeconForm> {
   final onSecondary = const Color(0xFFD4D4D4);
   String requestType = '';
 
+  // TODO: Customisable or standard?
   static const List<String> basicFieldTitles = [
     "Given Name",
     "Last Name",
@@ -26,6 +27,7 @@ class _SpeconFormState extends State<SpeconForm> {
     "Subject"
   ];
 
+  // TODO: Should be customisable by the subject coordinator
   static const Map typesOfRequest = {
     "Participation Waiver": [
       "Class",

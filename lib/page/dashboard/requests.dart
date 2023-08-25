@@ -19,6 +19,7 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
 
+  // TODO: Get assignments from canvas and it should be customisable
   List<String> filterSelections = [
     "All",
     "Project 1",
@@ -27,6 +28,7 @@ class _RequestsState extends State<Requests> {
     "Mid Semester Exam",
   ];
 
+  // TODO: Get all requests from the database
   List allRequests = [
     {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
     {"ID": 2, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
@@ -49,12 +51,6 @@ class _RequestsState extends State<Requests> {
     {"ID": 10, "name": 'Po', "subject": "COMP30021", "type": "Project 1"},
   ];
 
-  @override
-  void initState() {
-    dropdownValue = filterSelections.first;
-    super.initState();
-  }
-
   // should get information from canvas
   // List<DropdownMenuItem<String>> filterSelections = [
   //   DropdownMenuItem<String>(child: Text("All"), value: "All",),
@@ -75,6 +71,12 @@ class _RequestsState extends State<Requests> {
   String dropdownValue = '';
   String searchString = '';
   List _foundRequests = [];
+
+  @override
+  void initState() {
+    dropdownValue = filterSelections.first;
+    super.initState();
+  }
 
   // First filter
   void _filterBySubject() {
@@ -243,7 +245,9 @@ class _RequestsState extends State<Requests> {
                       itemBuilder: (context, index) => Padding(
                         padding: const EdgeInsets.only(right: 6.0),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            // TODO: Retrieve request from database and display
+                          },
                           child: Card(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
