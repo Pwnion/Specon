@@ -33,11 +33,15 @@ class _DashboardState extends State<Dashboard> {
   Map<String, String> currentSubject = {'code': '', 'name': ''};
   bool avatarIsPressed = false;
   bool newRequest = false;
+  bool showSubmittedRequest = false;
   String userType = 'student'; // TODO: Should change this to UserType
   Widget? requestWidget;
 
   void openSubmittedRequest() {
-
+    setState(() {
+      showSubmittedRequest = true;
+      newRequest = false;
+    });
   }
 
   String getCurrentSubjectCode() {
@@ -47,6 +51,7 @@ class _DashboardState extends State<Dashboard> {
   void openNewRequestForm() {
     setState(() {
       newRequest = true;
+      showSubmittedRequest = false;
     });
   }
 
@@ -60,7 +65,23 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       currentSubject = subject;
       requestWidget;
+      showSubmittedRequest = false;
+      newRequest = false;
     });
+  }
+
+  Widget displayThirdColumn() {
+
+    if (newRequest) {
+      return ConsiderationForm(closeNewRequestForm: closeNewRequestForm);
+
+    } else if (showSubmittedRequest) {
+      // TODO: Need to think how to display it
+      return const Center(child: Text('Show Submitted Request!', style: TextStyle(fontSize: 50, color: Colors.white)));
+
+    } else {
+      return Container();
+    }
   }
 
   @override
@@ -163,7 +184,7 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 3
             Expanded(
               flex: 5,
-              child: newRequest ? ConsiderationForm(closeNewRequestForm: closeNewRequestForm) : Container()
+              child: displayThirdColumn(),
               ),
             ],
           ),

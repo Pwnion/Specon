@@ -247,7 +247,10 @@ class _RequestsState extends State<Requests> {
                         padding: const EdgeInsets.only(right: 6.0),
                         child: InkWell(
                           onTap: () {
-                            // TODO: Retrieve request from database and display
+                            setState(() {
+                              // TODO: Retrieve request from database and display, pass in some sort of submission ID
+                              widget.openSubmittedRequest();
+                            });
                           },
                           child: Card(
                             child: Column(
