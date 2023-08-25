@@ -83,16 +83,23 @@ class _DashboardState extends State<Dashboard> {
         child: Text(
           'Show $studentName\'s Submitted Request!',
           style: const TextStyle(fontSize: 40, color: Colors.white)
-          )
+          ),
         );
 
     } else {
-      return Container();
+      return const Center(
+          child: Text(
+            'Select a request',
+            style: TextStyle(color: Colors.white, fontSize: 25)
+          ),
+        );
+
     }
   }
 
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
 
       appBar: AppBar(
@@ -168,13 +175,13 @@ class _DashboardState extends State<Dashboard> {
           children: [
 
             // Dashboard column 1
-            Expanded(
-                flex: 1,
-                child: Navigation(
-                  openNewRequestForm: openNewRequestForm,
-                  setCurrentSubject: setCurrentSubject,
-                  userType: userType
-                )
+            SizedBox(
+              width: 150.0,
+              child: Navigation(
+                openNewRequestForm: openNewRequestForm,
+                setCurrentSubject: setCurrentSubject,
+                userType: userType
+              ),
             ),
 
             VerticalDivider(
@@ -184,8 +191,8 @@ class _DashboardState extends State<Dashboard> {
             ),
 
             // Dashboard column 2
-            Expanded(
-                flex: 2,
+            SizedBox(
+                width: 300.0,
                 child: requestWidget = Requests(
                   getCurrentSubject: getCurrentSubjectCode,
                   openSubmittedRequest: openSubmittedRequest
@@ -200,7 +207,6 @@ class _DashboardState extends State<Dashboard> {
 
             // Dashboard column 3
             Expanded(
-              flex: 5,
               child: displayThirdColumn(),
               ),
             ],

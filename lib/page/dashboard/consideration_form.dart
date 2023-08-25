@@ -156,22 +156,20 @@ class _ConsiderationFormState extends State<ConsiderationForm> {
 
           children: [
 
-            const SizedBox(width: 40.0),
-
             // Basic information column
             Expanded(
               flex: 1,
-              child: Container(
-                color: secondary,
-                child: Column(
-                  children: [
-                    ...buildColumn(basicFieldTitles),
-                  ],
+              child: Center(
+                child: Container(
+                  color: secondary,
+                  child: Column(
+                    children: [
+                      ...buildColumn(basicFieldTitles),
+                    ],
+                  ),
                 ),
               ),
             ),
-
-            const SizedBox(width: 30.0),
 
             // Detailed information column
             Expanded(
