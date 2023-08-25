@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:specon/page/dashboard/navigation.dart';
 import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/consideration_form.dart';
-import '../user_type.dart';
+import 'package:specon/user_type.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;

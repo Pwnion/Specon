@@ -4,10 +4,7 @@
 /// filtering by [RequestFilter].
 
 import 'package:flutter/material.dart';
-
-import 'requests.dart';
-import 'request_filter.dart';
-import '../dashboard_page.dart';
+import 'package:specon/page/dashboard/request_filter.dart';
 
 class Navigation extends StatefulWidget {
 
