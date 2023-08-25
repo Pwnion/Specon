@@ -35,12 +35,14 @@ class _DashboardState extends State<Dashboard> {
   bool newRequest = false;
   bool showSubmittedRequest = false;
   String userType = 'student'; // TODO: Should change this to UserType
+  String studentName = '';
   Widget? requestWidget;
 
-  void openSubmittedRequest() {
+  void openSubmittedRequest(String studentName) {
     setState(() {
       showSubmittedRequest = true;
       newRequest = false;
+      this.studentName = studentName;
     });
   }
 
@@ -77,7 +79,7 @@ class _DashboardState extends State<Dashboard> {
 
     } else if (showSubmittedRequest) {
       // TODO: Need to think how to display it
-      return const Center(child: Text('Show Submitted Request!', style: TextStyle(fontSize: 50, color: Colors.white)));
+      return Center(child: Text('Show $studentName\'s Submitted Request!', style: TextStyle(fontSize: 40, color: Colors.white)));
 
     } else {
       return Container();

@@ -249,7 +249,7 @@ class _RequestsState extends State<Requests> {
                           onTap: () {
                             setState(() {
                               // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                              widget.openSubmittedRequest();
+                              widget.openSubmittedRequest(_foundRequests[index]['name']);
                             });
                           },
                           child: Card(
