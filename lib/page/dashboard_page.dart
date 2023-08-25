@@ -4,10 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/page/dashboard/navigation.dart';
-
+import 'package:specon/page/dashboard/requests.dart';
+import 'package:specon/page/dashboard/consideration_form.dart';
 import '../user_type.dart';
-import 'dashboard/requests.dart';
-import 'package:specon/form.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;
@@ -34,8 +33,12 @@ class _DashboardState extends State<Dashboard> {
   Map<String, String> currentSubject = {'code': '', 'name': ''};
   bool avatarIsPressed = false;
   bool newRequest = false;
-  String userType = 'student';
+  String userType = 'student'; // TODO: Should change this to UserType
   Widget? requestWidget;
+
+  void openSubmittedRequest() {
+
+  }
 
   String getCurrentSubjectCode() {
     return currentSubject['code']!;
@@ -148,7 +151,7 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 2
             Expanded(
                 flex: 2,
-                child: requestWidget = Requests(getCurrentSubject: getCurrentSubjectCode),
+                child: requestWidget = Requests(getCurrentSubject: getCurrentSubjectCode, openSubmittedRequest: openSubmittedRequest,),
             ),
 
             VerticalDivider(
@@ -160,7 +163,7 @@ class _DashboardState extends State<Dashboard> {
             // Dashboard column 3
             Expanded(
               flex: 5,
-              child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
+              child: newRequest ? ConsiderationForm(closeNewRequestForm: closeNewRequestForm) : Container()
               ),
             ],
           ),

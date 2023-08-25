@@ -10,8 +10,9 @@ import '../dashboard_page.dart';
 class Requests extends StatefulWidget {
 
   final Function getCurrentSubject;
+  final Function openSubmittedRequest;
 
-  const Requests({Key? key, required this.getCurrentSubject}) : super(key: key);
+  const Requests({Key? key, required this.getCurrentSubject, required this.openSubmittedRequest}) : super(key: key);
 
   @override
   State<Requests> createState() => _RequestsState();
