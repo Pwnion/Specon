@@ -35,26 +35,29 @@ class _RequestsState extends State<Requests> {
 
   // TODO: Get all requests from the database
   List allRequests = [
-    {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
-    {"ID": 2, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 3, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
-    {"ID": 4, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
-    {"ID": 5, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
-    {"ID": 6, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 7, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
-    {"ID": 8, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
-    {"ID": 9, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 1, "submittedBy": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
+    {"ID": 2, "submittedBy": 1, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
+    {"ID": 3, "submittedBy": 2, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
+    {"ID": 4, "submittedBy": 1, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
+    {"ID": 5, "submittedBy": 1, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
+    {"ID": 6, "submittedBy": 1, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
+    {"ID": 7, "submittedBy": 1, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
+    {"ID": 8, "submittedBy": 1, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
+    {"ID": 9, "submittedBy": 1, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
   ];
+
+  // Map currentUser = {'id': 2, 'userType': 'Student'};
+  Map currentUser = {'id': 3, 'userType': 'Subject Coordinator'};
 
   // should get information from canvas
   // List<DropdownMenuItem<String>> filterSelections = [
@@ -106,6 +109,27 @@ class _RequestsState extends State<Requests> {
   }
 
   // Second filter
+  void _filterByUserType() {
+
+    List filteredByUserType = [];
+    String userType = currentUser['userType'];
+
+    if (userType == 'Student') {
+
+      for (var request in _foundRequests) {
+        if (request['submittedBy'] == currentUser['id']) {
+          filteredByUserType.add(request);
+        }
+      }
+
+    } else if (userType == 'Subject Coordinator') {
+      return;
+    }
+
+    _foundRequests = filteredByUserType;
+  }
+
+  // Third filter
   void _filterByAssignment() {
 
     List filteredByAssignment = [];
@@ -122,7 +146,7 @@ class _RequestsState extends State<Requests> {
     _foundRequests = filteredByAssignment;
   }
 
-  // Third filter
+  // Forth filter
   void _filterBySearch() {
 
     List searchResult = [];
@@ -143,6 +167,7 @@ class _RequestsState extends State<Requests> {
   Widget build(BuildContext context) {
 
     _filterBySubject();
+    _filterByUserType();
     _filterByAssignment();
     _filterBySearch();
 
