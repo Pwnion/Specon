@@ -114,16 +114,21 @@ class _RequestsState extends State<Requests> {
     List filteredByUserType = [];
     String userType = currentUser['userType'];
 
+    // Only show the student's request
     if (userType == 'Student') {
-
       for (var request in _foundRequests) {
         if (request['submittedBy'] == currentUser['id']) {
           filteredByUserType.add(request);
         }
       }
 
+    // Show everything
     } else if (userType == 'Subject Coordinator') {
       return;
+
+    // Show based on restrictions given by coordinator (Tutor, etc)
+    } else {
+      // TODO: Determine which role gets to view what types of request
     }
 
     _foundRequests = filteredByUserType;
