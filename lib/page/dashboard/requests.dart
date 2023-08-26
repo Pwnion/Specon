@@ -71,7 +71,8 @@ class _RequestsState extends State<Requests> {
   final dividerColor = Colors.white30;
   final mainBodyColor = const Color(0xFF333333);
   final requestColor = const Color(0xFFD4D4D4);
-  final ScrollController _scrollController = ScrollController();
+  final _scrollController = ScrollController();
+  final nameSearchController = TextEditingController();
   String currentSubject = '';
   String dropdownValue = '';
   String searchString = '';
@@ -91,6 +92,8 @@ class _RequestsState extends State<Requests> {
     if (widget.getCurrentSubject() != currentSubject){
       currentSubject = widget.getCurrentSubject();
       dropdownValue = filterSelections.first;
+      nameSearchController.clear();
+      searchString = '';
     }
 
     for (var request in allRequests) {
@@ -98,9 +101,8 @@ class _RequestsState extends State<Requests> {
         filteredBySubject.add(request);
       }
     }
-    setState(() {
-      _foundRequests = filteredBySubject;
-    });
+
+    _foundRequests = filteredBySubject;
   }
 
   // Second filter
@@ -116,9 +118,8 @@ class _RequestsState extends State<Requests> {
       filteredByAssignment = _foundRequests.where((request) =>
           request['type'].contains("")).toList();
     }
-    setState(() {
-      _foundRequests = filteredByAssignment;
-    });
+
+    _foundRequests = filteredByAssignment;
   }
 
   // Third filter
@@ -134,9 +135,8 @@ class _RequestsState extends State<Requests> {
       searchResult = _foundRequests.where((request) =>
           request['name'].toLowerCase().contains(searchString.toLowerCase())).toList();
     }
-    setState(() {
-      _foundRequests = searchResult;
-    });
+
+    _foundRequests = searchResult;
   }
 
   @override
@@ -161,6 +161,7 @@ class _RequestsState extends State<Requests> {
                   height: 45.0,
                   child: TextField(
 
+                    controller: nameSearchController,
                     onChanged: (value) {
                       setState(() {
                         searchString = value;
