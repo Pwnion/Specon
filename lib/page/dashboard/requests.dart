@@ -40,15 +40,6 @@ class _RequestsState extends State<Requests> {
   // Map currentUser = {'id': 2, 'userType': 'Student'};
   Map currentUser = {'id': 3, 'userType': 'Subject Coordinator'};
 
-  // should get information from canvas
-  // List<DropdownMenuItem<String>> filterSelections = [
-  //   DropdownMenuItem<String>(child: Text("All"), value: "All",),
-  //   DropdownMenuItem<String>(child: Text("Project 1"), value: "Project 1",),
-  //   DropdownMenuItem<String>(child: Text("Project 2"), value: "Project 2",),
-  //   DropdownMenuItem<String>(child: Text("Final Exam"), value: "Final Exam",),
-  //   DropdownMenuItem<String>(child: Text("Mid Semester Exam"), value: "Mid Semester Exam",),
-  // ];
-
   final onPrimary = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final filterContainerColor = Colors.white10;

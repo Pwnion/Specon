@@ -70,7 +70,7 @@ class _NavigationState extends State<Navigation> {
       children: [
 
         // Display new request button only if user is a student
-        if (widget.userType == 'student')
+        if (widget.userType == 'student' && selectedSubject.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
             child: ElevatedButton (
