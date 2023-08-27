@@ -8,6 +8,37 @@ class BackEnd {
     return _instance;
   }
 
+  Map database =
+  {'COMP30022':
+    {'requests':
+      [
+        {"requestID": 1, "submittedBy": 1, "name": 'Alex', "assessment": "Project 1", 'status': 'approved'},
+        {"requestID": 2, "submittedBy": 1, "name": 'Bob', "assessment": "Project 2", 'status': 'pending'},
+        {"requestID": 3, "submittedBy": 2, "name": 'Aren', "assessment": "Final Exam", 'status': 'pending'},
+      ],
+
+    'typesOfRequest':
+      {
+        "Participation Waiver": {'fields': ["Class", "Reason"], 'allowedToView': ["Tutor"]},
+
+        "Due date extension": {'fields': ["How long", "Reason"], 'allowedToView': ["Tutor"]},
+
+        "Change tutorial": {'fields': ["From Class", "To Class", "Reason"], 'allowedToView': []},
+
+        "Others": {'fields': ["What", "Why"], 'allowedToView': []},
+      },
+
+    'assessments':
+      [
+        "All",
+        "Project 1",
+        "Project 2",
+        "Final Exam",
+        "Mid Semester Exam",
+      ]
+    }
+  };
+
   List allRequests = [
     {"requestID": 1, "submittedBy": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
     {"requestID": 2, "submittedBy": 1, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
@@ -86,6 +117,7 @@ class BackEnd {
 
   List getAllRequest(String subjectID) {
     return allRequests;
+    // return database[subjectID]['requests'];
   }
 
   List<String> getBasicFields(String subjectID) {
@@ -94,6 +126,7 @@ class BackEnd {
 
   Map getTypesOfRequest(String subjectID) {
     return typesOfRequest;
+    // return database[subjectID]['typesOfRequest'];
   }
 
   List<Map<String, String>> getSubjectList(String userID) {
@@ -102,6 +135,7 @@ class BackEnd {
 
   List<String> getAssessments(String subjectID) {
     return assessments;
+    // return database[subjectID]['assessments'];
   }
 
 }
