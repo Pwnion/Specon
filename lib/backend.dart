@@ -9,25 +9,25 @@ class BackEnd {
   }
 
   List allRequests = [
-    {"ID": 1, "submittedBy": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
-    {"ID": 2, "submittedBy": 1, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 3, "submittedBy": 2, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
-    {"ID": 4, "submittedBy": 1, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
-    {"ID": 5, "submittedBy": 1, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
-    {"ID": 6, "submittedBy": 1, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 7, "submittedBy": 1, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
-    {"ID": 8, "submittedBy": 1, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
-    {"ID": 9, "submittedBy": 1, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 1, "submittedBy": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
+    {"requestID": 2, "submittedBy": 1, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
+    {"requestID": 3, "submittedBy": 2, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
+    {"requestID": 4, "submittedBy": 1, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
+    {"requestID": 5, "submittedBy": 1, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
+    {"requestID": 6, "submittedBy": 1, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
+    {"requestID": 7, "submittedBy": 1, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
+    {"requestID": 8, "submittedBy": 1, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
+    {"requestID": 9, "submittedBy": 1, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
+    {"requestID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
   ];
 
   List<Map<String, String>> subjectList = [
@@ -75,6 +75,14 @@ class BackEnd {
   "Subject"
   ];
 
+  List<String> assessments = [
+    "All",
+    "Project 1",
+    "Project 2",
+    "Final Exam",
+    "Mid Semester Exam",
+  ];
+
 
   List getAllRequest(String subjectID) {
     return allRequests;
@@ -90,6 +98,10 @@ class BackEnd {
 
   List<Map<String, String>> getSubjectList(String userID) {
     return subjectList;
+  }
+
+  List<String> getAssessments(String subjectID) {
+    return assessments;
   }
 
 }

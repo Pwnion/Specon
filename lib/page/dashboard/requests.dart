@@ -5,17 +5,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
+import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
 
   final Function getCurrentSubject;
   final Function openSubmittedRequest;
+  final Map currentUser;
 
   const Requests(
     {
       Key? key,
       required this.getCurrentSubject,
-      required this.openSubmittedRequest
+      required this.openSubmittedRequest,
+      required this.currentUser
     }
   ) : super(key: key);
 
@@ -26,19 +29,10 @@ class Requests extends StatefulWidget {
 class _RequestsState extends State<Requests> {
 
   // TODO: Get assignments from canvas and it should be customisable
-  List<String> filterSelections = [
-    "All",
-    "Project 1",
-    "Project 2",
-    "Final Exam",
-    "Mid Semester Exam",
-  ];
+  List<String> filterSelections = BackEnd().getAssessments('subjectID');  // TODO: where to call
 
   // TODO: Get all requests from the database
   List allRequests = BackEnd().getAllRequest('subjectID');  // TODO: where to call
-
-  // Map currentUser = {'id': 2, 'userType': 'Student'};
-  Map currentUser = {'id': 3, 'userType': 'Subject Coordinator'};
 
   final onPrimary = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
@@ -48,16 +42,11 @@ class _RequestsState extends State<Requests> {
   final requestColor = const Color(0xFFD4D4D4);
   final _scrollController = ScrollController();
   final nameSearchController = TextEditingController();
-  String currentSubject = '';
+  String currentSubject = ''; // Get from dashboard
   String dropdownValue = '';
   String searchString = '';
   List _foundRequests = [];
-
-  @override
-  void initState() {
-    dropdownValue = filterSelections.first;
-    super.initState();
-  }
+  Map currentUser = {}; // Get from dashboard
 
   // First filter
   void _filterBySubject() {
@@ -84,18 +73,18 @@ class _RequestsState extends State<Requests> {
   void _filterByUserType() {
 
     List filteredByUserType = [];
-    String userType = currentUser['userType'];
+    UserType currentUserType = currentUser['userType'];
 
     // Only show the student's request
-    if (userType == 'Student') {
+    if (currentUserType == UserType.student) {
       for (var request in _foundRequests) {
-        if (request['submittedBy'] == currentUser['id']) {
+        if (request['submittedBy'] == currentUser['userID']) {
           filteredByUserType.add(request);
         }
       }
 
     // Show everything
-    } else if (userType == 'Subject Coordinator') {
+    } else if (currentUserType == UserType.subjectCoordinator) {
       return;
 
     // Show based on restrictions given by coordinator (Tutor, etc)
@@ -138,6 +127,13 @@ class _RequestsState extends State<Requests> {
     }
 
     _foundRequests = searchResult;
+  }
+
+  @override
+  void initState() {
+    dropdownValue = filterSelections.first;
+    currentUser = widget.currentUser;
+    super.initState();
   }
 
   @override

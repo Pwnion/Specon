@@ -6,19 +6,20 @@
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
+import 'package:specon/user_type.dart';
 
 class Navigation extends StatefulWidget {
 
   final Function openNewRequestForm;
   final Function setCurrentSubject;
-  final String userType;
+  final Map currentUser;
 
   const Navigation(
     {
     Key? key,
     required this.openNewRequestForm,
     required this.setCurrentSubject,
-    required, required this.userType
+    required this.currentUser
     }
   ) : super(key: key);
 
@@ -35,6 +36,7 @@ class _NavigationState extends State<Navigation> {
   final secondary = const Color(0xFF333333);
   final onSecondary = const Color(0xFFA7A7A7);
   String selectedSubject = '';
+  Map currentUser = {}; // Get from dashboard
 
   List<Widget> _buildSubjectsColumn() {
 
@@ -63,6 +65,12 @@ class _NavigationState extends State<Navigation> {
   }
 
   @override
+  void initState() {
+    currentUser = widget.currentUser;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Column(
@@ -70,7 +78,7 @@ class _NavigationState extends State<Navigation> {
       children: [
 
         // Display new request button only if user is a student
-        if (widget.userType == 'student' && selectedSubject.isNotEmpty)
+        if (currentUser['userType'] == UserType.student && selectedSubject != '')
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
             child: ElevatedButton (

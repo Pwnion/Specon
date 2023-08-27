@@ -34,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  String userType = 'student'; // TODO: Should change this to UserType
+  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // Should get from landing_page
   String studentName = '';
   Widget? requestWidget;
 
@@ -180,7 +180,7 @@ class _DashboardState extends State<Dashboard> {
               child: Navigation(
                 openNewRequestForm: openNewRequestForm,
                 setCurrentSubject: setCurrentSubject,
-                userType: userType
+                currentUser: currentUser
               ),
             ),
 
@@ -195,7 +195,8 @@ class _DashboardState extends State<Dashboard> {
                 width: 300.0,
                 child: requestWidget = Requests(
                   getCurrentSubject: getCurrentSubjectCode,
-                  openSubmittedRequest: openSubmittedRequest
+                  openSubmittedRequest: openSubmittedRequest,
+                  currentUser: currentUser,
                 ),
             ),
 
