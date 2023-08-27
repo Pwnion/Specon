@@ -4,6 +4,7 @@
 /// filtering by [RequestFilter].
 
 import 'package:flutter/material.dart';
+import 'package:specon/backend.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
 
 class Navigation extends StatefulWidget {
@@ -28,24 +29,7 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
 
   // TODO: Get user's enrolled subject from canvas
-  List<Map<String, String>> subjectList = [
-    {'code': 'COMP10001', 'name': 'Foundations of Computing'},
-    {'code': 'COMP10002', 'name': 'Foundations of Algorithms'},
-    {'code': 'COMP20003', 'name': 'Algorithms and Data Structures'},
-    {'code': 'COMP20005', 'name': 'Intro. to Numerical Computation in C'},
-    {'code': 'COMP20007', 'name': 'Design of Algorithms'},
-    {'code': 'COMP20008', 'name': 'Elements of Data Processing'},
-    {'code': 'SWEN20003', 'name': 'Object Oriented Software Development'},
-    {'code': 'COMP30013', 'name': 'Advanced Studies in Computing'},
-    {'code': 'COMP30019', 'name': 'Graphics and Interaction'},
-    {'code': 'COMP30020', 'name': 'Declarative Programming'},
-    {'code': 'COMP30022', 'name': 'IT Project'},
-    {'code': 'COMP30023', 'name': 'Computer Systems'},
-    {'code': 'COMP30024', 'name': 'Artificial Intelligence'},
-    {'code': 'COMP30026', 'name': 'Models of Computation'},
-    {'code': 'COMP30027', 'name': 'Machine Learning'},
-    {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
-  ];
+  List<Map<String, String>> subjectList = BackEnd().getSubjectList("userID"); // TODO: where to call
 
   final requestButtonColor = MaterialStateProperty.all(const Color(0xFFDF6C00));
   final secondary = const Color(0xFF333333);

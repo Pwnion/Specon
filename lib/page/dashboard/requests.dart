@@ -4,6 +4,7 @@
 /// and received requests for tutors and subject coordinators.
 
 import 'package:flutter/material.dart';
+import 'package:specon/backend.dart';
 
 class Requests extends StatefulWidget {
 
@@ -34,27 +35,7 @@ class _RequestsState extends State<Requests> {
   ];
 
   // TODO: Get all requests from the database
-  List allRequests = [
-    {"ID": 1, "submittedBy": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
-    {"ID": 2, "submittedBy": 1, "name": 'Bob', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 3, "submittedBy": 2, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam"},
-    {"ID": 4, "submittedBy": 1, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam"},
-    {"ID": 5, "submittedBy": 1, "name": 'Lo', "subject": "COMP30020", "type": "Project 1"},
-    {"ID": 6, "submittedBy": 1, "name": 'Harry', "subject": "COMP30019", "type": "Project 2"},
-    {"ID": 7, "submittedBy": 1, "name": 'Drey', "subject": "COMP30022", "type": "Project 2"},
-    {"ID": 8, "submittedBy": 1, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam"},
-    {"ID": 9, "submittedBy": 1, "name": 'David', "subject": "COMP30019", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-    {"ID": 10, "submittedBy": 1, "name": 'Po', "subject": "COMP30022", "type": "Project 1"},
-  ];
+  List allRequests = BackEnd().getAllRequest('subjectID');  // TODO: where to call
 
   // Map currentUser = {'id': 2, 'userType': 'Student'};
   Map currentUser = {'id': 3, 'userType': 'Subject Coordinator'};
@@ -151,7 +132,7 @@ class _RequestsState extends State<Requests> {
     _foundRequests = filteredByAssignment;
   }
 
-  // Forth filter
+  // Forth filter // TODO: Make it search for keywords in request as well, not just name search
   void _filterBySearch() {
 
     List searchResult = [];

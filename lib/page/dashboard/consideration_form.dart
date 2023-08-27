@@ -4,6 +4,7 @@
 /// will review it.
 
 import 'package:flutter/material.dart';
+import 'package:specon/backend.dart';
 
 class ConsiderationForm extends StatefulWidget {
 
@@ -24,34 +25,10 @@ class _ConsiderationFormState extends State<ConsiderationForm> {
   String requestType = '';
 
   // TODO: Customisable or standard?
-  static const List<String> basicFieldTitles = [
-    "Given Name",
-    "Last Name",
-    "Email",
-    "Student ID",
-    "Subject"
-  ];
+  List<String> basicFieldTitles = BackEnd().getBasicFields('subjectID'); // TODO: where to call
 
   // TODO: Should be customisable by the subject coordinator
-  static const Map typesOfRequest = {
-    "Participation Waiver": [
-      "Class",
-      "Reason"
-    ],
-    "Due date extension": [
-      "How long",
-      "Reason"
-    ],
-    "Change tutorial": [
-      "From Class",
-      "To Class",
-      "Reason"
-    ],
-    "Others": [
-      "What",
-      "Why",
-    ],
-  };
+  Map typesOfRequest = BackEnd().getTypesOfRequest("subjectID"); // TODO: where to call
 
   List<Widget> buildColumn(List<String> fields) {
     List<Widget> textFormFields = [];
@@ -197,17 +174,17 @@ class _ConsiderationFormState extends State<ConsiderationForm> {
                       Text(requestType, style: TextStyle(fontSize: 20.0, color: onSecondary, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, decorationColor: onSecondary, decorationThickness: 2)),
 
                       if (requestType.isNotEmpty)
-                        const SizedBox(height: 23),
+                      const SizedBox(height: 23),
 
                       if (requestType.isNotEmpty)
-                        Container(
-                          color: secondary,
-                          child:  Column(
-                            children: [
-                              ...buildColumn(typesOfRequest[requestType]),
-                            ],
-                          ),
+                      Container(
+                        color: secondary,
+                        child:  Column(
+                          children: [
+                            ...buildColumn(typesOfRequest[requestType]['fields']),
+                          ],
                         ),
+                      ),
                     ]
                 ),
               ),
