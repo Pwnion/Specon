@@ -15,8 +15,6 @@ class _AsmManagerState extends State<AsmManager> {
   final requestTypesList = RequestType.importTypes();
   List<RequestType> _foundRequestType = [];
   final _requestTypeController = TextEditingController();
-  final _subjectNameController = TextEditingController(); // Add this controller
-
   // String? selectedItem; // Declare selectedItem here
 
   @override
@@ -53,8 +51,6 @@ class _AsmManagerState extends State<AsmManager> {
                     setState(() {
                       requestTypesList.addAll(importedTypes);
                       _foundRequestType = requestTypesList;
-                      _subjectNameController.text =
-                          'Comp20008'; // Update the field value
                     });
                   },
                   child: Text("Import from Canvas"),
@@ -71,30 +67,6 @@ class _AsmManagerState extends State<AsmManager> {
               ],
             ),
           ),
-          TextFormField(
-            style: TextStyle(color: textColor),
-            controller: _subjectNameController, // Bind the controller
-            cursorColor: textColor,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: textColor,
-                  width: 0.5,
-                ),
-              ),
-              labelText: "Subject Name",
-              labelStyle: TextStyle(color: textColor, fontSize: 18),
-              floatingLabelStyle: TextStyle(color: textColor, fontSize: 22),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFD78521),
-                  width: 1,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
           Expanded(
             // Expanded to take remaining space
             child: Container(
