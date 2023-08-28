@@ -4,85 +4,99 @@
 /// filtering by [RequestFilter].
 
 import 'package:flutter/material.dart';
-
-import 'requests.dart';
-import 'request_filter.dart';
-import '../dashboard_page.dart';
+import 'package:specon/backend.dart';
+import 'package:specon/page/dashboard/request_filter.dart';
+import 'package:specon/user_type.dart';
 
 class Navigation extends StatefulWidget {
-  const Navigation({Key? key}) : super(key: key);
+
+  final Function openNewRequestForm;
+  final Function setCurrentSubject;
+  final Map currentUser;
+
+  const Navigation(
+    {
+    Key? key,
+    required this.openNewRequestForm,
+    required this.setCurrentSubject,
+    required this.currentUser
+    }
+  ) : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
-
 class _NavigationState extends State<Navigation> {
-  final requestButtonColor = const Color(0xFFDF6C00);
-  static const List<String> subjectList = [
-    "COMP30019",
-    "COMP30020",
-    "COMP30021",
-    "COMP30022",
-    "COMP30023"
-  ];
-  String currentSubject = '';
-  String userType = 'student';
-  bool newRequest = false;
 
+  // TODO: Get user's enrolled subject from canvas
+  List<Map<String, String>> subjectList = BackEnd().getSubjectList("userID"); // TODO: where to call
 
+  final requestButtonColor = MaterialStateProperty.all(const Color(0xFFDF6C00));
+  final secondary = const Color(0xFF333333);
+  final onSecondary = const Color(0xFFA7A7A7);
+  String selectedSubject = '';
+  Map currentUser = {}; // Get from dashboard
 
-  List<Widget> _buildSubjectsColumn(List<String> subjects) {
+  List<Widget> _buildSubjectsColumn() {
 
     List<Widget> subjectWidgets = [];
 
-    for (var subject in subjects) {
+    for (var subject in subjectList) {
+
       subjectWidgets.add(
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
+            elevation: 0.0,
+            color: subject['code'] == selectedSubject ? onSecondary : secondary,
             onPressed: () {
-              // setState(() {
-              //   currentSubject = subject;
-              // });
-              DashboardState().setCurrentSubject(subject);
+              setState(() {
+                selectedSubject = subject['code']!;
+                widget.setCurrentSubject(subject);
+              });
             },
-            child: Text(subject),
+            child: Text(subject['code']!),
           ),
         ),
       );
     }
     return subjectWidgets;
   }
+
+  @override
+  void initState() {
+    currentUser = widget.currentUser;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
 
-          // Display new request button only if user is a student
-          if (userType == 'student')
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: ElevatedButton (
-                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(requestButtonColor)),
-                onPressed: () {
-                  // temporary fix
-                  DashboardState().setNewRequest(true);
-                },
-                child: const Text(
-                  'New Request',
-                  style: TextStyle(color: Colors.white),
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+
+        // Display new request button only if user is a student
+        if (currentUser['userType'] == UserType.student && selectedSubject != '')
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+            child: ElevatedButton (
+              style: ButtonStyle(backgroundColor: requestButtonColor),
+              onPressed: () {
+                setState(() {
+                  widget.openNewRequestForm();
+                });
+              },
+              child: const Text(
+                'New Request',
+                style: TextStyle(color: Colors.white),
               ),
             ),
+          ),
 
-          // TODO: Get user's subject list from database
-          ..._buildSubjectsColumn(subjectList),
-        ],
-      ),
-
+        ..._buildSubjectsColumn(),
+      ],
     );
   }
 }

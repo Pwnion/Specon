@@ -3,11 +3,10 @@
 /// Content changes based on the [UserType] that is authenticated.
 
 import 'package:flutter/material.dart';
-
-import '../user_type.dart';
-import 'dashboard/requests.dart';
-import 'dashboard/navigation.dart';
-import 'package:specon/form.dart';
+import 'package:specon/page/dashboard/navigation.dart';
+import 'package:specon/page/dashboard/requests.dart';
+import 'package:specon/page/dashboard/consideration_form.dart';
+import 'package:specon/user_type.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;
@@ -20,44 +19,43 @@ class Dashboard extends StatefulWidget {
   ) : super(key: key);
 
   @override
-  State<Dashboard> createState() => DashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-// changed to singleton class for temporary fix
-class DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard> {
 
-  // singleton stuff--------------------------------------------
-  // static final DashboardState _instance = DashboardState._internal();
-  // factory DashboardState() {
-  //   return _instance;
-  // }
-  // DashboardState._internal();
-  // end of singleton stuff--------------------------------------
-
-  //final requestButtonColor = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final avatarBackgroundColor = const Color(0xFFD78521);
   final mainBodyColor = const Color(0xFF333333);
   final menuColor = const Color(0xFFD4D4D4);
   final dividerColor = Colors.white;
   final stopwatch = Stopwatch();
-  String currentSubject = '';
+  Map<String, String> currentSubject = {'code': '', 'name': ''};
   bool avatarIsPressed = false;
   bool newRequest = false;
-  //String userType = 'student';
+  bool showSubmittedRequest = false;
+  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // Should get from landing_page
+  String studentName = '';
+  Widget? requestWidget;
 
-  // setters for temporary fix, can't use (can't pass instance?)
-  setCurrentSubject(String currentSubject){
-    // setState(() {
-    //   this.currentSubject = currentSubject;
-    // });
-  }
-  setNewRequest(bool newRequest){
-    // setState(() {
-    //   this.newRequest = newRequest;
-    // });
+  void openSubmittedRequest(String studentName) {
+    setState(() {
+      showSubmittedRequest = true;
+      newRequest = false;
+      this.studentName = studentName;
+    });
   }
 
+  String getCurrentSubjectCode() {
+    return currentSubject['code']!;
+  }
+
+  void openNewRequestForm() {
+    setState(() {
+      newRequest = true;
+      showSubmittedRequest = false;
+    });
+  }
 
   void closeNewRequestForm() {
     setState(() {
@@ -65,8 +63,43 @@ class DashboardState extends State<Dashboard> {
     });
   }
 
+  void setCurrentSubject(Map<String, String> subject) {
+    setState(() {
+      currentSubject = subject;
+      requestWidget;
+      showSubmittedRequest = false;
+      newRequest = false;
+    });
+  }
+
+  Widget displayThirdColumn() {
+
+    if (newRequest) {
+      return ConsiderationForm(closeNewRequestForm: closeNewRequestForm);
+
+    } else if (showSubmittedRequest) {
+      // TODO: Need to think how to display it
+      return Center(
+        child: Text(
+          'Show $studentName\'s Submitted Request!',
+          style: const TextStyle(fontSize: 40, color: Colors.white)
+          ),
+        );
+
+    } else {
+      return const Center(
+          child: Text(
+            'Select a request',
+            style: TextStyle(color: Colors.white, fontSize: 25)
+          ),
+        );
+
+    }
+  }
+
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
 
       appBar: AppBar(
@@ -85,7 +118,10 @@ class DashboardState extends State<Dashboard> {
 
         leadingWidth: 110.0,
 
-        title: Text(currentSubject, style: const TextStyle(color: Colors.white,fontSize: 20.0,)),
+        title: Text(
+                '${currentSubject['code']!} - ${currentSubject['name']!}',
+                style: const TextStyle(color: Colors.white,fontSize: 20.0)
+                ),
         centerTitle: true,
 
         actions: [
@@ -139,9 +175,13 @@ class DashboardState extends State<Dashboard> {
           children: [
 
             // Dashboard column 1
-            const Expanded(
-                flex: 1,
-                child: Navigation()
+            SizedBox(
+              width: 150.0,
+              child: Navigation(
+                openNewRequestForm: openNewRequestForm,
+                setCurrentSubject: setCurrentSubject,
+                currentUser: currentUser
+              ),
             ),
 
             VerticalDivider(
@@ -151,9 +191,13 @@ class DashboardState extends State<Dashboard> {
             ),
 
             // Dashboard column 2
-            const Expanded(
-                flex: 2,
-                child: Requests()
+            SizedBox(
+                width: 300.0,
+                child: requestWidget = Requests(
+                  getCurrentSubject: getCurrentSubjectCode,
+                  openSubmittedRequest: openSubmittedRequest,
+                  currentUser: currentUser,
+                ),
             ),
 
             VerticalDivider(
@@ -162,11 +206,9 @@ class DashboardState extends State<Dashboard> {
               width: 3,
             ),
 
-            // Dashboard column 3, make submit form always open for now
+            // Dashboard column 3
             Expanded(
-              flex: 4,
-              child: SpeconForm(closeNewRequestForm: closeNewRequestForm)
-              //child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
+              child: displayThirdColumn(),
               ),
             ],
           ),
