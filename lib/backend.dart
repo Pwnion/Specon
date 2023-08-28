@@ -80,32 +80,6 @@ class BackEnd {
     {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
   ];
 
-  Map typesOfRequest = {
-    "Participation Waiver":
-      {'fields': ["Class", "Reason"],
-       'allowedToView': ["Tutor"]},
-
-    "Due date extension":
-      {'fields': ["How long", "Reason"],
-      'allowedToView': ["Tutor"]},
-
-    "Change tutorial":
-      {'fields': ["From Class", "To Class", "Reason"],
-      'allowedToView': []},
-
-    "Others":
-      {'fields': ["What", "Why"],
-      'allowedToView': []},
-  };
-
-  List<String> basicFieldTitles = [
-  "Given Name",
-  "Last Name",
-  "Email",
-  "Student ID",
-  "Subject"
-  ];
-
   List<String> assessments = [
     "All",
     "Project 1",
@@ -118,15 +92,6 @@ class BackEnd {
   List getAllRequest(String subjectID) {
     return allRequests;
     // return database[subjectID]['requests'];
-  }
-
-  List<String> getBasicFields(String subjectID) {
-    return basicFieldTitles;
-  }
-
-  Map getTypesOfRequest(String subjectID) {
-    return typesOfRequest;
-    // return database[subjectID]['typesOfRequest'];
   }
 
   List<Map<String, String>> getSubjectList(String userID) {

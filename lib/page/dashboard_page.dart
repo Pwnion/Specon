@@ -34,10 +34,11 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // Should get from landing_page
-  String studentName = '';
+  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // TODO: Should get from landing_page
+  String studentName = ''; // TODO: Temporary
   Widget? requestWidget;
 
+  // TODO: Should pass in request id instead of studentName
   void openSubmittedRequest(String studentName) {
     setState(() {
       showSubmittedRequest = true;

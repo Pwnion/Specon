@@ -4,7 +4,6 @@
 /// will review it.
 
 import 'package:flutter/material.dart';
-import 'package:specon/backend.dart';
 
 class ConsiderationForm extends StatefulWidget {
 
@@ -24,12 +23,21 @@ class _ConsiderationFormState extends State<ConsiderationForm> {
   final onSecondary = const Color(0xFFD4D4D4);
   String requestType = '';
 
-  // TODO: Should have function to get subject id from dashboard
-  // TODO: Customisable or standard?
-  List<String> basicFieldTitles = BackEnd().getBasicFields('subjectID'); // TODO: where to call
+  static final List<String> basicFieldTitles = [
+    "Given Name",
+    "Last Name",
+    "Email",
+    "Student ID",
+    "Subject" // TODO: Get from dashboard
+  ];
 
-  // TODO: Should be customisable by the subject coordinator
-  Map typesOfRequest = BackEnd().getTypesOfRequest("subjectID"); // TODO: where to call
+  // TODO: Think about fields for each types [regrade to be added]
+  static final Map typesOfRequest = {
+    "Participation Waiver": ["Class", "Reason"],
+    "Due date extension": ["How long", "Reason"],
+    "Change tutorial": ["From Class", "To Class", "Reason"],
+    "Others": ["What", "Why"]
+  };
 
   List<Widget> buildColumn(List<String> fields) {
     List<Widget> textFormFields = [];
@@ -182,7 +190,7 @@ class _ConsiderationFormState extends State<ConsiderationForm> {
                         color: secondary,
                         child:  Column(
                           children: [
-                            ...buildColumn(typesOfRequest[requestType]['fields']),
+                            ...buildColumn(typesOfRequest[requestType]),
                           ],
                         ),
                       ),
