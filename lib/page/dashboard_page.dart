@@ -34,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // Should get from landing_page
+  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.subjectCoordinator}; // Should get from landing_page
   String studentName = '';
   Widget? requestWidget;
 

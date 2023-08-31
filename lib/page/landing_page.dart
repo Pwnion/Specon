@@ -25,7 +25,7 @@ class Landing extends StatelessWidget {
           //   return const Login();
           // }
           return const Dashboard(
-            userType: UserType.student, // TODO: Get actual type from Canvas.
+            userType: UserType.subjectCoordinator, // TODO: Get actual type from Canvas.
           );
         }
         return const Loading();
