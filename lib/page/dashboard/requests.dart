@@ -198,6 +198,7 @@ class _RequestsState extends State<Requests> {
                   ),
                 ),
               ),
+              // end of search bar
 
               Divider(
                 color: dividerColor,
@@ -260,7 +261,7 @@ class _RequestsState extends State<Requests> {
                           onTap: () {
                             setState(() {
                               // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                              widget.openSubmittedRequest(_foundRequests[index]['name']);
+                              widget.openSubmittedRequest(_foundRequests[index]);
                             });
                           },
                           child: Card(
