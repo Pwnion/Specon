@@ -34,6 +34,7 @@ dependencies:
   firebase_core: ^2.15.0
   firebase_auth: ^4.7.2
   cloud_firestore: ^4.8.4
+  cloud_functions: ^4.4.0
   url_strategy: ^0.2.0
   flutter_dotenv: ^5.1.0
   intl: ^0.18.1
