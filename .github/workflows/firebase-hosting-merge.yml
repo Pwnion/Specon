@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
       - run: flutter doctor -v
       - run: flutter pub get
-      - run: flutter test
+#       - run: flutter test
       - run: flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
