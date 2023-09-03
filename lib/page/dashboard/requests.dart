@@ -11,7 +11,8 @@ class Requests extends StatefulWidget {
 
   final Function getCurrentSubject;
   final Function openSubmittedRequest;
-  final Map currentUser;
+  final Map currentUser; //whats this for
+ // void Function approveRequest(int requestID){};
 
   const Requests(
       {
@@ -51,10 +52,9 @@ class _RequestsState extends State<Requests> {
   List filteredByAssignment = []; // request through user, subject & assignment (for search)
   Map currentUser = {}; // Get from dashboard
 
+
   // Second filter
   void _filterBySubject() {
-
-    filteredBySubject = [];
 
     if (widget.getCurrentSubject() != currentSubject){
       currentSubject = widget.getCurrentSubject();
@@ -63,12 +63,12 @@ class _RequestsState extends State<Requests> {
       searchString = '';
     }
 
+    filteredBySubject = [];
     for (var request in filteredByUserType) {
       if (request['subject'] == currentSubject) {
         filteredBySubject.add(request);
       }
     }
-
     //_foundRequests = filteredBySubject;
   }
 
@@ -173,16 +173,12 @@ class _RequestsState extends State<Requests> {
                         searchString = value;
                       });
                     },
-
-                    style: const TextStyle(color: Colors.white),
-
+                    style: const TextStyle(color: Color(0xFFD4D4D4)),
+                    cursorColor: const Color(0xFFD4D4D4),
                     decoration: InputDecoration(
-
                       labelText: 'Name Search',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      suffixIcon: const Icon(Icons.search, color: Colors.white),
-                      filled: true,
-                      fillColor: mainBodyColor,
+                      labelStyle: const TextStyle(color: Color(0xFFD4D4D4)),
+                      suffixIcon: const Icon(Icons.search, color: Color(0xFFD4D4D4)),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 1,
@@ -191,7 +187,7 @@ class _RequestsState extends State<Requests> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: topBarColor,
+                          color: onPrimary,
                         ),
                       ),
                     ),
@@ -208,7 +204,7 @@ class _RequestsState extends State<Requests> {
 
               // Filter Button
               Container(
-                decoration: BoxDecoration(color: filterContainerColor),
+                //decoration: BoxDecoration(color: filterContainerColor),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   // filter drop down button
@@ -278,6 +274,22 @@ class _RequestsState extends State<Requests> {
                                       const Icon(Icons.album, size: 20.0),
                                       const SizedBox(width: 12),
                                       Text(_foundRequests[index]['name']),
+                                      // green tick icon
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.only(right: 7.0),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Visibility(
+                                                visible: _foundRequests[index]['state'] == "approved"? true: false,
+                                                child: const Icon(Icons.gpp_good_sharp, color: Colors.green),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
                                     ],
                                   ),
                                 ),

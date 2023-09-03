@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'consideration_form.dart';
 import '../dashboard_page.dart';
 
+import 'package:specon/backend.dart';
+
 class Discussion extends StatefulWidget {
   final Function getCurrentRequest;
   final Map currentUser;
@@ -43,7 +45,15 @@ class _DiscussionState extends State<Discussion> {
 
   void downloadAttachment(){}
 
-  void accept(){
+  void accept(int requestID){
+      for(var request in BackEnd().allRequests){
+        if(request['requestID'] == requestID){
+          setState(() {
+            request['state'] = "approved";
+          });
+        }
+      }
+
   }
 
   void decline(){}
@@ -108,7 +118,7 @@ class _DiscussionState extends State<Discussion> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           TextButton(
-                                            onPressed: accept,
+                                            onPressed: () => accept(discussionThread[index]["discussionID"]),
                                             child: const Text("Accept"),
                                           ),
                                           TextButton(
