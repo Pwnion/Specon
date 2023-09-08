@@ -5,6 +5,7 @@
 /// coordinator.
 
 import 'package:flutter/material.dart';
+import 'package:specon/user_type.dart';
 
 import 'consideration_form.dart';
 import '../dashboard_page.dart';
@@ -95,6 +96,7 @@ class _DiscussionState extends State<Discussion> {
                                     ),
 
                                     // accept decline button
+                                    if (widget.currentUser['userType'] != UserType.student)
                                     Expanded(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,

@@ -30,9 +30,6 @@ class _RequestsState extends State<Requests> {
   // TODO: Get assignments from canvas and it should be customisable
   List<String> filterSelections = BackEnd().getAssessments('subjectID');  // TODO: where to call
 
-  // TODO: Get all requests from the database
-  List allRequests = [];  // TODO: where to call
-
   final onPrimary = const Color(0xFFDF6C00);
   final topBarColor = const Color(0xFF385F71);
   final filterContainerColor = Colors.white10;
@@ -45,6 +42,7 @@ class _RequestsState extends State<Requests> {
   String currentSubject = ''; // TODO: Get from dashboard
   String dropdownValue = '';
   String searchString = '';
+  List allRequests = [];
   List _foundRequests = []; // result showing on screen
 
   // First filter
@@ -82,7 +80,7 @@ class _RequestsState extends State<Requests> {
   }
 
   // Search for new request or update request status every 1 second
-  Stream<List> getRequests() async*{
+  Stream<List> getRequests() async* {
 
     while(true) {
       await Future.delayed(const Duration(seconds: 1));
