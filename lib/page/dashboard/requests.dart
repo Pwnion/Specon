@@ -11,16 +11,17 @@ class Requests extends StatefulWidget {
 
   final Function getCurrentSubject;
   final Function openSubmittedRequest;
-  final Map currentUser;
+  final Map currentUser; //whats this for
+ // void Function approveRequest(int requestID){};
 
   const Requests(
-    {
-      Key? key,
-      required this.getCurrentSubject,
-      required this.openSubmittedRequest,
-      required this.currentUser
-    }
-  ) : super(key: key);
+      {
+        Key? key,
+        required this.getCurrentSubject,
+        required this.openSubmittedRequest,
+        required this.currentUser
+      }
+      ) : super(key: key);
 
   @override
   State<Requests> createState() => _RequestsState();
@@ -45,13 +46,15 @@ class _RequestsState extends State<Requests> {
   String currentSubject = ''; // Get from dashboard
   String dropdownValue = '';
   String searchString = '';
-  List _foundRequests = [];
+  List _foundRequests = []; // result showing on screen
+  List filteredByUserType = []; // request through user
+  List filteredBySubject = []; // request through user & subject
+  List filteredByAssignment = []; // request through user, subject & assignment (for search)
   Map currentUser = {}; // Get from dashboard
 
-  // First filter
-  void _filterBySubject() {
 
-    List filteredBySubject = [];
+  // Second filter
+  void _filterBySubject() {
 
     if (widget.getCurrentSubject() != currentSubject){
       currentSubject = widget.getCurrentSubject();
@@ -60,52 +63,55 @@ class _RequestsState extends State<Requests> {
       searchString = '';
     }
 
-    for (var request in allRequests) {
+    filteredBySubject = [];
+    for (var request in filteredByUserType) {
       if (request['subject'] == currentSubject) {
         filteredBySubject.add(request);
       }
     }
-
-    _foundRequests = filteredBySubject;
+    //_foundRequests = filteredBySubject;
   }
 
-  // Second filter
+  // First filter
   void _filterByUserType() {
 
-    List filteredByUserType = [];
+    //List filteredByUserType = [];
     UserType currentUserType = currentUser['userType'];
 
     // Only show the student's request
     if (currentUserType == UserType.student) {
-      for (var request in _foundRequests) {
-        if (request['submittedBy'] == currentUser['userID']) {
-          filteredByUserType.add(request);
-        }
-      }
+      //for (var request in allRequests) {
+        // if (request['submittedBy'] == currentUser['userID']) {
+        //   filteredByUserType.add(request);
+        // }
+        filteredByUserType = allRequests.where((request) =>
+            request['submittedBy'] == currentUser['userID']).toList();
+      //}
 
-    // Show everything
+      // Show everything
     } else if (currentUserType == UserType.subjectCoordinator) {
+      filteredByUserType = allRequests;
       return;
 
-    // Show based on restrictions given by coordinator (Tutor, etc)
+      // Show based on restrictions given by coordinator (Tutor, etc)
     } else {
       // TODO: Determine which role gets to view what types of request
     }
 
-    _foundRequests = filteredByUserType;
+    //_foundRequests = filteredByUserType;
   }
 
   // Third filter
   void _filterByAssignment() {
 
-    List filteredByAssignment = [];
+    //List filteredByAssignment = [];
 
     if (dropdownValue != "All") {
-      filteredByAssignment = _foundRequests.where((request) =>
+      filteredByAssignment = filteredBySubject.where((request) =>
           request['type'].contains(dropdownValue)).toList();
 
     }else{
-      filteredByAssignment = _foundRequests.where((request) =>
+      filteredByAssignment = filteredBySubject.where((request) =>
           request['type'].contains("")).toList();
     }
 
@@ -118,29 +124,31 @@ class _RequestsState extends State<Requests> {
     List searchResult = [];
 
     if(searchString.isEmpty) {
-      searchResult = _foundRequests;
+      searchResult = filteredByAssignment;
 
     }else{
       // apply search logic, should change later or not?
-      searchResult = _foundRequests.where((request) =>
+      searchResult = filteredByAssignment.where((request) =>
           request['name'].toLowerCase().contains(searchString.toLowerCase())).toList();
     }
 
     _foundRequests = searchResult;
   }
 
+
   @override
   void initState() {
     dropdownValue = filterSelections.first;
     currentUser = widget.currentUser;
     super.initState();
+
+    _filterByUserType();
   }
 
   @override
   Widget build(BuildContext context) {
 
     _filterBySubject();
-    _filterByUserType();
     _filterByAssignment();
     _filterBySearch();
 
@@ -165,16 +173,12 @@ class _RequestsState extends State<Requests> {
                         searchString = value;
                       });
                     },
-
-                    style: const TextStyle(color: Colors.white),
-
+                    style: const TextStyle(color: Color(0xFFD4D4D4)),
+                    cursorColor: const Color(0xFFD4D4D4),
                     decoration: InputDecoration(
-
                       labelText: 'Name Search',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      suffixIcon: const Icon(Icons.search, color: Colors.white),
-                      filled: true,
-                      fillColor: mainBodyColor,
+                      labelStyle: const TextStyle(color: Color(0xFFD4D4D4)),
+                      suffixIcon: const Icon(Icons.search, color: Color(0xFFD4D4D4)),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 1,
@@ -183,13 +187,14 @@ class _RequestsState extends State<Requests> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: topBarColor,
+                          color: onPrimary,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
+              // end of search bar
 
               Divider(
                 color: dividerColor,
@@ -199,7 +204,7 @@ class _RequestsState extends State<Requests> {
 
               // Filter Button
               Container(
-                decoration: BoxDecoration(color: filterContainerColor),
+                //decoration: BoxDecoration(color: filterContainerColor),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   // filter drop down button
@@ -252,7 +257,7 @@ class _RequestsState extends State<Requests> {
                           onTap: () {
                             setState(() {
                               // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                              widget.openSubmittedRequest(_foundRequests[index]['name']);
+                              widget.openSubmittedRequest(_foundRequests[index]);
                             });
                           },
                           child: Card(
@@ -269,6 +274,22 @@ class _RequestsState extends State<Requests> {
                                       const Icon(Icons.album, size: 20.0),
                                       const SizedBox(width: 12),
                                       Text(_foundRequests[index]['name']),
+                                      // green tick icon
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.only(right: 7.0),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Visibility(
+                                                visible: _foundRequests[index]['state'] == "approved"? true: false,
+                                                child: const Icon(Icons.gpp_good_sharp, color: Colors.green),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
                                     ],
                                   ),
                                 ),

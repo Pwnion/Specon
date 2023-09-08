@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:specon/page/dashboard/navigation.dart';
 import 'package:specon/page/dashboard/requests.dart';
+import 'package:specon/page/dashboard/discussion.dart';
 import 'package:specon/page/dashboard/consideration_form.dart';
 import 'package:specon/user_type.dart';
 
@@ -31,19 +32,20 @@ class _DashboardState extends State<Dashboard> {
   final dividerColor = Colors.white;
   final stopwatch = Stopwatch();
   Map<String, String> currentSubject = {'code': '', 'name': ''};
+  Map currentRequest = {};
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // TODO: Should get from landing_page
   String studentName = ''; // TODO: Temporary
   Widget? requestWidget;
+  Widget? discussionWidget;
 
-  // TODO: Should pass in request id instead of studentName
-  void openSubmittedRequest(String studentName) {
+  void openSubmittedRequest(Map currentRequest) {
     setState(() {
       showSubmittedRequest = true;
       newRequest = false;
-      this.studentName = studentName;
+      this.currentRequest = currentRequest;
     });
   }
 
@@ -51,11 +53,15 @@ class _DashboardState extends State<Dashboard> {
     return currentSubject['code']!;
   }
 
-  void openNewRequestForm() {
+  void openNewRequestForm(Map currentRequest) {
     setState(() {
       newRequest = true;
       showSubmittedRequest = false;
+      this.currentRequest = currentRequest;
     });
+  }
+  Map getCurrentRequest() {
+    return currentRequest;
   }
 
   void closeNewRequestForm() {
@@ -68,6 +74,7 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       currentSubject = subject;
       requestWidget;
+      discussionWidget; // dont know if this should belong here
       showSubmittedRequest = false;
       newRequest = false;
     });
@@ -81,10 +88,11 @@ class _DashboardState extends State<Dashboard> {
     } else if (showSubmittedRequest) {
       // TODO: Need to think how to display it
       return Center(
-        child: Text(
-          'Show $studentName\'s Submitted Request!',
-          style: const TextStyle(fontSize: 40, color: Colors.white)
-          ),
+        child: discussionWidget = Discussion(
+          getCurrentRequest: getCurrentRequest,
+          currentUser: currentUser,
+          //currentRequest: currentRequest,
+        ),
         );
 
     } else {
