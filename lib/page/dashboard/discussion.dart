@@ -45,26 +45,8 @@ class _DiscussionState extends State<Discussion> {
 
   void downloadAttachment(){}
 
-  void accept(int requestID){
-      for(var request in BackEnd().allRequests){
-        if(request['requestID'] == requestID){
-          setState(() {
-            request['state'] = "approved";
-          });
-        }
-      }
-
-  }
-
   void decline(){}
 
-
-  @override
-  void initState() {
-    currentRequest = widget.getCurrentRequest();
-    super.initState();
-
-  }
   @override
   Widget build(BuildContext context) {
     currentRequest = widget.getCurrentRequest();
@@ -118,7 +100,9 @@ class _DiscussionState extends State<Discussion> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           TextButton(
-                                            onPressed: () => accept(discussionThread[index]["discussionID"]),
+                                            onPressed: () {
+                                              BackEnd().accept(discussionThread[index]["discussionID"]);
+                                            },
                                             child: const Text("Accept"),
                                           ),
                                           TextButton(

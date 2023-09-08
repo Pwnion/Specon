@@ -36,8 +36,8 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.student}; // TODO: Should get from landing_page
-  String studentName = ''; // TODO: Temporary
+  Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.subjectCoordinator}; // Should get from landing_page
+  String studentName = '';
   Widget? requestWidget;
   Widget? discussionWidget;
 
@@ -53,13 +53,13 @@ class _DashboardState extends State<Dashboard> {
     return currentSubject['code']!;
   }
 
-  void openNewRequestForm(Map currentRequest) {
+  void openNewRequestForm() {
     setState(() {
       newRequest = true;
       showSubmittedRequest = false;
-      this.currentRequest = currentRequest;
     });
   }
+
   Map getCurrentRequest() {
     return currentRequest;
   }
@@ -74,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       currentSubject = subject;
       requestWidget;
-      discussionWidget; // dont know if this should belong here
+      //discussionWidget; // dont know if this should belong here
       showSubmittedRequest = false;
       newRequest = false;
     });

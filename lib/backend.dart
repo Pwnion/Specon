@@ -1,3 +1,5 @@
+import 'package:specon/user_type.dart';
+
 class BackEnd {
 
   BackEnd._privateConstructor();
@@ -80,6 +82,32 @@ class BackEnd {
     {'code': 'SWEN30006', 'name': 'Software Modelling and Design'},
   ];
 
+  Map typesOfRequest = {
+    "Participation Waiver":
+      {'fields': ["Class", "Reason"],
+       'allowedToView': ["Tutor"]},
+
+    "Due date extension":
+      {'fields': ["How long", "Reason"],
+      'allowedToView': ["Tutor"]},
+
+    "Change tutorial":
+      {'fields': ["From Class", "To Class", "Reason"],
+      'allowedToView': []},
+
+    "Others":
+      {'fields': ["What", "Why"],
+      'allowedToView': []},
+  };
+
+  List<String> basicFieldTitles = [
+  "Given Name",
+  "Last Name",
+  "Email",
+  "Student ID",
+  "Subject"
+  ];
+
   List<String> assessments = [
     "All",
     "Project 1",
@@ -88,10 +116,44 @@ class BackEnd {
     "Mid Semester Exam",
   ];
 
+  List getRequests(String subjectID, Map user) {
 
-  List getAllRequest(String subjectID) {
-    return allRequests;
-    // return database[subjectID]['requests'];
+    List filteredByUserType = [];
+    List filteredBySubject = [];
+
+    if (subjectID == '') return [];
+
+    // Only show the student's request
+    if (user['userType'] == UserType.student) {
+      filteredByUserType = allRequests.where((request) =>
+      request['submittedBy'] == user['userID']).toList();
+
+      // Show everything
+    } else if (user['userType'] == UserType.subjectCoordinator) {
+      filteredByUserType = allRequests;
+
+      // Show based on restrictions given by coordinator (Tutor, etc)
+    } else {
+      // TODO: Determine which role gets to view what types of request
+    }
+
+    filteredBySubject = [];
+    for (var request in filteredByUserType) {
+      if (request['subject'] == subjectID) {
+        filteredBySubject.add(request);
+      }
+    }
+
+    return filteredBySubject;
+  }
+
+  List<String> getBasicFields(String subjectID) {
+    return basicFieldTitles;
+  }
+
+  Map getTypesOfRequest(String subjectID) {
+    return typesOfRequest;
+    // return database[subjectID]['typesOfRequest'];
   }
 
   List<Map<String, String>> getSubjectList(String userID) {
@@ -101,6 +163,14 @@ class BackEnd {
   List<String> getAssessments(String subjectID) {
     return assessments;
     // return database[subjectID]['assessments'];
+  }
+
+  void accept(int requestID){
+    for(var request in allRequests){
+      if(request['requestID'] == requestID){
+        request['state'] = "approved";
+      }
+    }
   }
 
 }
