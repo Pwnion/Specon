@@ -103,7 +103,7 @@ class _RequestsState extends State<Requests> {
       animation: BackEnd(),
       builder: (context, child) {
 
-        allRequests = BackEnd().getRequests(currentSubject, currentUser);
+        allRequests = BackEnd().getRequests(currentSubject, currentUser); // TODO: await?
         _filterByAssignment();
         _filterBySearch();
 

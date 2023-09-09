@@ -112,6 +112,7 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: topBarColor,
         elevation: 0.0,
 
+        // Logo
         leading: InkWell(
           onTap: () {},
           child: const Center(
@@ -141,8 +142,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
 
-          // Permission Settings Button
-          //if(currentUser['userType'] == UserType.subjectCoordinator) TODO
+          // Switch between student and subject coordinator view Button : TODO: to be removed
             Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: InkWell(
@@ -157,9 +157,19 @@ class _DashboardState extends State<Dashboard> {
                     });
                   }
                 },
-                child: const Icon(Icons.admin_panel_settings, size: 30.0,),
+                child: const Icon(Icons.sync_outlined, size: 30.0,),
               ),
             ),
+
+          // Permission Settings Button
+          if(currentUser['userType'] == UserType.subjectCoordinator)
+          Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: InkWell(
+              onTap: () {},
+              child: const Icon(Icons.admin_panel_settings, size: 30.0,),
+            ),
+          ),
 
           // Notification Button
           Padding(
