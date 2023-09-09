@@ -79,19 +79,6 @@ class _RequestsState extends State<Requests> {
     _foundRequests = searchResult;
   }
 
-  // Search for new request or update request status every 1 second
-  Stream<List> getRequests() async* {
-
-    while(true) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        setState(() {
-          allRequests = BackEnd().getRequests(currentSubject, currentUser); // TODO: await?
-        });
-      }
-    }
-  }
-
   @override
   void initState() {
     dropdownValue = filterSelections.first;
@@ -103,6 +90,7 @@ class _RequestsState extends State<Requests> {
   @override
   Widget build(BuildContext context) {
 
+    // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != currentSubject) {
       currentSubject = widget.getCurrentSubject();
       dropdownValue = filterSelections.first;
@@ -110,12 +98,15 @@ class _RequestsState extends State<Requests> {
       searchString = '';
     }
 
-    _filterByAssignment();
-    _filterBySearch();
+    return AnimatedBuilder(
 
-    return StreamBuilder<Object>(
-      stream: getRequests(),
-      builder: (context, snapshot) {
+      animation: BackEnd(),
+      builder: (context, child) {
+
+        allRequests = BackEnd().getRequests(currentSubject, currentUser);
+        _filterByAssignment();
+        _filterBySearch();
+
         return Scaffold(
             body: Padding(
               padding: const EdgeInsets.all(1.0),

@@ -85,13 +85,11 @@ class _DashboardState extends State<Dashboard> {
       return ConsiderationForm(closeNewRequestForm: closeNewRequestForm);
 
     } else if (showSubmittedRequest) {
-      // TODO: Need to think how to display it
-      return Center(
-        child: discussionWidget = Discussion(
-          getCurrentRequest: getCurrentRequest,
-          currentUser: currentUser,
-          //currentRequest: currentRequest,
-        ),
+        return Center(
+          child: discussionWidget = Discussion(
+            getCurrentRequest: getCurrentRequest,
+            currentUser: currentUser,
+          ),
         );
 
     } else {
@@ -142,6 +140,26 @@ class _DashboardState extends State<Dashboard> {
               child: const Icon(Icons.home, size: 30.0,),
             ),
           ),
+
+          // Permission Settings Button
+          //if(currentUser['userType'] == UserType.subjectCoordinator) TODO
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {
+                  if (currentUser['userType'] == UserType.subjectCoordinator){
+                    setState(() {
+                      currentUser['userType'] = UserType.student;
+                    });
+                  } else {
+                    setState(() {
+                      currentUser['userType'] = UserType.subjectCoordinator;
+                    });
+                  }
+                },
+                child: const Icon(Icons.admin_panel_settings, size: 30.0,),
+              ),
+            ),
 
           // Notification Button
           Padding(

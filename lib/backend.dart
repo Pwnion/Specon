@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:specon/user_type.dart';
 
-class BackEnd {
+class BackEnd extends ChangeNotifier{
 
   BackEnd._privateConstructor();
 
@@ -169,8 +170,8 @@ class BackEnd {
     for(var request in allRequests){
       if(request['requestID'] == requestID){
         request['state'] = "approved";
+        notifyListeners();
       }
     }
   }
-
 }
