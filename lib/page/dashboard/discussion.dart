@@ -28,6 +28,7 @@ class Discussion extends StatefulWidget {
 Map currentRequest = {'requestID': 1};
 class _DiscussionState extends State<Discussion> {
   final _scrollController = ScrollController();
+  final _TextController = TextEditingController();
   List allDiscussion = [
     {"discussionID": 1, "submittedBy": 1234, "name": 'Alex', "subject": "COMP30023", "type": "Project 1", "reason": "Pls I beg u"},
     {"discussionID": 2, "submittedBy": 23423, "name": 'Bob', "subject": "COMP30019", "type": "Project 2", "reason": "Plssssssss"},
@@ -84,6 +85,7 @@ class _DiscussionState extends State<Discussion> {
             ),
           ),
           Expanded(
+            flex: 5,
               child: ListView.builder(
                       itemCount: discussionThread.length,
                       controller: _scrollController,
@@ -171,6 +173,45 @@ class _DiscussionState extends State<Discussion> {
                         ),
                       )
               ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              margin: const EdgeInsets.all(5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextFormField(
+                    controller: _TextController,
+                    minLines: 2,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    style: const TextStyle(color: Color(0xFFD4D4D4), ),
+                    cursorColor: const Color(0xFFD4D4D4),
+                    decoration: const InputDecoration(
+                      hintText: "Enter response",
+                      hintStyle: TextStyle(color: Colors.grey),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xFFDF6C00),
+                        ),
+                      ),
+                    ),
+
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    child: OutlinedButton(
+                      onPressed: (){
+                        // update database
+                      },
+                      child: const Text("Submit"),
+                    ),
+                  )
+
+                ],
+              ),
+            ),
           )
 
         ],
