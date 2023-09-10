@@ -7,6 +7,7 @@ class RequestModel {
   final String lastName;
   final String emailAddress;
   final String subject;
+  final String reason;
 
   const RequestModel({
     this.id,
@@ -15,16 +16,17 @@ class RequestModel {
     required this.lastName,
     required this.emailAddress,
     required this.subject,
+    required this.reason,
   });
 
-  toJson() {
-    return {
-      "StudentID": studentId,
-      "FirstName": firstName,
-      "LastName": lastName,
-      "EmailAddress": emailAddress,
-    };
-  }
+  // toJson() {
+  //   return {
+  //     "StudentID": studentId,
+  //     "FirstName": firstName,
+  //     "LastName": lastName,
+  //     "EmailAddress": emailAddress,
+  //   };
+  // }
 
   factory RequestModel.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> document) {
@@ -36,6 +38,7 @@ class RequestModel {
       lastName: data["LastName"],
       emailAddress: data["EmailAddress"],
       subject: data["Subject"],
+      reason: data['Reason'],
     );
   }
 }

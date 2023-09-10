@@ -3,10 +3,11 @@ import 'requestModel.dart';
 
 class ExtensionModel extends RequestModel {
   final String numDays;
+  final String? id;
   //final String considerationType = "Extension";
 
   const ExtensionModel({
-    required id,
+    this.id,
     required studentId,
     required firstName,
     required lastName,
@@ -16,7 +17,7 @@ class ExtensionModel extends RequestModel {
     required this.numDays,
     //required this.considerationType,
   }) : super(
-          id: id,
+          //id: id,
           studentId: studentId,
           firstName: firstName,
           lastName: lastName,
