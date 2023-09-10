@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'models/requestModel.dart';
+import 'page/db.dart';
 
 class SpeconForm extends StatefulWidget {
-
   final Function closeNewRequestForm;
 
   const SpeconForm({super.key, required this.closeNewRequestForm});
@@ -11,7 +12,6 @@ class SpeconForm extends StatefulWidget {
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-
   final primary = const Color(0xFF385F71);
   final onPrimary = const Color(0xFFDF6C00);
   final secondary = const Color(0xFF333333);
@@ -27,19 +27,9 @@ class _SpeconFormState extends State<SpeconForm> {
   ];
 
   static const Map typesOfRequest = {
-    "Participation Waiver": [
-      "Class",
-      "Reason"
-    ],
-    "Due date extension": [
-      "How long",
-      "Reason"
-    ],
-    "Change tutorial": [
-      "From Class",
-      "To Class",
-      "Reason"
-    ],
+    "Participation Waiver": ["Class", "Reason"],
+    "Due date extension": ["How long", "Reason"],
+    "Change tutorial": ["From Class", "To Class", "Reason"],
     "Others": [
       "What",
       "Why",
@@ -54,11 +44,8 @@ class _SpeconFormState extends State<SpeconForm> {
         SizedBox(
           width: 300.0,
           child: TextFormField(
-
             style: TextStyle(color: onSecondary),
-
             cursorColor: onSecondary,
-
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
@@ -66,13 +53,10 @@ class _SpeconFormState extends State<SpeconForm> {
                   width: 0.5,
                 ),
               ),
-
               labelText: field,
               labelStyle: TextStyle(color: onSecondary, fontSize: 18),
-
               floatingLabelStyle: TextStyle(color: onSecondary, fontSize: 22),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
                   color: Color(0xFFD78521),
@@ -90,33 +74,25 @@ class _SpeconFormState extends State<SpeconForm> {
   }
 
   List<DropdownMenuItem<String>> buildRequestType(Map requestTypes) {
-
     List<DropdownMenuItem<String>> requestTypesList = [];
 
     for (var requestType in requestTypes.keys) {
-
-      requestTypesList.add(
-          DropdownMenuItem(
-            value: requestType,
-            child: Text(requestType, style: const TextStyle(color: Colors.white)),
-          )
-      );
+      requestTypesList.add(DropdownMenuItem(
+        value: requestType,
+        child: Text(requestType, style: const TextStyle(color: Colors.white)),
+      ));
     }
 
     return requestTypesList;
-
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
-
         Stack(
           children: [
-
             // X button to close form
             Align(
               alignment: Alignment.centerLeft,
@@ -135,7 +111,10 @@ class _SpeconFormState extends State<SpeconForm> {
               alignment: Alignment.center,
               child: Container(
                 padding: const EdgeInsets.only(top: 10.0),
-                child: const Text('Request Form', style: TextStyle(fontSize: 30.0, color: Colors.white),),
+                child: const Text(
+                  'Request Form',
+                  style: TextStyle(fontSize: 30.0, color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -146,9 +125,7 @@ class _SpeconFormState extends State<SpeconForm> {
         // Information part
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
-
             const SizedBox(width: 40.0),
 
             // Basic information column
@@ -170,41 +147,43 @@ class _SpeconFormState extends State<SpeconForm> {
             Expanded(
               flex: 1,
               child: Center(
-                child: Column(
-                  children: [
+                child: Column(children: [
+                  // Request type button
+                  DropdownButton(
+                      hint: const Text('Request Type'),
+                      // enableFeedback: true,
+                      items: [
+                        ...buildRequestType(typesOfRequest),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          requestType = value!;
+                        });
+                      }),
 
-                    // Request type button
-                    DropdownButton(
-                        hint: const Text('Request Type'),
-                        // enableFeedback: true,
-                        items: [
-                          ...buildRequestType(typesOfRequest),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            requestType = value!;
-                          });
-                        }
-                    ),
+                  const SizedBox(height: 15),
 
-                    const SizedBox(height: 15),
+                  Text(requestType,
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          color: onSecondary,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          decorationColor: onSecondary,
+                          decorationThickness: 2)),
 
-                    Text(requestType, style: TextStyle(fontSize: 20.0, color: onSecondary, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, decorationColor: onSecondary, decorationThickness: 2)),
+                  if (requestType.isNotEmpty) const SizedBox(height: 23),
 
-                    if (requestType.isNotEmpty)
-                    const SizedBox(height: 23),
-
-                    if (requestType.isNotEmpty)
+                  if (requestType.isNotEmpty)
                     Container(
                       color: secondary,
-                      child:  Column(
+                      child: Column(
                         children: [
                           ...buildColumn(typesOfRequest[requestType]),
                         ],
                       ),
                     ),
-                  ]
-                ),
+                ]),
               ),
             ),
           ],
@@ -213,11 +192,20 @@ class _SpeconFormState extends State<SpeconForm> {
         const SizedBox(height: 20),
 
         ElevatedButton(
-          onPressed: ()  async {
+          onPressed: () async {
             //TODO: send request to database
+            RequestModel testRequest = const RequestModel(
+              studentId: "1172301",
+              firstName: "Jeremy",
+              lastName: "Annal",
+              emailAddress: "janna@unimelb.com",
+              subject: "comp10001",
+            );
+            final dataBase = DataBase();
+            dataBase.createRequest(testRequest);
             widget.closeNewRequestForm();
           },
-          child: const Text('Submit'),
+          child: const Text('Submitoo'),
         ),
       ],
     );
