@@ -2,22 +2,19 @@
 ///
 /// Content changes based on the [UserType] that is authenticated.
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../user_type.dart';
 import 'dashboard/requests.dart';
 import 'dashboard/navigation.dart';
 import 'package:specon/form.dart';
+import 'db.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;
 
-  const Dashboard(
-    {
-      Key? key,
-      required this.userType
-    }
-  ) : super(key: key);
+  const Dashboard({Key? key, required this.userType}) : super(key: key);
 
   @override
   State<Dashboard> createState() => DashboardState();
@@ -25,7 +22,6 @@ class Dashboard extends StatefulWidget {
 
 // changed to singleton class for temporary fix
 class DashboardState extends State<Dashboard> {
-
   // singleton stuff--------------------------------------------
   // static final DashboardState _instance = DashboardState._internal();
   // factory DashboardState() {
@@ -47,17 +43,16 @@ class DashboardState extends State<Dashboard> {
   //String userType = 'student';
 
   // setters for temporary fix, can't use (can't pass instance?)
-  setCurrentSubject(String currentSubject){
+  setCurrentSubject(String currentSubject) {
     // setState(() {
     //   this.currentSubject = currentSubject;
     // });
   }
-  setNewRequest(bool newRequest){
+  setNewRequest(bool newRequest) {
     // setState(() {
     //   this.newRequest = newRequest;
     // });
   }
-
 
   void closeNewRequestForm() {
     setState(() {
@@ -66,36 +61,35 @@ class DashboardState extends State<Dashboard> {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         backgroundColor: topBarColor,
         elevation: 0.0,
-
         leading: InkWell(
-          onTap: () {},
-          child: const Center(
-            child: Text(
+            onTap: () {},
+            child: const Center(
+                child: Text(
               'Specon',
               style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-            )
-          )
-        ),
-
+            ))),
         leadingWidth: 110.0,
-
-        title: Text(currentSubject, style: const TextStyle(color: Colors.white,fontSize: 20.0,)),
+        title: Text(currentSubject,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20.0,
+            )),
         centerTitle: true,
-
         actions: [
-
           // Home Button
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               onTap: () {},
-              child: const Icon(Icons.home, size: 30.0,),
+              child: const Icon(
+                Icons.home,
+                size: 30.0,
+              ),
             ),
           ),
 
@@ -104,7 +98,10 @@ class DashboardState extends State<Dashboard> {
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               onTap: () {},
-              child: const Icon(Icons.notifications, size: 30.0,),
+              child: const Icon(
+                Icons.notifications,
+                size: 30.0,
+              ),
             ),
           ),
 
@@ -114,8 +111,8 @@ class DashboardState extends State<Dashboard> {
             child: InkWell(
               onTap: () {
                 setState(() {
-
-                  if (stopwatch.isRunning && stopwatch.elapsedMilliseconds < 200) {
+                  if (stopwatch.isRunning &&
+                      stopwatch.elapsedMilliseconds < 200) {
                     stopwatch.stop();
                   } else {
                     avatarIsPressed = true;
@@ -124,25 +121,20 @@ class DashboardState extends State<Dashboard> {
               },
               child: CircleAvatar(
                 backgroundColor: avatarBackgroundColor,
-                child: const Text('LC', style: TextStyle(color: Colors.white)), // TODO: Make LC a variable, so that it changes depending on user's name
+                child: const Text('LC',
+                    style: TextStyle(
+                        color: Colors
+                            .white)), // TODO: Make LC a variable, so that it changes depending on user's name
               ),
             ),
           ),
         ],
-
       ),
-
-      body: Stack(
-        children: [
-
-          Row(
+      body: Stack(children: [
+        Row(
           children: [
-
             // Dashboard column 1
-            const Expanded(
-                flex: 1,
-                child: Navigation()
-            ),
+            const Expanded(flex: 1, child: Navigation()),
 
             VerticalDivider(
               color: dividerColor,
@@ -151,10 +143,7 @@ class DashboardState extends State<Dashboard> {
             ),
 
             // Dashboard column 2
-            const Expanded(
-                flex: 2,
-                child: Requests()
-            ),
+            const Expanded(flex: 2, child: Requests()),
 
             VerticalDivider(
               color: dividerColor,
@@ -164,15 +153,15 @@ class DashboardState extends State<Dashboard> {
 
             // Dashboard column 3, make submit form always open for now
             Expanded(
-              flex: 4,
-              child: SpeconForm(closeNewRequestForm: closeNewRequestForm)
-              //child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
-              ),
-            ],
-          ),
+                flex: 4,
+                child: SpeconForm(closeNewRequestForm: closeNewRequestForm)
+                //child: newRequest ? SpeconForm(closeNewRequestForm: closeNewRequestForm) : Container()
+                ),
+          ],
+        ),
 
-          // Menu displayed when avatar is pressed
-          if (avatarIsPressed)
+        // Menu displayed when avatar is pressed
+        if (avatarIsPressed)
           TapRegion(
             onTapOutside: (tap) {
               setState(() {
@@ -183,18 +172,17 @@ class DashboardState extends State<Dashboard> {
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 10.0, right: 15.0),
-                child: Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    color: menuColor,
-                  ),
+              child: Align(
+                alignment: AlignmentDirectional.topEnd,
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  color: menuColor,
                 ),
               ),
+            ),
           ),
-        ]
-      ),
+      ]),
     );
   }
 }

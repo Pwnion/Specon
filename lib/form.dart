@@ -205,7 +205,7 @@ class _SpeconFormState extends State<SpeconForm> {
             dataBase.createRequest(testRequest);
             widget.closeNewRequestForm();
           },
-          child: const Text('Submitoo'),
+          child: const Text('Submit'),
         ),
       ],
     );

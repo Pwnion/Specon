@@ -11,7 +11,7 @@ class DataBase {
   createRequest(RequestModel request) async {
     await db
         .collection("Specon")
-        .doc("placeholder")
+        .doc("placeHolder")
         .collection(request.subject)
         .add(request.toJson());
     //.whenComplete(() => 1)
