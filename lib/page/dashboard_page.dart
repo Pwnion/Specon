@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:specon/page/dashboard/navigation.dart';
 import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/discussion.dart';
-import 'package:specon/page/dashboard/consideration_form.dart';
+// TODO import 'package:specon/page/dashboard/consideration_form.dart'; //TODO
 import 'package:specon/user_type.dart';
 
 class Dashboard extends StatefulWidget {
@@ -82,7 +82,7 @@ class _DashboardState extends State<Dashboard> {
   Widget displayThirdColumn() {
 
     if (newRequest) {
-      return ConsiderationForm(closeNewRequestForm: closeNewRequestForm);
+      return ConsiderationForm(closeNewRequestForm: closeNewRequestForm); // TODO
 
     } else if (showSubmittedRequest) {
         return Center(
