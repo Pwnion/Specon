@@ -4,206 +4,277 @@
 /// and received requests for tutors and subject coordinators.
 
 import 'package:flutter/material.dart';
-
-import '../dashboard_page.dart';
+import 'package:specon/backend.dart';
 
 class Requests extends StatefulWidget {
-  const Requests({Key? key}) : super(key: key);
+
+  final Function getCurrentSubject;
+  final Function openSubmittedRequest;
+  final Map currentUser; //whats this for
+
+  const Requests(
+      {
+        Key? key,
+        required this.getCurrentSubject,
+        required this.openSubmittedRequest,
+        required this.currentUser
+      }
+      ) : super(key: key);
 
   @override
   State<Requests> createState() => _RequestsState();
 }
 
-enum FilterType {subject, assignment}
-List<String> filterSelections = [
-  "All",
-  "Project 1",
-  "Project 2",
-  "Final Exam",
-  "Mid Semester Exam",
-];
-
 class _RequestsState extends State<Requests> {
-  // for testing
-  List<Map<String, dynamic>> allRequests = [
-    {"ID": 1, "name": 'Alex', "subject": "COMP30023", "type": "Project 1"},
-    {"ID": 2, "name": 'Bob', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 3, "name": 'Aren', "subject": "COMP30024", "type": "Final Exam"},
-    {"ID": 4, "name": 'Aden', "subject": "COMP30024", "type": "Mid Semester Exam"},
-    {"ID": 5, "name": 'Lo', "subject": "COMP30024", "type": "Project 1"},
-    {"ID": 6, "name": 'Harry', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 7, "name": 'Drey', "subject": "COMP30024", "type": "Project 2"},
-    {"ID": 8, "name": 'Brian', "subject": "COMP30024", "type": "Final Exam"},
-    {"ID": 9, "name": 'David', "subject": "COMP30024", "type": "Project 1"},
-    {"ID": 10, "name": 'Po', "subject": "COMP30024", "type": "Project 1"},
-  ];
-  // should get information from canvas
-  // List<DropdownMenuItem<String>> filterSelections = [
-  //   DropdownMenuItem<String>(child: Text("All"), value: "All",),
-  //   DropdownMenuItem<String>(child: Text("Project 1"), value: "Project 1",),
-  //   DropdownMenuItem<String>(child: Text("Project 2"), value: "Project 2",),
-  //   DropdownMenuItem<String>(child: Text("Final Exam"), value: "Final Exam",),
-  //   DropdownMenuItem<String>(child: Text("Mid Semester Exam"), value: "Mid Semester Exam",),
-  // ];
 
-  List<Map<String, dynamic>> _foundRequests = [];
-  List<Map<String, dynamic>> _filtered_S_Requests = [];
-  List<Map<String, dynamic>> _filtered_A_Requests = [];
+  // TODO: Get assignments from canvas and it should be customisable
+  List<String> filterSelections = BackEnd().getAssessments('subjectID');  // TODO: where to call
+
+  final onPrimary = const Color(0xFFDF6C00);
+  final topBarColor = const Color(0xFF385F71);
+  final filterContainerColor = Colors.white10;
+  final dividerColor = Colors.white30;
+  final mainBodyColor = const Color(0xFF333333);
+  final requestColor = const Color(0xFFD4D4D4);
+  final _scrollController = ScrollController();
+  final nameSearchController = TextEditingController();
+  Map currentUser = {}; // TODO: Get from dashboard
+  String currentSubject = ''; // TODO: Get from dashboard
+  String dropdownValue = '';
+  String searchString = '';
+  List allRequests = [];
+  List _foundRequests = []; // result showing on screen
+
+  // First filter
+  void _filterByAssignment() {
+
+    List filteredByAssignment = [];
+
+    if (dropdownValue != "All") {
+      filteredByAssignment = allRequests.where((request) =>
+          request['type'].contains(dropdownValue)).toList();
+
+    }else{
+      filteredByAssignment = allRequests.where((request) =>
+          request['type'].contains("")).toList();
+    }
+
+    _foundRequests = filteredByAssignment;
+  }
+
+  // Second filter // TODO: Make it search for keywords in request as well, not just name search
+  void _filterBySearch() {
+
+    List searchResult = [];
+
+    if(searchString.isEmpty) {
+      searchResult = _foundRequests;
+
+    }else{
+      // apply search logic, should change later or not?
+      searchResult = _foundRequests.where((request) =>
+          request['name'].toLowerCase().contains(searchString.toLowerCase())).toList();
+    }
+
+    _foundRequests = searchResult;
+  }
 
   @override
   void initState() {
-    _foundRequests = allRequests;
-    _filtered_S_Requests = allRequests; // 1st layer filter, Subject
-    _filtered_A_Requests = allRequests; // 2nd layer filter, Assignment
+    dropdownValue = filterSelections.first;
+    currentUser = widget.currentUser;
+    allRequests = BackEnd().getRequests(currentSubject, currentUser);
     super.initState();
   }
-  // function that updates _foundRequests when search, search in 2nd layer filter
-  void _searchRequest(String searchString){
-    List<Map<String, dynamic>> result = [];
-    if(searchString.isEmpty) {
-      result = _filtered_A_Requests;
-    }else{
-      // apply search logic, should change later or not?
-      result = _filtered_A_Requests.where((request) =>
-          request['name'].toLowerCase().contains(searchString.toLowerCase())).toList();
-    }
-    setState(() {
-      _foundRequests = result;
-    });
-  }
-  // filter out requests whenever we change filter type
-  void filterCallback(String value, FilterType type){
-    List<Map<String, dynamic>> result = [];
 
-    if (value != "All") {
-      if(type == FilterType.assignment){
-        result = _filtered_S_Requests.where((request) =>
-            request['type'].contains(value)).toList();
-        _filtered_A_Requests = result;
-      }
-      if(type == FilterType.subject){
-        // should get called in dashboard (selection is in first column)
-      }
-    }else{
-      if(type == FilterType.assignment){
-        result = _filtered_S_Requests.where((request) =>
-            request['type'].contains("")).toList();
-        _filtered_A_Requests = result;
-      }
-      if(type == FilterType.subject){
-        result = allRequests.where((request) =>
-            request['subject'].contains("")).toList();
-        _filtered_S_Requests = result;
-      }
-    }
-    setState(() {
-      _foundRequests = result;
-    });
-  }
-
-  String dropdownValue = filterSelections.first;
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      //backgroundColor: Color(0xFF333333),
-        body: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: Column(
-            children: [
-              // search bar is here
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  onChanged: (value) => _searchRequest(value),
-                  style: const TextStyle(color: Color(0xFFD4D4D4)),
-                  cursorColor: const Color(0xFFD4D4D4),
-                  //cursorHeight: 15,
-                  decoration: const InputDecoration(
-                      labelText: '  Search Name', suffixIcon: Icon(Icons.search),
-                      iconColor: Color(0xFFD4D4D4),
-                      hoverColor: Color(0xFFDF6C00),
-                      labelStyle: TextStyle(color: Color(0xFFD4D4D4), fontSize: 10, wordSpacing: 2.0),
-                      focusedBorder: OutlineInputBorder( borderSide: BorderSide(color: Color(0xFFD4D4D4), width: 0.3))
+    // Reset filter stuff after new subject is clicked
+    if (widget.getCurrentSubject() != currentSubject) {
+      currentSubject = widget.getCurrentSubject();
+      dropdownValue = filterSelections.first;
+      nameSearchController.clear();
+      searchString = '';
+    }
 
-                  ),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  // filter drop down button
-                  children: <Widget>[DropdownButton<String>(
-                    //dropdownColor: Color(0xFFD4D4D4),
-                    iconDisabledColor: Color(0xFF333333), // need this
-                    focusColor: Color(0xFF333333),
+    return AnimatedBuilder(
 
-                    style: const TextStyle(color: Color(0xFFDF6C00), fontSize: 13),
-                    padding: const EdgeInsets.all(1),
-                    value: dropdownValue,
-                    items: filterSelections.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged:(String? value) {
-                      filterCallback(value!, FilterType.assignment);
-                      setState(() {
-                        dropdownValue = value!;
-                      });
-                    },
-                  ),
-                  ],
-                ),
-              ),
+      animation: BackEnd(),
+      builder: (context, child) {
 
-              Expanded(
-                // viewing all request
-                child: Container(
-                  child: ListView.builder(
-                    itemCount: _foundRequests.length,
-                    itemBuilder: (context, index) => Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.only(top: 10),
-                            // request first row
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const SizedBox(width: 4),
-                                Icon(Icons.album, size: 20.0,),
-                                const SizedBox(width: 12),
-                                Text(_foundRequests[index]["name"]),
-                              ],
+        allRequests = BackEnd().getRequests(currentSubject, currentUser); // TODO: await?
+        _filterByAssignment();
+        _filterBySearch();
+
+        return Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Column(
+                children: [
+
+                  // Search Bar
+                  Padding(
+
+                    padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+                    child: SizedBox(
+
+                      height: 45.0,
+                      child: TextField(
+
+                        controller: nameSearchController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchString = value;
+                          });
+                        },
+                        style: const TextStyle(color: Color(0xFFD4D4D4)),
+                        cursorColor: const Color(0xFFD4D4D4),
+                        decoration: InputDecoration(
+                          labelText: 'Name Search',
+                          labelStyle: const TextStyle(color: Color(0xFFD4D4D4)),
+                          suffixIcon: const Icon(Icons.search, color: Color(0xFFD4D4D4)),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: mainBodyColor,
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.only(top: 10, bottom: 10),
-                            // bottom row
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(width: 8),
-                                Text(_foundRequests[index]["type"]),
-                                const SizedBox(width: 8),
-                                Text('4h'),
-                                const SizedBox(width: 8),
-                              ],
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: onPrimary,
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
-
                   ),
-                ),
+                  // end of search bar
+
+                  Divider(
+                    color: dividerColor,
+                    thickness: 3,
+                    height: 1,
+                  ),
+
+                  // Filter Button
+                  Container(
+                    //decoration: BoxDecoration(color: filterContainerColor),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      // filter drop down button
+                      children: <Widget>[DropdownButton<String>(
+                        //dropdownColor: Color(0xFFD4D4D4),
+                        iconDisabledColor: mainBodyColor,
+                        focusColor: mainBodyColor,
+
+                        style: TextStyle(color: onPrimary, fontSize: 13),
+                        padding: const EdgeInsets.all(1),
+                        value: dropdownValue,
+                        items: filterSelections.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged:(value) {
+                          setState(() {
+                            dropdownValue = value!;
+                          });
+                        },
+                      ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5.0),
+                    child: Divider(
+                      color: dividerColor,
+                      thickness: 3,
+                      height: 1,
+                    ),
+                  ),
+
+                  // Display requests
+                  Expanded(
+                    child: RawScrollbar(
+                      controller: _scrollController,
+                      thumbColor: Colors.white38,
+                      radius: const Radius.circular(20),
+                      thickness: 5,
+                      child: ListView.builder(
+                          itemCount: _foundRequests.length,
+                          controller: _scrollController,
+                          itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.only(right: 6.0),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  // TODO: Retrieve request from database and display, pass in some sort of submission ID
+                                  widget.openSubmittedRequest(_foundRequests[index]);
+                                });
+                              },
+                              child: Card(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      // request first row
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          const SizedBox(width: 4),
+                                          const Icon(Icons.album, size: 20.0),
+                                          const SizedBox(width: 12),
+                                          Text(_foundRequests[index]['name']),
+                                          // green tick icon
+                                          Expanded(
+                                            child: Container(
+                                              padding: const EdgeInsets.only(right: 7.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  Visibility(
+                                                    visible: _foundRequests[index]['state'] == "approved"? true: false,
+                                                    child: const Icon(Icons.gpp_good_sharp, color: Colors.green),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                      // bottom row
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(width: 8),
+                                          Text(_foundRequests[index]['type']),
+                                          const SizedBox(width: 8),
+                                          const Text('4h'),
+                                          const SizedBox(width: 8),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        )
+            )
+        );
+      }
     );
   }
 }
