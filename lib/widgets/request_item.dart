@@ -6,13 +6,11 @@ class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;
   final Function onDeleteItem;
 
-  const RequestTypeItem(
-    {
-      Key? key,
-      required this.requestType,
-      required this.onDeleteItem,
-    }
-  ) : super(key: key);
+  const RequestTypeItem({
+    Key? key,
+    required this.requestType,
+    required this.onDeleteItem,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +20,7 @@ class RequestTypeItem extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 5
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         tileColor: Theme.of(context).colorScheme.background,
         title: Text(
           requestType.name,
@@ -61,6 +56,68 @@ class RequestTypeItem extends StatelessWidget {
     );
   }
 
+  Future<void> _editItem(BuildContext context) async {
+    String newName = requestType.name!;
+    bool showError = false;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('Edit Item Name'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        newName = value;
+                        showError = false;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'New Name',
+                    ),
+                  ),
+                  if (showError)
+                    Text(
+                      'Invalid name. Please try again.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Save'),
+                  onPressed: () {
+                    setState(() {
+                      if (newName.isNotEmpty) {
+                        // Perform rename operation here
+                        requestType.name = newName;
+                        Navigator.of(context).pop();
+                      } else {
+                        showError = true;
+                      }
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _confirmDelete(BuildContext context) async {
     String typedName = '';
     bool showError = false;
@@ -76,7 +133,27 @@ class RequestTypeItem extends StatelessWidget {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text('Please type the item\'s name to confirm:'),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'To confirm, type ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: '"${requestType.name}"',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' in the box below.',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
                   TextField(
                     onChanged: (value) {
                       setState(() {
