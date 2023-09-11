@@ -126,7 +126,7 @@ class _AsmManagerState extends State<AsmManager> {
               child: ElevatedButton(
                   onPressed: () {
                     //requestType: ADD TO MAIN DASHBOARD
-                    Navigator.pushReplacementNamed(context, "/home");
+                    Navigator.pop(context);
                   },
                   child: Text("import"))),
         ],

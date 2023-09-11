@@ -157,6 +157,7 @@ class _LoginState extends State<Login> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: 'Email',
+                    hintStyle: const TextStyle(color: Colors.black),
                     errorText: _emailErrorMessage,
                     fillColor: Colors.white,
                     filled: true,
@@ -182,6 +183,7 @@ class _LoginState extends State<Login> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   hintText: 'Password',
+                  hintStyle: const TextStyle(color: Colors.black),
                   errorText: _passwordErrorMessage,
                   fillColor: Colors.white,
                   filled: true,

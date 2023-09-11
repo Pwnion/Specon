@@ -4,9 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/form.dart';
+import 'package:specon/page/asm_mana.dart';
 import 'package:specon/page/dashboard/navigation.dart';
 import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/discussion.dart';
+import 'package:specon/page/permission.dart';
 import 'package:specon/user_type.dart';
 
 class Dashboard extends StatefulWidget {
@@ -36,6 +38,7 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
+  bool openPermissionPanel = false;
   Map currentUser = {'userID': 2, 'name': 'Harry', 'userType': UserType.subjectCoordinator}; // TODO: Should get from landing_page
   String studentName = '';
   Widget? requestWidget;
@@ -163,10 +166,26 @@ class _DashboardState extends State<Dashboard> {
 
           // Permission Settings Button
           if(currentUser['userType'] == UserType.subjectCoordinator)
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => AsmManager()));
+                },
+                child: const Icon(Icons.document_scanner, size: 30.0,),
+              ),
+            ),
+
+          // Permission Settings Button
+          if(currentUser['userType'] == UserType.subjectCoordinator)
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  openPermissionPanel = true;
+                });
+              },
               child: const Icon(Icons.admin_panel_settings, size: 30.0,),
             ),
           ),
@@ -271,6 +290,30 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
           ),
+
+          if(openPermissionPanel)
+          TapRegion(
+            onTapOutside: (tap) {
+              setState(() {
+                openPermissionPanel = false;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5.0, right: 30.0),
+              child: Align(
+                alignment: AlignmentDirectional.topEnd,
+                child: Container(
+                  width: 1680.0,
+                  height: 1200.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 5.0, color: Colors.white)
+                  ),
+                  child: const Permission()
+                ),
+              ),
+            ),
+          ),
+
         ]
       ),
     );
