@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:specon/models/changeTuteModel.dart';
 import 'package:specon/models/extensionModel.dart';
+import 'package:specon/models/otherReasonModel.dart';
+import 'package:specon/models/participationWaiverModel.dart';
 import 'models/requestModel.dart';
 import 'page/db.dart';
 
@@ -19,38 +22,17 @@ class _SpeconFormState extends State<SpeconForm> {
   final onSecondary = const Color(0xFFD4D4D4);
   String requestType = '';
 
-  static const List<String> basicFieldTitles = [
+  static const List<String> fieldTitles = [
     "Given Name",
     "Last Name",
     "Email",
     "Student ID",
-    "Subject"
+    "Subject",
+    "Additional Information",
+    "Reason"
   ];
 
-  static const Map typesOfRequest = {
-    "Participation Waiver": ["Class", "Reason"],
-    "Due date extension": ["How long", "Reason"],
-    "Change tutorial": ["From Class", "To Class", "Reason"],
-    "Others": [
-      "What",
-      "Why",
-    ],
-  };
-
-  ExtensionModel toJson(List<TextEditingController> controllers) {
-    ExtensionModel request = ExtensionModel(
-      studentId: controllers[0].text,
-      firstName: controllers[1].text,
-      lastName: controllers[2].text,
-      emailAddress: controllers[3].text,
-      subject: controllers[4].text,
-      reason: controllers[5].text,
-      numDays: controllers[6].text,
-    );
-    return request;
-  }
-
-  Map<String, dynamic> buildColumn(List<String> fields) {
+  Map<String, dynamic> buildForm(List<String> fields) {
     List<Widget> textFormFields = [];
     List<TextEditingController> controllers = [];
 
@@ -107,7 +89,9 @@ class _SpeconFormState extends State<SpeconForm> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> basicForm = buildColumn(basicFieldTitles);
+    Map<String, dynamic> basicForm = buildForm(fieldTitles);
+    List<TextEditingController> controllers = basicForm["Controllers"];
+    List<Widget> textFields = basicForm["Form"];
 
     return Column(
       children: [
@@ -154,14 +138,12 @@ class _SpeconFormState extends State<SpeconForm> {
               child: Container(
                 color: secondary,
                 child: Column(
-                  children: [
-                    ...basicForm["Form"],
-                  ],
+                  children: textFields,
                 ),
               ),
             ),
 
-            const SizedBox(width: 30.0),
+            //const SizedBox(width: 30.0),
 
             // Detailed information column
             Expanded(
@@ -169,17 +151,18 @@ class _SpeconFormState extends State<SpeconForm> {
               child: Center(
                 child: Column(children: [
                   // Request type button
-                  DropdownButton(
-                      hint: const Text('Request Type'),
-                      // enableFeedback: true,
-                      items: [
-                        ...buildRequestType(typesOfRequest),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          requestType = value!;
-                        });
-                      }),
+                  // DropdownButton(
+                  //     hint: const Text('Request Type'),
+                  //     // enableFeedback: true,
+                  //     //items: buildRequestType(typesOfRequest),
+                  //     onChanged: (value) {
+                  //       basicForm =
+                  //           buildForm(basicFieldTitles + typesOfRequest[value]);
+                  //       controllers = basicForm["Controllers"];
+                  //       setState(() {
+                  //         requestType = value!;
+                  //       });
+                  //     }),
 
                   const SizedBox(height: 15),
 
@@ -197,11 +180,8 @@ class _SpeconFormState extends State<SpeconForm> {
                   if (requestType.isNotEmpty)
                     Container(
                       color: secondary,
-                      child: Column(
-                        children: [
-                          ...buildColumn(typesOfRequest[requestType])["Form"],
-                        ],
-                      ),
+                      child: Column(children: [] //basicForm["Form"],
+                          ),
                     ),
                 ]),
               ),
@@ -213,29 +193,20 @@ class _SpeconFormState extends State<SpeconForm> {
 
         ElevatedButton(
           onPressed: () async {
-            //TODO: send request to database
-            // RequestModel testRequest = const RequestModel(
-            //   studentId: "1172301",
-            //   firstName: "Jeremy",
-            //   lastName: "Annal",
-            //   emailAddress: "janna@unimelb.com",
-            //   subject: "comp10001",
-            //   reason: "diahrrea",
-            // );
-            ExtensionModel request = ExtensionModel(
-              firstName: basicForm["Controllers"][0].text,
-              lastName: basicForm["Controllers"][1].text,
-              emailAddress: basicForm["Controllers"][2].text,
-              studentId: basicForm["Controllers"][3].text,
-              subject: basicForm["Controllers"][4].text,
-              //reason: basicForm["Controllers"][5].text,
-              //numDays: basicForm["Controllers"][6].text,
-              reason: "I'm sick",
-              numDays: "5",
+            final dataBase = DataBase();
+
+            RequestModel request = RequestModel(
+              studentId: controllers[0].text,
+              firstName: controllers[1].text,
+              lastName: controllers[2].text,
+              emailAddress: controllers[3].text,
+              subject: controllers[4].text,
+              additionalInfo: controllers[5].text,
+              reason: controllers[6].text,
             );
 
-            final dataBase = DataBase();
-            dataBase.createExtensionRequest(request);
+            dataBase.createRequest(request);
+
             widget.closeNewRequestForm();
           },
           child: const Text('Submit'),
