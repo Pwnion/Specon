@@ -204,7 +204,10 @@ class _DiscussionState extends State<Discussion> {
                     child: OutlinedButton(
                       onPressed: (){
                         // update database
-                      },
+                        setState(() {
+                          allDiscussion.add({"discussionID": currentRequest['requestID'], "submittedBy": 0000, "name": 'tutor name', "subject": currentRequest['subject'], "type": currentRequest['type'], "reason":_TextController.value.text});
+                        });
+                        },
                       child: const Text("Submit"),
                     ),
                   )
