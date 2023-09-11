@@ -13,6 +13,8 @@ import 'page/landing_page.dart';
 import 'page/loading_page.dart';
 import 'page/error_page.dart';
 
+import './page/asm_mana.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
@@ -32,8 +34,7 @@ class _AppState extends State<App> {
 
   Future<void> _initialiseFirebase() async {
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform
-    );
+        options: DefaultFirebaseOptions.currentPlatform);
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
 
@@ -46,7 +47,7 @@ class _AppState extends State<App> {
       setState(() {
         _initialized = true;
       });
-    } catch(e) {
+    } catch (e) {
       setState(() {
         _error = true;
       });
@@ -54,11 +55,11 @@ class _AppState extends State<App> {
   }
 
   Widget _getPage() {
-    if(_error) {
+    if (_error) {
       return const Error();
     }
 
-    if(!_initialized) {
+    if (!_initialized) {
       return const Loading();
     }
 
@@ -89,10 +90,12 @@ class _AppState extends State<App> {
                 background: Color(0xFF333333),
                 onBackground: Color(0xFFD4D4D4),
                 surface: Color(0xFFD4D4D4),
-                onSurface: Color(0xFF000000)
-            )
-        ),
-        home: _getPage()
-    );
+                onSurface: Color(0xFF000000))),
+        // home: _getPage()
+        initialRoute: "/",
+        routes: {
+          '/': (context) => AsmManager(),
+          '/home': (context) => _getPage(),
+        });
   }
 }
