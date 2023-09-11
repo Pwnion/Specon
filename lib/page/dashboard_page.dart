@@ -80,10 +80,11 @@ class _DashboardState extends State<Dashboard> {
 
   Widget displayThirdColumn() {
 
-    if (newRequest) {
-      return ConsiderationForm(closeNewRequestForm: closeNewRequestForm); // TODO
+    // if (newRequest) {
+    //   return ConsiderationForm(closeNewRequestForm: closeNewRequestForm); // TODO
 
-    } else if (showSubmittedRequest) {
+    // } else
+    if (showSubmittedRequest) {
         return Center(
           child: discussionWidget = Discussion(
             getCurrentRequest: getCurrentRequest,
