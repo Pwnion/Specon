@@ -7,7 +7,6 @@
 import 'package:flutter/material.dart';
 import 'package:specon/user_type.dart';
 
-import 'consideration_form.dart';
 import '../dashboard_page.dart';
 
 import 'package:specon/backend.dart';
