@@ -23,7 +23,7 @@ class Landing extends StatelessWidget {
         if(snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if(user == null) {
-            return const Dashboard(userType: UserType.student);
+            return const Login();
           }
 
           if(!user.emailVerified) {

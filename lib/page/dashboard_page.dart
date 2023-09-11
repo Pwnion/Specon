@@ -3,6 +3,7 @@
 /// Content changes based on the [UserType] that is authenticated.
 
 import 'package:flutter/material.dart';
+import 'package:specon/form.dart';
 import 'package:specon/page/dashboard/navigation.dart';
 import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/discussion.dart';
@@ -80,11 +81,10 @@ class _DashboardState extends State<Dashboard> {
 
   Widget displayThirdColumn() {
 
-    // if (newRequest) {
-    //   return ConsiderationForm(closeNewRequestForm: closeNewRequestForm); // TODO
+    if (newRequest) {
+      return SpeconForm(closeNewRequestForm: closeNewRequestForm); // TODO
 
-    // } else
-    if (showSubmittedRequest) {
+    } else if (showSubmittedRequest) {
         return Center(
           child: discussionWidget = Discussion(
             getCurrentRequest: getCurrentRequest,
