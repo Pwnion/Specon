@@ -53,11 +53,70 @@ class RequestTypeItem extends StatelessWidget {
             iconSize: 18,
             icon: const Icon(Icons.delete),
             onPressed: () {
-              onDeleteItem(requestType.id);
+              _confirmDelete(context);
             },
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    String typedName = '';
+    bool showError = false;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('Confirm Delete'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text('Please type the item\'s name to confirm:'),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        typedName = value;
+                        showError = false;
+                      });
+                    },
+                  ),
+                  if (showError)
+                    Text(
+                      'You have entered the wrong name.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Delete'),
+                  onPressed: () {
+                    setState(() {
+                      if (typedName == requestType.name) {
+                        onDeleteItem(requestType.id);
+                        Navigator.of(context).pop();
+                      } else {
+                        showError = true;
+                      }
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
