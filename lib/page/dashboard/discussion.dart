@@ -32,10 +32,6 @@ class _DiscussionState extends State<Discussion> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
 
-  final List discussionThread = allDiscussion.where((discussion) {
-    return discussion['discussionID'] == currentRequest['requestID'];
-  }).toList();
-
   void downloadAttachment() {}
 
   void decline() {}
@@ -43,6 +39,10 @@ class _DiscussionState extends State<Discussion> {
   @override
   Widget build(BuildContext context) {
     final currentRequest = widget.getCurrentRequest();
+
+    final List discussionThread = allDiscussion.where((discussion) {
+      return discussion['discussionID'] == currentRequest['requestID'];
+    }).toList();
 
     return Scaffold(
       body: Column(
