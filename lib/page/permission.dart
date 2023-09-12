@@ -28,16 +28,32 @@ class _PermissionState extends State<Permission> {
     for(final permission in typesOfPermissions) {
       if(!inEditMode) {
         if(permissions.contains(permission)) {
-          permissionWidgets.add(Row(children: [const SizedBox(width: 200), Text(permission), greenTick]));
+          permissionWidgets.add(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(permission),
+                greenTick
+              ]
+            )
+          );
         } else {
-          permissionWidgets.add(Row(children: [const SizedBox(width: 200), Text(permission), redCross]));
+          permissionWidgets.add(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(permission),
+                redCross
+              ]
+            )
+          );
         }
       } else{
         var isChecked = permissions.contains(permission) ? true : false;
         permissionWidgets.add(
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(width: 200),
               Text(permission),
               Checkbox(
                 value: isChecked,
