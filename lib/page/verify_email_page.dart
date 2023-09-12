@@ -28,20 +28,20 @@ class _VerifyEmailState extends State<VerifyEmail> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(
-                width: 30,
-              ),
-              Text(
-                'A verification email has been sent to your email address.\n'
-                'Click the link in it to verify your account.',
-                textAlign: TextAlign.center,
-              )
-            ],
-          )
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(
+              width: 30,
+            ),
+            Text(
+              'A verification email has been sent to your email address.\n'
+              'Click the link in it to verify your account.',
+              textAlign: TextAlign.center,
+            )
+          ],
+        )
       )
     );
   }

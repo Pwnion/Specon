@@ -15,7 +15,7 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return AlertDialog(
       content: Row(
         children: <Widget>[

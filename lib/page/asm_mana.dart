@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 
 import '../model/request_type.dart';
-import '../constants/colors.dart';
 import '../widgets/request_item.dart';
 
 class AsmManager extends StatefulWidget {
-  AsmManager({Key? key}) : super(key: key);
+  const AsmManager({Key? key}) : super(key: key);
 
   @override
   State<AsmManager> createState() => _AsmManagerState();
 }
 
 class _AsmManagerState extends State<AsmManager> {
-  final requestTypesList = RequestType.importTypes();
-  List<RequestType> _foundRequestType = [];
+  final _requestTypesList = RequestType.importTypes();
   final _requestTypeController = TextEditingController();
+
+  List<RequestType> _foundRequestType = [];
   // String? selectedItem; // Declare selectedItem here
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: tertiaryColor,
-      appBar: _buildAppBar(),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         // Change to Column for better control
         children: [
           Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 15,
             ),
@@ -35,34 +34,28 @@ class _AsmManagerState extends State<AsmManager> {
                 Text(
                   'Imported from Canvas',
                   style: TextStyle(
-                    color: textColor,
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 30,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 ElevatedButton(
-                  onPressed: () async {
-                    // Call the importTypes() function
-                    List<RequestType> importedTypes =
-                        await RequestType.importTypes();
-
-                    // Update the requestTypesList and _foundrequestType with imported data
+                  onPressed: () {
+                    final List<RequestType> importedTypes = RequestType.importTypes();
                     setState(() {
-                      requestTypesList.addAll(importedTypes);
-                      _foundRequestType = requestTypesList;
+                      _requestTypesList.addAll(importedTypes);
+                      _foundRequestType = _requestTypesList;
                     });
                   },
-                  child: Text("Import from Canvas"),
+                  child: const Text('Import from Canvas'),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10.0,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    _showAddNewItemDialog();
-                  },
-                  child: Text("Add new"),
+                  onPressed: () => _showAddNewItemDialog(),
+                  child: const Text('Add new'),
                 ),
               ],
             ),
@@ -71,64 +64,55 @@ class _AsmManagerState extends State<AsmManager> {
             // Expanded to take remaining space
             child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: _foundRequestType.isEmpty
-                    ? Center(
-                        child: Text(
-                          "Nothing to show here",
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      )
-                    : ReorderableListView(
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) newIndex--;
-                            final item = _foundRequestType.removeAt(oldIndex);
-                            _foundRequestType.insert(newIndex, item);
-                          });
-                        },
-                        children:
-                            _foundRequestType.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final item = entry.value;
-
-                          return RequestTypeItem(
-                            // Use RequestTypeItem widget here
-                            key: ValueKey(index),
-                            requestType: item,
-                            onDeleteItem: _deleteRequestTypeItem,
-                          );
-                        }).toList(),
-                      )
-
-                // ListView.builder(
-                //     itemCount: _foundrequestType.length,
-                //     itemBuilder: (BuildContext context, int index) {
-                //       return RequestTypeItem(
-                //         requestType: _foundrequestType.reversed.toList()[index],
-                //         onDeleteItem: _deleterequestTypeItem,
-                //       );
-                //     },
-                //   ),
+                ? Center(
+                    child: Text(
+                      'Nothing to show here',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )
+                : ReorderableListView(
+                    onReorder: (oldIndex, newIndex) {
+                      setState(() {
+                        if (newIndex > oldIndex) newIndex--;
+                        final item = _foundRequestType.removeAt(oldIndex);
+                        _foundRequestType.insert(newIndex, item);
+                      });
+                    },
+                    children: _foundRequestType.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final item = entry.value;
+  
+                      return RequestTypeItem(
+                        // Use RequestTypeItem widget here
+                        key: ValueKey(index),
+                        requestType: item,
+                        onDeleteItem: _deleteRequestTypeItem,
+                      );
+                    }).toList(),
+                  )
                 ),
           ),
           Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 15,
-              ),
-              child: ElevatedButton(
-                  onPressed: () {
-                    //requestType: ADD TO MAIN DASHBOARD
-                    Navigator.pop(context);
-                  },
-                  child: Text("import"))),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 15,
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                //requestType: ADD TO MAIN DASHBOARD
+                Navigator.pop(context);
+              },
+              child: const Text('import')
+            )
+          ),
         ],
       ),
     );
@@ -152,11 +136,11 @@ class _AsmManagerState extends State<AsmManager> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Add New Item',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   DropdownButton<String>(
                     value: selectedItem,
                     onChanged: (value) {
@@ -165,7 +149,7 @@ class _AsmManagerState extends State<AsmManager> {
                         selectedItem = value;
                       });
                     },
-                    items: [
+                    items: const [
                       DropdownMenuItem(
                         value: 'assignment extension',
                         child: Text('Assignment Extension'),
@@ -176,17 +160,17 @@ class _AsmManagerState extends State<AsmManager> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     onChanged: (value) {
                       newItemName = value;
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Enter a new item',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -194,7 +178,7 @@ class _AsmManagerState extends State<AsmManager> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -203,7 +187,7 @@ class _AsmManagerState extends State<AsmManager> {
                             Navigator.pop(context);
                           }
                         },
-                        child: Text('Add'),
+                        child: const Text('Add'),
                       ),
                     ],
                   ),
@@ -218,13 +202,13 @@ class _AsmManagerState extends State<AsmManager> {
 
   void _deleteRequestTypeItem(String id) {
     setState(() {
-      requestTypesList.removeWhere((item) => item.id == id);
+      _requestTypesList.removeWhere((item) => item.id == id);
     });
   }
 
   void _addRequestTypeItem(String name, String requestType) {
     setState(() {
-      requestTypesList.add(RequestType(
+      _requestTypesList.add(RequestType(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         type: requestType,
@@ -234,68 +218,42 @@ class _AsmManagerState extends State<AsmManager> {
   }
 
   void _runFilter(String enteredKeyword) {
-    List<RequestType> results = [];
+    final List<RequestType> results;
     if (enteredKeyword.isEmpty) {
-      results = requestTypesList;
+      results = _requestTypesList;
     } else {
-      results = requestTypesList
-          .where((item) =>
-              item.name!.toLowerCase().contains(enteredKeyword.toLowerCase()))
-          .toList();
+      results = _requestTypesList.where((item) {
+        return item.name.toLowerCase().contains(enteredKeyword.toLowerCase());
+      }).toList();
     }
-
-    setState(() {
-      _foundRequestType = results;
-    });
+    setState(() => _foundRequestType = results);
   }
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
         onChanged: (value) => _runFilter(value),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(0),
+          contentPadding: const EdgeInsets.all(0),
           prefixIcon: Icon(
             Icons.search,
-            color: tdBlack,
+            color: Theme.of(context).colorScheme.secondary,
             size: 20,
           ),
-          prefixIconConstraints: BoxConstraints(
+          prefixIconConstraints: const BoxConstraints(
             maxHeight: 20,
             minWidth: 25,
           ),
           border: InputBorder.none,
           hintText: 'Search',
-          hintStyle: TextStyle(color: tdGrey),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
         ),
       ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: tdBGColor,
-      elevation: 0,
-      title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Icon(
-          Icons.menu,
-          color: tdBlack,
-          size: 30,
-        ),
-        Container(
-          height: 40,
-          width: 40,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset('assets/images/avatar.jpeg'),
-          ),
-        ),
-      ]),
     );
   }
 }

@@ -7,9 +7,9 @@ class Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: const Center(
         child: Text(
           'A fatal error has occurred. Please refresh to try again.',
           style: TextStyle(

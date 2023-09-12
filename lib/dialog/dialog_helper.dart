@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'loading_dialog.dart';
 
-Future<dynamic> _showDialog(BuildContext context, Widget dialog, {bool dismissable = true}) {
+Future<dynamic> _showDialog(
+  final BuildContext context,
+  final Widget dialog,
+  {final bool dismissable = true}
+) {
   return showDialog(
     context: context,
     barrierDismissible: dismissable,
@@ -12,7 +16,7 @@ Future<dynamic> _showDialog(BuildContext context, Widget dialog, {bool dismissab
   );
 }
 
-void showLoadingDialog(BuildContext context, String text) {
+void showLoadingDialog(final BuildContext context, final String text) {
   _showDialog(
     context,
     Loading(

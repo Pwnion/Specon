@@ -16,14 +16,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  static const textFormFieldWidth = 400.0;
+  
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   static final CollectionReference userRef = _db.collection('users');
-
-  final topBarColor = const Color(0xFF385F71);
-  final mainBodyColor = const Color(0xFF333333);
-  final textFormFieldWidth = 400.0;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -91,7 +89,7 @@ class _LoginState extends State<Login> {
           }
 
           try {
-            final UserCredential creds = await _auth.createUserWithEmailAndPassword(
+            await _auth.createUserWithEmailAndPassword(
               email: email,
               password: password
             );
@@ -126,15 +124,15 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBodyColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: topBarColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0.0,
         title: const Text('Sign in'),
         actions: [
           TextButton.icon(
-            style: const ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.white),
+            style: ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.surface),
             ),
             icon: const Icon(Icons.person),
             label: const Text('Register'),
@@ -157,16 +155,13 @@ class _LoginState extends State<Login> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: const TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.background),
                     errorText: _emailErrorMessage,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     filled: true,
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.surface, width: 2.0),
                     ),
-                    // focusedBorder: const OutlineInputBorder(
-                    //   borderSide: BorderSide(color: Colors.pink, width: 2.0),
-                    // ),
                   ),
                   onChanged: (value) {
                     if(_emailErrorMessage != null) {
@@ -183,16 +178,13 @@ class _LoginState extends State<Login> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   hintText: 'Password',
-                  hintStyle: const TextStyle(color: Colors.black),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.background),
                   errorText: _passwordErrorMessage,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   filled: true,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.surface, width: 2.0),
                   ),
-                  // focusedBorder: const OutlineInputBorder(
-                  //   borderSide: BorderSide(color: Colors.pink, width: 2.0),
-                  // ),
                 ),
                 obscureText: true,
                 onChanged: (value) {
@@ -205,15 +197,15 @@ class _LoginState extends State<Login> {
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              style: const ButtonStyle(
+              style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
-                  Color(0xFFDF6C00)
+                  Theme.of(context).colorScheme.secondary
                 )
               ),
               onPressed: () => _attemptLogin(),
-              child: const Text(
+              child: Text(
                 'Sign in',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.surface),
               ),
             ),
           ],

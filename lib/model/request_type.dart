@@ -1,7 +1,7 @@
 class RequestType {
-  String? name;
-  String? type;
-  String? id;
+  final String name;
+  final String type;
+  final String id;
 
   RequestType({
     required this.name,

@@ -9,17 +9,16 @@ import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/user_type.dart';
 
 class Navigation extends StatefulWidget {
-
-  final Function openNewRequestForm;
-  final Function setCurrentSubject;
-  final Map currentUser;
+  final void Function() openNewRequestForm;
+  final void Function(Map<String, String>) setCurrentSubject;
+  final Map<String, dynamic> currentUser;
 
   const Navigation(
     {
-    Key? key,
-    required this.openNewRequestForm,
-    required this.setCurrentSubject,
-    required this.currentUser
+      Key? key,
+      required this.openNewRequestForm,
+      required this.setCurrentSubject,
+      required this.currentUser
     }
   ) : super(key: key);
 
@@ -28,28 +27,22 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-
   // TODO: Get user's enrolled subject from canvas
-  List<Map<String, String>> subjectList = BackEnd().getSubjectList("userID"); // TODO: where to call
+  final List<Map<String, String>> subjectList = BackEnd().getSubjectList('userID'); // TODO: where to call
 
-  final requestButtonColor = MaterialStateProperty.all(const Color(0xFFDF6C00));
-  final secondary = const Color(0xFF333333);
-  final onSecondary = const Color(0xFFA7A7A7);
-  String selectedSubject = '';
-  Map currentUser = {}; // Get from dashboard
+  String? selectedSubject;
 
   List<Widget> _buildSubjectsColumn() {
-
-    List<Widget> subjectWidgets = [];
-
-    for (var subject in subjectList) {
-
+    final List<Widget> subjectWidgets = [];
+    for (final subject in subjectList) {
       subjectWidgets.add(
         Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
             elevation: 0.0,
-            color: subject['code'] == selectedSubject ? onSecondary : secondary,
+            color: subject['code'] == selectedSubject
+            ? Theme.of(context).colorScheme.onBackground
+            : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
                 selectedSubject = subject['code']!;
@@ -65,36 +58,31 @@ class _NavigationState extends State<Navigation> {
   }
 
   @override
-  void initState() {
-    currentUser = widget.currentUser;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-
         // Display new request button only if user is a student
-        if (currentUser['userType'] == UserType.student && selectedSubject != '')
+        if(widget.currentUser['userType'] == UserType.student && selectedSubject != null)
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
             child: ElevatedButton (
-              style: ButtonStyle(backgroundColor: requestButtonColor),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  Theme.of(context).colorScheme.secondary
+                )
+              ),
               onPressed: () {
                 setState(() {
                   widget.openNewRequestForm();
                 });
               },
-              child: const Text(
+              child: Text(
                 'New Request',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.surface),
               ),
             ),
           ),
-
         ..._buildSubjectsColumn(),
       ],
     );
