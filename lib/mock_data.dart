@@ -23,7 +23,7 @@ const Map<String, dynamic> database = {
   }
 };
 
-const List<Map<String, dynamic>> allRequests = [
+List<Map<String, dynamic>> allRequests = [
   {'requestID': 1, 'submittedBy': 1, 'name': 'Alex', 'subject': 'COMP30023', 'type': 'Project 1', 'state': 'unassessed'},
   {'requestID': 2, 'submittedBy': 1, 'name': 'Bob', 'subject': 'COMP30019', 'type': 'Project 2', 'state': 'unassessed'},
   {'requestID': 3, 'submittedBy': 2, 'name': 'Aren', 'subject': 'COMP30022', 'type': 'Final Exam', 'state': 'unassessed'},

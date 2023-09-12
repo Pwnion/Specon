@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:specon/backend.dart';
 import '../mock_data.dart';
 
 class Permission extends StatefulWidget {
@@ -10,7 +9,6 @@ class Permission extends StatefulWidget {
 }
 
 class _PermissionState extends State<Permission> {
-  final List<String> assessments = BackEnd().getAssessments('subjectID');
   final _scrollController = ScrollController();
   
   var inEditMode = false;
@@ -163,7 +161,13 @@ class _PermissionState extends State<Permission> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 200.0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 30,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('Permission Settings'),
       ),
       body: Padding(

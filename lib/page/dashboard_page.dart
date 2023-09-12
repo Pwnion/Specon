@@ -34,7 +34,6 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  bool openPermissionPanel = false;
   String studentName = '';
   Widget? requestWidget;
   Widget? discussionWidget;
@@ -150,7 +149,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           // Assessment Manager Button
-          if(currentUser['userType'] == UserType.subjectCoordinator)
+          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject['code']!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: Tooltip(
@@ -164,7 +163,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           // Permission Settings Button
-          if(currentUser['userType'] == UserType.subjectCoordinator)
+          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject['code']!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: Tooltip(
@@ -222,7 +221,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               VerticalDivider(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.surface,
                 thickness: 3,
                 width: 3,
               ),
@@ -236,7 +235,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               VerticalDivider(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.surface,
                 thickness: 3,
                 width: 3,
               ),
