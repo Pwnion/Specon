@@ -10,9 +10,9 @@ class DataBase {
 
   createRequest(RequestModel request) async {
     await _db
-    .collection("Specon")
-    .doc("placeHolder")
-    .collection(request.subject)
-    .add(request.toJson());
+        .collection("subjects")
+        .doc(request.subject)
+        .collection("requests")
+        .add(request.toJson());
   }
 }

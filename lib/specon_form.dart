@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'page/db.dart';
@@ -6,40 +7,83 @@ import 'models/request_model.dart';
 class SpeconForm extends StatefulWidget {
   final Function closeNewRequestForm;
 
-  const SpeconForm(
-    {
-      super.key,
-      required this.closeNewRequestForm
-    }
-  );
+  const SpeconForm({super.key, required this.closeNewRequestForm});
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-  static const List<String> _fieldTitles = [
+  static const List<String> _preFilledFieldTitles = [
     'Given Name',
     'Last Name',
     'Email',
     'Student ID',
+  ];
+
+  static const List<String> _toFillFields = [
     'Subject',
     'Additional Information',
     'Reason'
   ];
 
   String requestType = '';
-  
-  Map<String, dynamic> buildForm(List<String> fields) {
+
+  Map<String, dynamic> buildForm(List<String> preFilled, List<String> toFill) {
     final List<Widget> textFormFields = <Widget>[];
     final List<TextEditingController> controllers = <TextEditingController>[];
-    for (final field in fields) {
-      final TextEditingController newController = TextEditingController();
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser!;
+
+    for (final field in toFill) {
+      final TextEditingController newController =
+          TextEditingController(text: user.email);
       controllers.add(newController);
       textFormFields.add(
         SizedBox(
           width: 300.0,
+          child: TextField(
+            enabled: false,
+            controller: newController,
+            style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+            cursorColor: Theme.of(context).colorScheme.onSecondary,
+            decoration: InputDecoration(
+              disabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      textFormFields.add(const SizedBox(height: 15));
+    }
+
+    for (final field in toFill) {
+      final TextEditingController newController = TextEditingController();
+      controllers.add(newController);
+
+      textFormFields.add(
+        SizedBox(
+          width: 300.0,
           child: TextFormField(
+            enabled: true,
             controller: newController,
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
             cursorColor: Theme.of(context).colorScheme.onSecondary,
@@ -51,8 +95,12 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ),
               labelText: field,
-              labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
-              floatingLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: 22),
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 22),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
@@ -77,10 +125,11 @@ class _SpeconFormState extends State<SpeconForm> {
       );
     }).toList();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> basicForm = buildForm(_fieldTitles);
+    final Map<String, dynamic> basicForm =
+        buildForm(_preFilledFieldTitles, _toFillFields);
     final List<TextEditingController> controllers = basicForm['Controllers'];
     final List<Widget> textFields = basicForm['Form'];
 
@@ -134,40 +183,25 @@ class _SpeconFormState extends State<SpeconForm> {
               flex: 1,
               child: Center(
                 child: Column(children: [
-                  // Request type button
-                  // DropdownButton(
-                  //     hint: const Text('Request Type'),
-                  //     // enableFeedback: true,
-                  //     //items: buildRequestType(typesOfRequest),
-                  //     onChanged: (value) {
-                  //       basicForm =
-                  //           buildForm(basicFieldTitles + typesOfRequest[value]);
-                  //       controllers = basicForm['Controllers'];
-                  //       setState(() {
-                  //         requestType = value!;
-                  //       });
-                  //     }),
                   const SizedBox(height: 15),
                   Text(requestType,
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Theme.of(context).colorScheme.onSecondary,
-                      decorationThickness: 2
-                    )
-                  ),
-                  if (requestType.isNotEmpty) const SizedBox(height: 23),
-                  if (requestType.isNotEmpty)
-                    Container(
-                      color: Theme.of(context).colorScheme.secondary,
-                      child: const Column(
-                        children: [] //basicForm['Form'],
-                      ),
-                    ),
-                  ]
-                ),
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          decorationColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                          decorationThickness: 2)),
+                  // if (requestType.isNotEmpty) const SizedBox(height: 23),
+                  // if (requestType.isNotEmpty)
+                  //   Container(
+                  //     color: Theme.of(context).colorScheme.secondary,
+                  //     child: const Column(
+                  //       children: []
+                  //     ),
+                  //   ),
+                ]),
               ),
             ),
           ],
@@ -177,13 +211,12 @@ class _SpeconFormState extends State<SpeconForm> {
           onPressed: () async {
             final dataBase = DataBase();
             final RequestModel request = RequestModel(
-              studentId: controllers[0].text,
-              firstName: controllers[1].text,
-              lastName: controllers[2].text,
-              email: controllers[3].text,
+              requested_user_id: controllers[0].text,
+              assessed_user_id: controllers[0].text,
               subject: controllers[4].text,
               reason: controllers[6].text,
-              additionalInfo: controllers[5].text,
+              additional_info: controllers[5].text,
+              status: "open",
             );
             dataBase.createRequest(request);
             widget.closeNewRequestForm();
