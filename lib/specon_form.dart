@@ -172,7 +172,7 @@ class _SpeconFormState extends State<SpeconForm> {
             Expanded(
               flex: 1,
               child: Container(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.background,
                 child: Column(
                   children: textFields,
                 ),
