@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/user_type.dart';
+import 'package:specon/page/asm_mana.dart';
 
 class Navigation extends StatefulWidget {
   final void Function() openNewRequestForm;
-  final void Function(Map<String, String>) setCurrentSubject;
+  final void Function(Map<String, dynamic>) setCurrentSubject;
   final Map<String, dynamic> currentUser;
 
   const Navigation(
@@ -26,7 +27,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   // TODO: Get user's enrolled subject from canvas
-  final List<Map<String, String>> subjectList =
+  final List<Map<String, dynamic>> subjectList =
       BackEnd().getSubjectList('userID'); // TODO: where to call
 
   String? selectedSubject;
@@ -44,8 +45,14 @@ class _NavigationState extends State<Navigation> {
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
-                selectedSubject = subject['code']!;
-                widget.setCurrentSubject(subject);
+                // print(subject['assessments']);
+                if (subject['assessments'].isEmpty) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const AsmManager()));
+                } else {
+                  selectedSubject = subject['code']!;
+                  widget.setCurrentSubject(subject);
+                }
               });
             },
             child: Text(subject['code']!),

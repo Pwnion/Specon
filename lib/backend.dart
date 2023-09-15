@@ -3,7 +3,7 @@ import 'package:specon/user_type.dart';
 
 import 'mock_data.dart';
 
-class BackEnd extends ChangeNotifier{
+class BackEnd extends ChangeNotifier {
   BackEnd._privateConstructor();
 
   static final BackEnd _instance = BackEnd._privateConstructor();
@@ -13,11 +13,10 @@ class BackEnd extends ChangeNotifier{
   }
 
   List<Map<String, dynamic>> getRequests(
-    final String subjectID,
-    final Map<String, dynamic> user
-  ) {
+      final String subjectID, final Map<String, dynamic> user) {
     final List<Map<String, dynamic>> filteredByUserType;
-    final List<Map<String, dynamic>> filteredBySubject = <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> filteredBySubject =
+        <Map<String, dynamic>>[];
 
     if (subjectID.isEmpty) return [];
 
@@ -26,16 +25,17 @@ class BackEnd extends ChangeNotifier{
       filteredByUserType = allRequests.where((request) {
         return request['submittedBy'] == user['userID'];
       }).toList();
-    // Show everything
+      // Show everything
     } else if (user['userType'] == UserType.subjectCoordinator) {
       filteredByUserType = allRequests;
-    // Show based on restrictions given by coordinator (Tutor, etc)
+      // Show based on restrictions given by coordinator (Tutor, etc)
     } else {
-      filteredByUserType = allRequests; // TODO: Determine which role gets to view what types of request
+      filteredByUserType =
+          allRequests; // TODO: Determine which role gets to view what types of request
     }
 
-    for(final request in filteredByUserType) {
-      if(request['subject'] == subjectID) {
+    for (final request in filteredByUserType) {
+      if (request['subject'] == subjectID) {
         filteredBySubject.add(request);
       }
     }
@@ -52,7 +52,7 @@ class BackEnd extends ChangeNotifier{
     // return database[subjectID]['typesOfRequest'];
   }
 
-  List<Map<String, String>> getSubjectList(String userID) {
+  List<Map<String, dynamic>> getSubjectList(String userID) {
     return subjectList;
   }
 
@@ -61,9 +61,9 @@ class BackEnd extends ChangeNotifier{
     // return database[subjectID]['assessments'];
   }
 
-  void accept(int requestID){
-    for(final request in allRequests){
-      if(request['requestID'] == requestID){
+  void accept(int requestID) {
+    for (final request in allRequests) {
+      if (request['requestID'] == requestID) {
         request['state'] = "approved";
         notifyListeners();
       }
