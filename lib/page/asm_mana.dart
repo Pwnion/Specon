@@ -140,16 +140,36 @@ class _AsmManagerState extends State<AsmManager> {
                       )),
           ),
           Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 15,
-              ),
-              child: ElevatedButton(
-                  onPressed: () {
-                    //requestType: ADD TO MAIN DASHBOARD
-                    Navigator.pop(context);
-                  },
-                  child: const Text('import'))),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 15,
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_foundRequestType.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Error: No assessments to import.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      behavior:
+                          SnackBarBehavior.floating, // Set behavior to floating
+                    ),
+                  );
+                } else {
+                  if (widget.subject != null) {
+                    widget.subject!['assessments'] = _foundRequestType;
+                  }
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Import'),
+            ),
+          ),
         ],
       ),
     );

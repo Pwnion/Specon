@@ -208,7 +208,7 @@ const List<Map<String, dynamic>> allRequests = [
   },
 ];
 
-const List<Map<String, dynamic>> subjectList = [
+final List<Map<String, dynamic>> subjectList = [
   {'code': 'COMP10001', 'name': 'Foundations of Computing', 'assessments': []},
   {'code': 'COMP10002', 'name': 'Foundations of Algorithms', 'assessments': []},
   {
