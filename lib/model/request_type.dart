@@ -1,5 +1,5 @@
 class RequestType {
-  final String name;
+  String name; // not final because we can change name
   final String type;
   final String id;
 

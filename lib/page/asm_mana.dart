@@ -26,11 +26,21 @@ class _AsmManagerState extends State<AsmManager> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 20,
+              horizontal: 10,
               vertical: 15,
             ),
             child: Row(
               children: [
+                BackButton(
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () {
+                    //requestType: ADD TO MAIN DASHBOARD
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(
+                  width: 10.0,
+                ),
                 Text(
                   'Imported from Canvas',
                   style: TextStyle(
@@ -42,7 +52,8 @@ class _AsmManagerState extends State<AsmManager> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () {
-                    final List<RequestType> importedTypes = RequestType.importTypes();
+                    final List<RequestType> importedTypes =
+                        RequestType.importTypes();
                     setState(() {
                       _requestTypesList.addAll(importedTypes);
                       _foundRequestType = _requestTypesList;
@@ -64,55 +75,54 @@ class _AsmManagerState extends State<AsmManager> {
             // Expanded to take remaining space
             child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.primary),
+                  border:
+                      Border.all(color: Theme.of(context).colorScheme.primary),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: _foundRequestType.isEmpty
-                ? Center(
-                    child: Text(
-                      'Nothing to show here',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                : ReorderableListView(
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        if (newIndex > oldIndex) newIndex--;
-                        final item = _foundRequestType.removeAt(oldIndex);
-                        _foundRequestType.insert(newIndex, item);
-                      });
-                    },
-                    children: _foundRequestType.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final item = entry.value;
-  
-                      return RequestTypeItem(
-                        // Use RequestTypeItem widget here
-                        key: ValueKey(index),
-                        requestType: item,
-                        onDeleteItem: _deleteRequestTypeItem,
-                      );
-                    }).toList(),
-                  )
-                ),
+                    ? Center(
+                        child: Text(
+                          'Nothing to show here',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )
+                    : ReorderableListView(
+                        onReorder: (oldIndex, newIndex) {
+                          setState(() {
+                            if (newIndex > oldIndex) newIndex--;
+                            final item = _foundRequestType.removeAt(oldIndex);
+                            _foundRequestType.insert(newIndex, item);
+                          });
+                        },
+                        children:
+                            _foundRequestType.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
+
+                          return RequestTypeItem(
+                            // Use RequestTypeItem widget here
+                            key: ValueKey(index),
+                            requestType: item,
+                            onDeleteItem: _deleteRequestTypeItem,
+                          );
+                        }).toList(),
+                      )),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 15,
-            ),
-            child: ElevatedButton(
-              onPressed: () {
-                //requestType: ADD TO MAIN DASHBOARD
-                Navigator.pop(context);
-              },
-              child: const Text('import')
-            )
-          ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 15,
+              ),
+              child: ElevatedButton(
+                  onPressed: () {
+                    //requestType: ADD TO MAIN DASHBOARD
+                    Navigator.pop(context);
+                  },
+                  child: const Text('import'))),
         ],
       ),
     );
