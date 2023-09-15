@@ -14,13 +14,11 @@ class Navigation extends StatefulWidget {
   final Map<String, dynamic> currentUser;
 
   const Navigation(
-    {
-      Key? key,
+      {Key? key,
       required this.openNewRequestForm,
       required this.setCurrentSubject,
-      required this.currentUser
-    }
-  ) : super(key: key);
+      required this.currentUser})
+      : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
@@ -28,7 +26,8 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   // TODO: Get user's enrolled subject from canvas
-  final List<Map<String, String>> subjectList = BackEnd().getSubjectList('userID'); // TODO: where to call
+  final List<Map<String, String>> subjectList =
+      BackEnd().getSubjectList('userID'); // TODO: where to call
 
   String? selectedSubject;
 
@@ -41,8 +40,8 @@ class _NavigationState extends State<Navigation> {
           child: MaterialButton(
             elevation: 0.0,
             color: subject['code'] == selectedSubject
-            ? Theme.of(context).colorScheme.onBackground
-            : Theme.of(context).colorScheme.background,
+                ? Theme.of(context).colorScheme.onBackground
+                : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
                 selectedSubject = subject['code']!;
@@ -59,32 +58,34 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        // Display new request button only if user is a student
-        if(widget.currentUser['userType'] == UserType.student && selectedSubject != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-            child: ElevatedButton (
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                  Theme.of(context).colorScheme.secondary
-                )
-              ),
-              onPressed: () {
-                setState(() {
-                  widget.openNewRequestForm();
-                });
-              },
-              child: Text(
-                'New Request',
-                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // Display new request button only if user is a student
+          if (widget.currentUser['userType'] == UserType.student &&
+              selectedSubject != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary)),
+                onPressed: () {
+                  setState(() {
+                    widget.openNewRequestForm();
+                  });
+                },
+                child: Text(
+                  'New Request',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.surface),
+                ),
               ),
             ),
-          ),
-        ..._buildSubjectsColumn(),
-      ],
+          ..._buildSubjectsColumn(),
+        ],
+      ),
     );
   }
 }
