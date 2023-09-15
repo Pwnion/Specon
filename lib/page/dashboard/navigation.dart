@@ -47,8 +47,10 @@ class _NavigationState extends State<Navigation> {
               setState(() {
                 // print(subject['assessments']);
                 if (subject['assessments'].isEmpty) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const AsmManager()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => AsmManager(subject: subject)));
                 } else {
                   selectedSubject = subject['code']!;
                   widget.setCurrentSubject(subject);

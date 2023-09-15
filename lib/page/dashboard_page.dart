@@ -153,8 +153,9 @@ class _DashboardState extends State<Dashboard> {
               padding: const EdgeInsets.only(right: 15.0),
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const AsmManager()));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (_) => const AsmManager()));
+                  //  TODO: HAS TO HAVE A SUBJECT PARAMETER
                 },
                 child: const Icon(
                   Icons.document_scanner,

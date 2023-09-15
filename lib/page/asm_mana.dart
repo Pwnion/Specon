@@ -4,7 +4,8 @@ import '../model/request_type.dart';
 import '../widgets/request_item.dart';
 
 class AsmManager extends StatefulWidget {
-  const AsmManager({Key? key}) : super(key: key);
+  final Map<String, dynamic>? subject;
+  const AsmManager({Key? key, this.subject}) : super(key: key);
 
   @override
   State<AsmManager> createState() => _AsmManagerState();
@@ -41,12 +42,38 @@ class _AsmManagerState extends State<AsmManager> {
                 const SizedBox(
                   width: 10.0,
                 ),
-                Text(
-                  'Imported from Canvas',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w500,
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Adding assessments to ',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      widget.subject != null
+                          ? TextSpan(
+                              text: '"${widget.subject!['code']}"',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary, // Change the color here
+                                fontSize: 30,
+
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : TextSpan(
+                              text: 'subject name',
+                              style: TextStyle(
+                                color: Colors.blue, // Change the color here
+                                fontSize: 30,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                    ],
                   ),
                 ),
                 const Spacer(),
