@@ -43,11 +43,11 @@ class _RequestsState extends State<Requests> {
     final List filteredByAssignment;
     if (_dropdownValue != 'All') {
       filteredByAssignment = _allRequests.where((request) {
-        return request['type'].contains(_dropdownValue);
+        return request['assessment'].contains(_dropdownValue);
       }).toList();
     } else{
       filteredByAssignment = _allRequests.where((request) {
-        return request['type'].contains('');
+        return request['assessment'].contains('');
       }).toList();
     }
     _foundRequests = filteredByAssignment;
@@ -232,7 +232,7 @@ class _RequestsState extends State<Requests> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(width: 8),
-                                      Text(_foundRequests[index]['type']),
+                                      Text(_foundRequests[index]['assessment']),
                                       const SizedBox(width: 8),
                                       const Text('4h'),
                                       const SizedBox(width: 8),

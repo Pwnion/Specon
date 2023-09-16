@@ -51,7 +51,7 @@ class _DiscussionState extends State<Discussion> {
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20),
             child: Text(
-              widget.getCurrentRequest()['subject'] + ' - Extension',
+              currentRequest['subject'] + ' - ' + currentRequest['assessment'],
               textAlign: TextAlign.left,
               style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.surface, wordSpacing: 5, letterSpacing: 1),
             ),
@@ -85,7 +85,7 @@ class _DiscussionState extends State<Discussion> {
                               style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
                             ),
                             // accept decline button
-                            if(widget.currentUser['userType'] != UserType.student)
+                            if(widget.currentUser['userType'] != UserType.student && discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -124,6 +124,7 @@ class _DiscussionState extends State<Discussion> {
                         ),
                       ),
                       // display attach file download button
+                      if(discussionThread[index]['type'] == 'request')
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
@@ -144,46 +145,56 @@ class _DiscussionState extends State<Discussion> {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Container(
               margin: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).colorScheme.primary)
+              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  TextFormField(
-                    controller: _textController,
-                    minLines: 2,
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                    style: TextStyle(color: Theme.of(context).colorScheme.surface),
-                    cursorColor: Theme.of(context).colorScheme.surface,
-                    decoration: InputDecoration(
-                      hintText: 'Enter response',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.surface),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.secondary,
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: TextFormField(
+                      controller: _textController,
+                      minLines: 2,
+                      maxLines: 2,
+                      keyboardType: TextInputType.multiline,
+                      style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                      cursorColor: Theme.of(context).colorScheme.surface,
+                      decoration: InputDecoration(
+                        hintText: 'Enter response',
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: 13, letterSpacing: 2),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(left: 10,right: 10, top: 20),
                     child: OutlinedButton(
                       onPressed: () {
-                        // update database
-                        setState(() {
-                          allDiscussion.add({
-                            'discussionID': currentRequest['requestID'],
-                            'submittedBy': 0000,
-                            'name': 'tutor name',
-                            'subject': currentRequest['subject'],
-                            'type': currentRequest['type'],
-                            'reason': _textController.value.text,
+                        // update database, and check if field has any word
+                        if(_textController.value.text != ""){
+                          setState(() {
+                            allDiscussion.add({
+                              'discussionID': currentRequest['requestID'],
+                              'submittedBy': currentUser['userID'],
+                              'name': currentUser['name'],
+                              'subject': currentRequest['subject'],
+                              'assessment': currentRequest['assessment'],
+                              'reason': _textController.value.text,
+                              'type': currentUser['userType'] == UserType.student? "request": "respond",
+                            });
                           });
-                        });
+                        }
+                        _textController.clear();
                       },
-                      child: const Text('Submit'),
+                      child: Text('Submit', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                     ),
                   ),
                 ],

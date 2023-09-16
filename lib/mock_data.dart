@@ -24,25 +24,25 @@ const Map<String, dynamic> database = {
 };
 
 List<Map<String, dynamic>> allRequests = [
-  {'requestID': 1, 'submittedBy': 1, 'name': 'Alex', 'subject': 'COMP30023', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 2, 'submittedBy': 1, 'name': 'Bob', 'subject': 'COMP30019', 'type': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 3, 'submittedBy': 2, 'name': 'Aren', 'subject': 'COMP30022', 'type': 'Final Exam', 'state': 'unassessed'},
-  {'requestID': 4, 'submittedBy': 1, 'name': 'Aden', 'subject': 'COMP30023', 'type': 'Mid Semester Exam', 'state': 'unassessed'},
-  {'requestID': 5, 'submittedBy': 1, 'name': 'Lo', 'subject': 'COMP30020', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 6, 'submittedBy': 1, 'name': 'Harry', 'subject': 'COMP30019', 'type': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 7, 'submittedBy': 1, 'name': 'Drey', 'subject': 'COMP30022', 'type': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 8, 'submittedBy': 1, 'name': 'Brian', 'subject': 'COMP30023', 'type': 'Final Exam', 'state': 'unassessed'},
-  {'requestID': 9, 'submittedBy': 1, 'name': 'David', 'subject': 'COMP30019', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'type': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 1, 'submittedBy': 1, 'name': 'Alex', 'subject': 'COMP30023', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 2, 'submittedBy': 1, 'name': 'Bob', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'unassessed'},
+  {'requestID': 3, 'submittedBy': 2, 'name': 'Aren', 'subject': 'COMP30022', 'assessment': 'Final Exam', 'state': 'unassessed'},
+  {'requestID': 4, 'submittedBy': 1, 'name': 'Aden', 'subject': 'COMP30023', 'assessment': 'Mid Semester Exam', 'state': 'unassessed'},
+  {'requestID': 5, 'submittedBy': 1, 'name': 'Lo', 'subject': 'COMP30020', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 6, 'submittedBy': 1, 'name': 'Harry', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'unassessed'},
+  {'requestID': 7, 'submittedBy': 1, 'name': 'Drey', 'subject': 'COMP30022', 'assessment': 'Project 2', 'state': 'unassessed'},
+  {'requestID': 8, 'submittedBy': 1, 'name': 'Brian', 'subject': 'COMP30023', 'assessment': 'Final Exam', 'state': 'unassessed'},
+  {'requestID': 9, 'submittedBy': 1, 'name': 'David', 'subject': 'COMP30019', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
 ];
 
 const List<Map<String, String>> subjectList = [
@@ -100,16 +100,16 @@ const List<String> assessments = [
 ];
 
 List<Map<String, dynamic>> allDiscussion = [
-  {"discussionID": 1, "submittedBy": 1234, "name": 'Alex', "subject": "COMP30023", "type": "Project 1", "reason": "Pls I beg u"},
-  {"discussionID": 2, "submittedBy": 23423, "name": 'Bob', "subject": "COMP30019", "type": "Project 2", "reason": "Plssssssss"},
-  {"discussionID": 3, "submittedBy": 34232, "name": 'Aren', "subject": "COMP30022", "type": "Final Exam", "reason": "I dumb"},
-  {"discussionID": 4, "submittedBy": 44234, "name": 'Aden', "subject": "COMP30023", "type": "Mid Semester Exam", "reason": "Pls I beg u asd;lfknalksdnfka;sdlkfn;alkdsnfka;sdlkfna;lksdnf;aldkfn;aldknf;alskdnf;alksdnf;alkdsnfa;lkdsfna;l"},
-  {"discussionID": 5, "submittedBy": 5432, "name": 'Lo', "subject": "COMP30020", "type": "Project 1", "reason": "Pls I beg u"},
-  {"discussionID": 6, "submittedBy": 6423, "name": 'Harry', "subject": "COMP30019", "type": "Project 2", "reason": "Pls I beeeeg u"},
-  {"discussionID": 7, "submittedBy": 7432, "name": 'Drey', "subject": "COMP30022", "type": "Project 2", "reason": "Pls I beg u"},
-  {"discussionID": 8, "submittedBy": 84234, "name": 'Brian', "subject": "COMP30023", "type": "Final Exam", "reason": "uwu"},
-  {"discussionID": 9, "submittedBy": 9234, "name": 'David', "subject": "COMP30019", "type": "Project 1", "reason": "Pls I beg u"},
-  {"discussionID": 10, "submittedBy": 10234, "name": 'Po', "subject": "COMP30022", "type": "Project 1", "reason": "Pls uuuu beg u"},
+  {"discussionID": 1, "submittedBy": 1234, "name": 'Alex', "subject": "COMP30023", "assessment": "Project 1", "reason": "Pls I beg u", "type": "request"},
+  {"discussionID": 2, "submittedBy": 23423, "name": 'Bob', "subject": "COMP30019", "assessment": "Project 2", "reason": "Plssssssss", "type": "request"},
+  {"discussionID": 3, "submittedBy": 34232, "name": 'Aren', "subject": "COMP30022", "assessment": "Final Exam", "reason": "I dumb", "type": "request"},
+  {"discussionID": 4, "submittedBy": 44234, "name": 'Aden', "subject": "COMP30023", "assessment": "Mid Semester Exam", "reason": "Pls I beg u asd;lfknalksdnfka;sdlkfn;alkdsnfka;sdlkfna;lksdnf;aldkfn;aldknf;alskdnf;alksdnf;alkdsnfa;lkdsfna;l", "type": "request"},
+  {"discussionID": 5, "submittedBy": 5432, "name": 'Lo', "subject": "COMP30020", "assessment": "Project 1", "reason": "Pls I beg u", "type": "request"},
+  {"discussionID": 6, "submittedBy": 6423, "name": 'Harry', "subject": "COMP30019", "assessment": "Project 2", "reason": "Pls I beeeeg u", "type": "request"},
+  {"discussionID": 7, "submittedBy": 7432, "name": 'Drey', "subject": "COMP30022", "assessment": "Project 2", "reason": "Pls I beg u", "type": "request"},
+  {"discussionID": 8, "submittedBy": 84234, "name": 'Brian', "subject": "COMP30023", "assessment": "Final Exam", "reason": "uwu", "type": "request"},
+  {"discussionID": 9, "submittedBy": 9234, "name": 'David', "subject": "COMP30019", "assessment": "Project 1", "reason": "Pls I beg u", "type": "request"},
+  {"discussionID": 10, "submittedBy": 10234, "name": 'Po', "subject": "COMP30022", "assessment": "Project 1", "reason": "Pls uuuu beg u", "type": "request"},
 ];
 
 const Map<String, int> currentRequest = {'requestID': 1};
