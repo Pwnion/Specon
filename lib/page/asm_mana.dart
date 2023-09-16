@@ -133,6 +133,8 @@ class _AsmManagerState extends State<AsmManager> {
                             key: ValueKey(index),
                             requestType: item,
                             onDeleteItem: _deleteRequestTypeItem,
+                            onUpdateName:
+                                updateRequestTypeName, // Add this line
                           );
                         }).toList(),
                       )),
@@ -178,6 +180,13 @@ class _AsmManagerState extends State<AsmManager> {
         ],
       ),
     );
+  }
+
+  void updateRequestTypeName(String id, String newName) {
+    setState(() {
+      // Find the RequestType by ID and update its name
+      _foundRequestType.firstWhere((type) => type.id == id).name = newName;
+    });
   }
 
   Future<void> _showAddNewItemDialog() async {

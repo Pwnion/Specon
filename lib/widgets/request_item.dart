@@ -5,12 +5,14 @@ import '../model/request_type.dart';
 class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;
   final Function onDeleteItem;
+  final Function(String, String) onUpdateName; // Add this line in your class
 
-  const RequestTypeItem({
-    Key? key,
-    required this.requestType,
-    required this.onDeleteItem,
-  }) : super(key: key);
+  const RequestTypeItem(
+      {Key? key,
+      required this.requestType,
+      required this.onDeleteItem,
+      required this.onUpdateName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,21 +38,43 @@ class RequestTypeItem extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
           ),
         ),
-        trailing: Container(
-          height: 35,
-          width: 35,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.error,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: IconButton(
-            color: Theme.of(context).colorScheme.surface,
-            iconSize: 18,
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              _confirmDelete(context);
-            },
-          ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: IconButton(
+                color: Theme.of(context).colorScheme.surface,
+                iconSize: 18,
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  _editItem(context);
+                },
+              ),
+            ),
+            const SizedBox(width: 10), // Add a bit of space between buttons
+            Container(
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.error,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: IconButton(
+                color: Theme.of(context).colorScheme.surface,
+                iconSize: 18,
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  _confirmDelete(context);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -103,6 +127,8 @@ class RequestTypeItem extends StatelessWidget {
                       if (newName.isNotEmpty) {
                         // Perform rename operation here
                         requestType.name = newName;
+                        onUpdateName(requestType.id, newName);
+
                         Navigator.of(context).pop();
                       } else {
                         showError = true;
