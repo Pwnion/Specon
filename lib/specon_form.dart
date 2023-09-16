@@ -348,7 +348,7 @@ class _SpeconFormState extends State<SpeconForm> {
                           subject: controllers[4].text,
                           reason: controllers[6].text,
                           additional_info: controllers[5].text,
-                          status: "open",
+                          state: "open",
                         );
                         dataBase.createRequest(request);
                         widget.closeNewRequestForm();

@@ -6,7 +6,7 @@ class RequestModel {
   final String reason;
   final String additional_info;
   final String assessed_user_id;
-  final String status;
+  final String state;
   final String subject;
 
   const RequestModel({
@@ -15,7 +15,7 @@ class RequestModel {
     required this.reason,
     required this.additional_info,
     required this.assessed_user_id,
-    required this.status,
+    required this.state,
     required this.subject,
   });
 
@@ -25,7 +25,7 @@ class RequestModel {
       'reason': reason,
       'additional_info': additional_info,
       'assessed_by_user': assessed_user_id,
-      'status': status,
+      'state': state,
     };
   }
 
@@ -38,7 +38,7 @@ class RequestModel {
       reason: data['reason'],
       additional_info: data['additional_info'],
       assessed_user_id: data['assessed_user_id'],
-      status: data['status'],
+      state: data['status'],
       subject: data['subject'],
     );
   }
