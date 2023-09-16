@@ -5,8 +5,8 @@ import '../widgets/request_item.dart';
 import 'package:specon/model/subject.dart';
 
 class AsmManager extends StatefulWidget {
-  final Subject? subject;
-  const AsmManager({Key? key, this.subject}) : super(key: key);
+  final Subject subject;
+  const AsmManager({Key? key, required this.subject}) : super(key: key);
 
   @override
   State<AsmManager> createState() => _AsmManagerState();
@@ -16,8 +16,13 @@ class _AsmManagerState extends State<AsmManager> {
   final _requestTypesList = RequestType.importTypes();
   final _requestTypeController = TextEditingController();
 
-  List<RequestType> _foundRequestType = [];
-  // String? selectedItem; // Declare selectedItem here
+  List<RequestType> _foundRequestType = []; // Initialize it here
+
+  @override
+  void initState() {
+    super.initState();
+    _foundRequestType = widget.subject.assessments;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +59,9 @@ class _AsmManagerState extends State<AsmManager> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      widget.subject != null
+                      widget.subject.code == ""
                           ? TextSpan(
-                              text: '"${widget.subject!.code}"',
+                              text: '"${widget.subject.code}"',
                               style: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -161,10 +166,9 @@ class _AsmManagerState extends State<AsmManager> {
                     ),
                   );
                 } else {
-                  if (widget.subject != null) {
-                    widget.subject!.assessments = _foundRequestType;
+                  if (widget.subject.code != "") {
+                    widget.subject.assessments = _foundRequestType;
                   }
-                  print(widget.subject!.assessments);
                   Navigator.pop(context);
                 }
               },

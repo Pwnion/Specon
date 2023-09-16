@@ -42,20 +42,6 @@ class _NavigationState extends State<Navigation> {
   List<Widget> _buildSubjectsColumn() {
     final List<Widget> subjectWidgets = [];
 
-    // Add the "Subjects" text field
-    subjectWidgets.add(
-      const Padding(
-        padding: EdgeInsets.only(top: 10.0),
-        child: Text(
-          "Subjects",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
     // Create buttons for each subject
     for (final subject in subjectList) {
       subjectWidgets.add(
@@ -68,7 +54,8 @@ class _NavigationState extends State<Navigation> {
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
-                if (subject.assessments.isEmpty) {
+                if (subject.assessments.isEmpty &&
+                    widget.currentUser['userType'] != UserType.student) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
