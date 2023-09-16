@@ -34,8 +34,6 @@ class _DiscussionState extends State<Discussion> {
 
   void downloadAttachment() {}
 
-  void decline() {}
-
   @override
   Widget build(BuildContext context) {
     final currentRequest = widget.getCurrentRequest();
@@ -84,7 +82,7 @@ class _DiscussionState extends State<Discussion> {
                               '${discussionThread[index]['name']}\n${discussionThread[index]['submittedBy']}',
                               style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
                             ),
-                            // accept decline button
+                            // accept decline  flag button
                             if(widget.currentUser['userType'] != UserType.student && discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(
@@ -97,8 +95,16 @@ class _DiscussionState extends State<Discussion> {
                                       child: const Text('Accept'),
                                     ),
                                     TextButton(
-                                      onPressed: decline,
+                                      onPressed: (){
+                                        BackEnd().decline(discussionThread[index]['discussionID']);
+                                      },
                                       child: const Text('Decline'),
+                                    ),
+                                    TextButton(
+                                      onPressed: (){
+                                        BackEnd().flag(discussionThread[index]['discussionID']);
+                                      },
+                                      child: const Text('Flag'),
                                     )
                                   ],
                                 ),

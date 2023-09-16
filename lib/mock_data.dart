@@ -24,25 +24,18 @@ const Map<String, dynamic> database = {
 };
 
 List<Map<String, dynamic>> allRequests = [
-  {'requestID': 1, 'submittedBy': 1, 'name': 'Alex', 'subject': 'COMP30023', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 2, 'submittedBy': 1, 'name': 'Bob', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 3, 'submittedBy': 2, 'name': 'Aren', 'subject': 'COMP30022', 'assessment': 'Final Exam', 'state': 'unassessed'},
-  {'requestID': 4, 'submittedBy': 1, 'name': 'Aden', 'subject': 'COMP30023', 'assessment': 'Mid Semester Exam', 'state': 'unassessed'},
-  {'requestID': 5, 'submittedBy': 1, 'name': 'Lo', 'subject': 'COMP30020', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 6, 'submittedBy': 1, 'name': 'Harry', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 7, 'submittedBy': 1, 'name': 'Drey', 'subject': 'COMP30022', 'assessment': 'Project 2', 'state': 'unassessed'},
-  {'requestID': 8, 'submittedBy': 1, 'name': 'Brian', 'subject': 'COMP30023', 'assessment': 'Final Exam', 'state': 'unassessed'},
-  {'requestID': 9, 'submittedBy': 1, 'name': 'David', 'subject': 'COMP30019', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
-  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'unassessed'},
+  {'requestID': 1, 'submittedBy': 1, 'name': 'Alex', 'subject': 'COMP30023', 'assessment': 'Project 1', 'state': 'Un-assessed'},
+  {'requestID': 2, 'submittedBy': 1, 'name': 'Bob', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'Un-assessed'},
+  {'requestID': 3, 'submittedBy': 2, 'name': 'Aren', 'subject': 'COMP30022', 'assessment': 'Final Exam', 'state': 'Un-assessed'},
+  {'requestID': 4, 'submittedBy': 1, 'name': 'Aden', 'subject': 'COMP30023', 'assessment': 'Mid Semester Exam', 'state': 'Un-assessed'},
+  {'requestID': 5, 'submittedBy': 1, 'name': 'Lo', 'subject': 'COMP30020', 'assessment': 'Project 1', 'state': 'Un-assessed'},
+  {'requestID': 6, 'submittedBy': 1, 'name': 'Harry', 'subject': 'COMP30019', 'assessment': 'Project 2', 'state': 'Un-assessed'},
+  {'requestID': 7, 'submittedBy': 1, 'name': 'Drey', 'subject': 'COMP30022', 'assessment': 'Project 2', 'state': 'Un-assessed'},
+  {'requestID': 8, 'submittedBy': 1, 'name': 'Brian', 'subject': 'COMP30023', 'assessment': 'Final Exam', 'state': 'Un-assessed'},
+  {'requestID': 9, 'submittedBy': 1, 'name': 'David', 'subject': 'COMP30019', 'assessment': 'Project 1', 'state': 'Un-assessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'Un-assessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'Un-assessed'},
+  {'requestID': 10, 'submittedBy': 1, 'name': 'Po', 'subject': 'COMP30022', 'assessment': 'Project 1', 'state': 'Un-assessed'},
 ];
 
 const List<Map<String, String>> subjectList = [
@@ -92,11 +85,19 @@ const List<String> basicFieldTitles = [
 ];
 
 const List<String> assessments = [
-  'All',
+  'All assessment',
   'Project 1',
   'Project 2',
   'Final Exam',
   'Mid Semester Exam',
+];
+
+const List<String> requestStates = [
+  'Un-assessed',
+  'Approved',
+  'Flagged',
+  'Declined',
+  'All state',
 ];
 
 List<Map<String, dynamic>> allDiscussion = [
