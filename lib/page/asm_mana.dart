@@ -61,26 +61,17 @@ class _AsmManagerState extends State<AsmManager> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      widget.subject.code == ""
-                          ? TextSpan(
-                              text: '"${widget.subject.code}"',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary, // Change the color here
-                                fontSize: 30,
+                      TextSpan(
+                        text: '"${widget.subject.code}"',
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary, // Change the color here
+                          fontSize: 30,
 
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          : const TextSpan(
-                              text: 'subject name',
-                              style: TextStyle(
-                                color: Colors.blue, // Change the color here
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
                     ],
                   ),
                 ),
