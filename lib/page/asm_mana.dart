@@ -6,7 +6,9 @@ import 'package:specon/model/subject.dart';
 
 class AsmManager extends StatefulWidget {
   final Subject subject;
-  const AsmManager({Key? key, required this.subject}) : super(key: key);
+  final Function refreshFn;
+  const AsmManager({Key? key, required this.subject, required this.refreshFn})
+      : super(key: key);
 
   @override
   State<AsmManager> createState() => _AsmManagerState();
@@ -167,9 +169,13 @@ class _AsmManagerState extends State<AsmManager> {
                 } else {
                   if (widget.subject.code != "") {
                     setState(() {
-                      widget.subject.assessments = List.from(_foundRequestType);
+                      widget.subject.assessments.clear();
+                      widget.subject.assessments
+                          .addAll(List.from(_foundRequestType));
+                      // .setAll(0, List.from(_foundRequestType));
                     });
                   }
+                  widget.refreshFn(() {});
                   Navigator.pop(context);
                 }
               },

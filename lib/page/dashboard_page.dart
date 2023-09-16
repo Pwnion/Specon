@@ -155,8 +155,8 @@ class _DashboardState extends State<Dashboard> {
                       MaterialPageRoute(
                           builder: (_) => AsmManager(
                                 subject: currentSubject,
+                                refreshFn: setState,
                               )));
-                  //  TODO: HAS TO HAVE A SUBJECT PARAMETER
                 },
                 child: const Icon(
                   Icons.document_scanner,
