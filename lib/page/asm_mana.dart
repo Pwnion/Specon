@@ -173,7 +173,9 @@ class _AsmManagerState extends State<AsmManager> {
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Import'),
+              child: Text(
+                widget.subject.assessments.isEmpty ? 'Import' : 'Update',
+              ),
             ),
           ),
         ],
