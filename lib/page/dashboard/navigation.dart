@@ -30,11 +30,12 @@ class _NavigationState extends State<Navigation> {
   final List<Subject> subjectList =
       BackEnd().getSubjectList('userID'); // TODO: where to call
 
-  String? selectedSubject;
+  // String? selectedSubject;
+  Subject? selectedSubject;
 
-  void selectSubject(String subjectCode) {
+  void selectSubject(Subject subject) {
     setState(() {
-      selectedSubject = subjectCode;
+      selectedSubject = subject;
     });
   }
 
@@ -62,7 +63,7 @@ class _NavigationState extends State<Navigation> {
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
             elevation: 0.0,
-            color: subject.code == selectedSubject
+            color: subject == selectedSubject
                 ? Theme.of(context).colorScheme.onBackground
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
@@ -75,7 +76,7 @@ class _NavigationState extends State<Navigation> {
                     ),
                   );
                 } else {
-                  selectSubject(subject.code);
+                  selectSubject(subject);
                   widget.setCurrentSubject(subject);
                 }
               });
@@ -85,12 +86,12 @@ class _NavigationState extends State<Navigation> {
         ),
       );
 
-      if (subject.assessments.isNotEmpty && subject.code == selectedSubject) {
+      if (subject.assessments.isNotEmpty && subject == selectedSubject) {
         // Add a list of assessments for this subject
         for (final assessment in subject.assessments) {
           subjectWidgets.add(
             Padding(
-              padding: const EdgeInsets.only(left: 40.0, top: 5.0),
+              padding: const EdgeInsets.only(left: 50.0, top: 5.0),
               child: Align(
                 alignment: Alignment.centerLeft, // Align text to the left
                 child: Text(
