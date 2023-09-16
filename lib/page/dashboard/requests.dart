@@ -5,7 +5,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
-import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
   final String Function() getCurrentSubject;
@@ -217,6 +216,7 @@ class _RequestsState extends State<Requests> {
                   child: RawScrollbar(
                     controller: _scrollController,
                     thumbColor: Colors.white38,
+                    thumbVisibility: true,
                     radius: const Radius.circular(20),
                     thickness: 5,
                     child: ListView.builder(

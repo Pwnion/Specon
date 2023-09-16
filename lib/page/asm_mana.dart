@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../model/request_type.dart';
+import '../models/request_type.dart';
 import '../widgets/request_item.dart';
+import 'package:specon/models/subject_model.dart';
 
 class AsmManager extends StatefulWidget {
-  const AsmManager({Key? key}) : super(key: key);
+  final SubjectModel subject;
+  final Function refreshFn;
+  const AsmManager({Key? key, required this.subject, required this.refreshFn})
+      : super(key: key);
 
   @override
   State<AsmManager> createState() => _AsmManagerState();
@@ -12,10 +16,15 @@ class AsmManager extends StatefulWidget {
 
 class _AsmManagerState extends State<AsmManager> {
   final _requestTypesList = RequestType.importTypes();
-  final _requestTypeController = TextEditingController();
+  // final _requestTypeController = TextEditingController();
 
-  List<RequestType> _foundRequestType = [];
-  // String? selectedItem; // Declare selectedItem here
+  final List<RequestType> _foundRequestType = []; // Initialize it here
+
+  @override
+  void initState() {
+    super.initState();
+    _foundRequestType.addAll(widget.subject.assessments);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,26 +35,53 @@ class _AsmManagerState extends State<AsmManager> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 20,
+              horizontal: 10,
               vertical: 15,
             ),
             child: Row(
               children: [
-                Text(
-                  'Imported from Canvas',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w500,
+                BackButton(
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () {
+                    //requestType: ADD TO MAIN DASHBOARD
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(
+                  width: 10.0,
+                ),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Adding assessments to ',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '"${widget.subject.code}"',
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary, // Change the color here
+                          fontSize: 30,
+
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
                   ),
                 ),
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () {
-                    final List<RequestType> importedTypes = RequestType.importTypes();
+                    final List<RequestType> importedTypes =
+                        RequestType.importTypes();
                     setState(() {
-                      _requestTypesList.addAll(importedTypes);
-                      _foundRequestType = _requestTypesList;
+                      _foundRequestType.addAll(importedTypes);
                     });
                   },
                   child: const Text('Import from Canvas'),
@@ -64,41 +100,44 @@ class _AsmManagerState extends State<AsmManager> {
             // Expanded to take remaining space
             child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.primary),
+                  border:
+                      Border.all(color: Theme.of(context).colorScheme.primary),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: _foundRequestType.isEmpty
-                ? Center(
-                    child: Text(
-                      'Nothing to show here',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                : ReorderableListView(
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        if (newIndex > oldIndex) newIndex--;
-                        final item = _foundRequestType.removeAt(oldIndex);
-                        _foundRequestType.insert(newIndex, item);
-                      });
-                    },
-                    children: _foundRequestType.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final item = entry.value;
-  
-                      return RequestTypeItem(
-                        // Use RequestTypeItem widget here
-                        key: ValueKey(index),
-                        requestType: item,
-                        onDeleteItem: _deleteRequestTypeItem,
-                      );
-                    }).toList(),
-                  )
-                ),
+                    ? Center(
+                        child: Text(
+                          'Nothing to show here',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )
+                    : ReorderableListView(
+                        onReorder: (oldIndex, newIndex) {
+                          setState(() {
+                            if (newIndex > oldIndex) newIndex--;
+                            final item = _foundRequestType.removeAt(oldIndex);
+                            _foundRequestType.insert(newIndex, item);
+                          });
+                        },
+                        children:
+                            _foundRequestType.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
+
+                          return RequestTypeItem(
+                            // Use RequestTypeItem widget here
+                            key: ValueKey(index),
+                            requestType: item,
+                            onDeleteItem: _deleteRequestTypeItem,
+                            onUpdateName:
+                                updateRequestTypeName, // Add this line
+                          );
+                        }).toList(),
+                      )),
           ),
           Container(
             padding: const EdgeInsets.symmetric(
@@ -107,15 +146,47 @@ class _AsmManagerState extends State<AsmManager> {
             ),
             child: ElevatedButton(
               onPressed: () {
-                //requestType: ADD TO MAIN DASHBOARD
-                Navigator.pop(context);
+                if (_foundRequestType.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Error: No assessments to import.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                } else {
+                  if (widget.subject.code != "") {
+                    setState(() {
+                      widget.subject.assessments.clear();
+                      widget.subject.assessments
+                          .addAll(List.from(_foundRequestType));
+                      // .setAll(0, List.from(_foundRequestType));
+                    });
+                  }
+                  widget.refreshFn(() {});
+                  Navigator.pop(context);
+                }
               },
-              child: const Text('import')
-            )
+              child: Text(
+                widget.subject.assessments.isEmpty ? 'Import' : 'Update',
+              ),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  void updateRequestTypeName(String id, String newName) {
+    setState(() {
+      // Find the RequestType by ID and update its name
+      _foundRequestType.firstWhere((type) => type.id == id).name = newName;
+    });
   }
 
   Future<void> _showAddNewItemDialog() async {
@@ -202,19 +273,18 @@ class _AsmManagerState extends State<AsmManager> {
 
   void _deleteRequestTypeItem(String id) {
     setState(() {
-      _requestTypesList.removeWhere((item) => item.id == id);
+      _foundRequestType.removeWhere((item) => item.id == id);
     });
   }
 
   void _addRequestTypeItem(String name, String requestType) {
     setState(() {
-      _requestTypesList.add(RequestType(
+      _foundRequestType.add(RequestType(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         type: requestType,
       ));
     });
-    _requestTypeController.clear();
   }
 
   void _runFilter(String enteredKeyword) {
@@ -226,7 +296,7 @@ class _AsmManagerState extends State<AsmManager> {
         return item.name.toLowerCase().contains(enteredKeyword.toLowerCase());
       }).toList();
     }
-    setState(() => _foundRequestType = results);
+    setState(() => _foundRequestType.addAll(results));
   }
 
   Widget searchBox() {
