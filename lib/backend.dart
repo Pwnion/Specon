@@ -89,11 +89,31 @@ class BackEnd extends ChangeNotifier {
     // return database[subjectID]['assessments'];
   }
 
-  void accept(int requestID) {
-    for (final request in allRequests) {
-      if (request['requestID'] == requestID) {
-        request['state'] = "approved";
+  List<String> getRequestStates() {
+    return requestStates;
+    // return database[subjectID]['assessments'];
+  }
+
+  void accept(int requestID){
+    for(final request in allRequests){
+      if(request['requestID'] == requestID){
+        request['state'] = "Approved";
         notifyListeners();
+      }
+    }
+  }
+  void decline(int requestID){
+    for(final request in allRequests){
+      if(request['requestID'] == requestID){
+        request['state'] = "Declined";
+        notifyListeners();
+      }
+    }
+  }
+  void flag(int requestID){
+    for(final request in allRequests){
+      if(request['requestID'] == requestID){
+        request['state'] = "Flagged";
       }
     }
   }

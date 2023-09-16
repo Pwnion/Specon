@@ -289,11 +289,19 @@ const List<String> basicFieldTitles = [
 ];
 
 const List<String> assessments = [
-  'All',
+  'All assessment',
   'Project 1',
   'Project 2',
   'Final Exam',
   'Mid Semester Exam',
+];
+
+const List<String> requestStates = [
+  'Un-assessed',
+  'Approved',
+  'Flagged',
+  'Declined',
+  'All state',
 ];
 
 List<Map<String, dynamic>> allDiscussion = [

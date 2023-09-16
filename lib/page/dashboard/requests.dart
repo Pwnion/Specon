@@ -26,30 +26,45 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
   // TODO: Get assignments from canvas and it should be customisable
-  final List<String> filterSelections = BackEnd().getAssessments('subjectID');  // TODO: where to call
+  final List<String> filterSelectionsAssess = BackEnd().getAssessments('subjectID');  // TODO: where to call
+  final List<String> filterSelectionsState = BackEnd().getRequestStates();
 
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
   
-  String _currentSubject = '';
-  String _dropdownValue = '';
+  String _currentSubject = ''; // TODO: Get from dashboard
+  String _dropdownValueAssess = '';
+  String _dropdownValueState = '';
   String _searchString = '';
   List _allRequests = [];
   List _foundRequests = []; // result showing on screen
 
+
   // First filter
-  void _filterByAssignment() {
+  void _applyDropdownFilters() {
     final List filteredByAssignment;
-    if (_dropdownValue != 'All') {
+    if (_dropdownValueAssess != 'All assessment') {
       filteredByAssignment = _allRequests.where((request) {
-        return request['type'].contains(_dropdownValue);
+        return request['assessment'].contains(_dropdownValueAssess);
       }).toList();
     } else{
       filteredByAssignment = _allRequests.where((request) {
-        return request['type'].contains('');
+        return request['assessment'].contains('');
       }).toList();
     }
     _foundRequests = filteredByAssignment;
+
+    final List filteredByState;
+    if (_dropdownValueState != 'All state') {
+      filteredByState = _foundRequests.where((request) {
+        return request['state'].contains(_dropdownValueState);
+      }).toList();
+    } else{
+      filteredByState = _foundRequests.where((request) {
+        return request['state'].contains('');
+      }).toList();
+    }
+    _foundRequests = filteredByState;
   }
 
   // Second filter // TODO: Make it search for keywords in request as well, not just name search
@@ -71,8 +86,8 @@ class _RequestsState extends State<Requests> {
   @override
   void initState() {
     super.initState();
-
-    _dropdownValue = filterSelections.first;
+    _dropdownValueState = filterSelectionsState.first;
+    _dropdownValueAssess = filterSelectionsAssess.first;
     _allRequests = BackEnd().getRequests(_currentSubject, widget.currentUser);
   }
 
@@ -82,7 +97,8 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValue = filterSelections.first;
+      _dropdownValueAssess = filterSelectionsAssess.first;
+      _dropdownValueState = filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
     }
@@ -91,7 +107,7 @@ class _RequestsState extends State<Requests> {
       animation: BackEnd(),
       builder: (context, child) {
         _allRequests = BackEnd().getRequests(_currentSubject, widget.currentUser); // TODO: await?
-        _filterByAssignment();
+        _applyDropdownFilters();
         _filterBySearch();
 
         return Scaffold(
@@ -143,15 +159,37 @@ class _RequestsState extends State<Requests> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   // filter drop down button
-                  children: <Widget>[DropdownButton<String>(
-                    //dropdownColor: Color(0xFFD4D4D4),
+                  children: <Widget>[
+                    // state filter
+                    DropdownButton<String>(
+                      iconDisabledColor: Theme.of(context).colorScheme.background,
+                      focusColor: Theme.of(context).colorScheme.background,
+
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 12),
+                      padding: const EdgeInsets.all(1),
+                      value: _dropdownValueState,
+                      items: filterSelectionsState.map<DropdownMenuItem<String>>((String state) {
+                        return DropdownMenuItem<String>(
+                          value: state,
+                          child: Text(state),
+                        );
+                      }).toList(),
+                      onChanged:(state) {
+                        setState(() {
+                          _dropdownValueState = state!;
+                        });
+                      },
+                    ),
+                    const SizedBox( width: 5,),
+                    // assessment filter
+                    DropdownButton<String>(
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
 
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 13),
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 12),
                     padding: const EdgeInsets.all(1),
-                    value: _dropdownValue,
-                    items: filterSelections.map<DropdownMenuItem<String>>((String value) {
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -159,7 +197,7 @@ class _RequestsState extends State<Requests> {
                     }).toList(),
                     onChanged:(value) {
                       setState(() {
-                        _dropdownValue = value!;
+                        _dropdownValueAssess = value!;
                       });
                     },
                   ),
@@ -215,8 +253,16 @@ class _RequestsState extends State<Requests> {
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               Visibility(
-                                                visible: _foundRequests[index]['state'] == 'approved'? true : false,
+                                                visible: _foundRequests[index]['state'] == 'Approved'? true : false,
                                                 child: const Icon(Icons.gpp_good_sharp, color: Colors.green),
+                                              ),
+                                              Visibility(
+                                                visible: _foundRequests[index]['state'] == 'Flagged'? true : false,
+                                                child: const Icon(Icons.flag, color: Colors.orange),
+                                              ),
+                                              Visibility(
+                                                visible: _foundRequests[index]['state'] == 'Declined'? true : false,
+                                                child: const Icon(Icons.not_interested, color: Colors.red),
                                               ),
                                             ],
                                           ),
@@ -232,7 +278,7 @@ class _RequestsState extends State<Requests> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(width: 8),
-                                      Text(_foundRequests[index]['type']),
+                                      Text(_foundRequests[index]['assessment']),
                                       const SizedBox(width: 8),
                                       const Text('4h'),
                                       const SizedBox(width: 8),
