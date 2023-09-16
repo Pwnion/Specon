@@ -65,7 +65,7 @@ class _AsmManagerState extends State<AsmManager> {
                                 fontWeight: FontWeight.bold,
                               ),
                             )
-                          : const TextSpan(
+                          : TextSpan(
                               text: 'subject name',
                               style: TextStyle(
                                 color: Colors.blue, // Change the color here
@@ -156,14 +156,14 @@ class _AsmManagerState extends State<AsmManager> {
                         ),
                       ),
                       backgroundColor: Theme.of(context).colorScheme.error,
-                      behavior: SnackBarBehavior.floating,
+                      behavior:
+                          SnackBarBehavior.floating, // Set behavior to floating
                     ),
                   );
                 } else {
                   if (widget.subject != null) {
                     widget.subject!['assessments'] = _foundRequestType;
                   }
-                  print(widget.subject!['assessments']);
                   Navigator.pop(context);
                 }
               },
@@ -265,7 +265,7 @@ class _AsmManagerState extends State<AsmManager> {
 
   void _addRequestTypeItem(String name, String requestType) {
     setState(() {
-      _foundRequestType.add(RequestType(
+      _requestTypesList.add(RequestType(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         type: requestType,

@@ -26,35 +26,14 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
+  // TODO: Get user's enrolled subject from canvas
   final List<Map<String, dynamic>> subjectList =
       BackEnd().getSubjectList('userID'); // TODO: where to call
 
   String? selectedSubject;
 
-  void selectSubject(String subjectCode) {
-    setState(() {
-      selectedSubject = subjectCode;
-    });
-  }
-
   List<Widget> _buildSubjectsColumn() {
     final List<Widget> subjectWidgets = [];
-
-    // Add the "Subjects" text field
-    subjectWidgets.add(
-      const Padding(
-        padding: EdgeInsets.only(top: 10.0),
-        child: Text(
-          "Subjects",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
-    // Create buttons for each subject
     for (final subject in subjectList) {
       subjectWidgets.add(
         Padding(
@@ -66,15 +45,14 @@ class _NavigationState extends State<Navigation> {
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
+                // print(subject['assessments']);
                 if (subject['assessments'].isEmpty) {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AsmManager(subject: subject),
-                    ),
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => AsmManager(subject: subject)));
                 } else {
-                  selectSubject(subject['code']!);
+                  selectedSubject = subject['code']!;
                   widget.setCurrentSubject(subject);
                 }
               });
@@ -83,26 +61,6 @@ class _NavigationState extends State<Navigation> {
           ),
         ),
       );
-
-      if (subject['assessments'].isNotEmpty &&
-          subject['code'] == selectedSubject) {
-        // Add a list of assessments for this subject
-        for (final assessment in subject['assessments']) {
-          subjectWidgets.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 40.0, top: 5.0),
-              child: Align(
-                alignment: Alignment.centerLeft, // Align text to the left
-                child: Text(
-                  assessment.name,
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ),
-            ),
-          );
-        }
-      }
     }
     return subjectWidgets;
   }
