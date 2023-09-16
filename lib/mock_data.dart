@@ -427,7 +427,9 @@ const List<String> typesOfPermissions = [
 
 Map<String, dynamic> currentUser = {
   'userID': 2,
-  'name': 'Harry',
+  'givenName': 'Harry',
+  'lastName': 'Styles',
+  'email': 'harrys@student.unimelb.edu.au',
   'userType': UserType.subjectCoordinator
 };
 

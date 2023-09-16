@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:specon/backend.dart';
 import '../mock_data.dart';
 
 class Permission extends StatefulWidget {
@@ -10,12 +9,11 @@ class Permission extends StatefulWidget {
 }
 
 class _PermissionState extends State<Permission> {
-  final List<String> assessments = BackEnd().getAssessments('subjectID');
   final _scrollController = ScrollController();
   
   var inEditMode = false;
   var editButtonText = 'Edit';
-  
+
   List<Widget> buildUserColumns(final List users) {
     return users.map((user) => Text(user)).toList();
   }
@@ -28,16 +26,32 @@ class _PermissionState extends State<Permission> {
     for(final permission in typesOfPermissions) {
       if(!inEditMode) {
         if(permissions.contains(permission)) {
-          permissionWidgets.add(Row(children: [const SizedBox(width: 200), Text(permission), greenTick]));
+          permissionWidgets.add(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(permission),
+                greenTick
+              ]
+            )
+          );
         } else {
-          permissionWidgets.add(Row(children: [const SizedBox(width: 200), Text(permission), redCross]));
+          permissionWidgets.add(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(permission),
+                redCross
+              ]
+            )
+          );
         }
       } else{
         var isChecked = permissions.contains(permission) ? true : false;
         permissionWidgets.add(
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(width: 200),
               Text(permission),
               Checkbox(
                 value: isChecked,
@@ -62,6 +76,28 @@ class _PermissionState extends State<Permission> {
     return permissionWidgets;
   }
 
+  Widget userGroupBuilder(String userGroupName) {
+
+    final controller = TextEditingController(text: userGroupName);
+
+    if(inEditMode) {
+      return Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: EditableText(
+          controller: controller,
+          focusNode: FocusNode(),
+          style: const TextStyle(color: Colors.black),
+          textAlign: TextAlign.center,
+          cursorColor: Colors.red,
+          backgroundCursorColor: Colors.red,
+        ),
+      );
+    }
+    else {
+      return Text(userGroupName);
+    }
+  }
+
   Widget buildPermissionRows() {
     return Flexible(
       child: Scrollbar(
@@ -84,7 +120,9 @@ class _PermissionState extends State<Permission> {
                         left: BorderSide(color: Theme.of(context).colorScheme.primary),
                       )
                     ),
-                    child: Center(child: Text(permissionGroups[index]['group'])),
+                    child: Center(
+                        child: userGroupBuilder(permissionGroups[index]['group']),
+                    ),
                   ),
                   // Users
                   Expanded(
@@ -147,7 +185,13 @@ class _PermissionState extends State<Permission> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 200.0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 30,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('Permission Settings'),
       ),
       body: Padding(
