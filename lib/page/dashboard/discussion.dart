@@ -11,6 +11,7 @@ import '../../mock_data.dart';
 import '../dashboard_page.dart';
 
 import 'package:specon/backend.dart';
+import 'package:specon/storage.dart';
 
 class Discussion extends StatefulWidget {
   final Map<String, dynamic> Function() getCurrentRequest;
@@ -134,12 +135,26 @@ class _DiscussionState extends State<Discussion> {
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: downloadAttachment,
+                          onPressed: selectFile,  //downloadAttachment,
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
                           child: Text(
                             'Attachments',
+                            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                      // temporary upload button
+                      Container(
+                        margin: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: TextButton(
+                          onPressed: ()=>uploadFile(currentRequest['requestID']),  //downloadAttachment,
+                          style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                          ),
+                          child: Text(
+                            'upload',
                             style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
