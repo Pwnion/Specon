@@ -10,7 +10,7 @@ import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/discussion.dart';
 import 'package:specon/page/permission.dart';
 import 'package:specon/user_type.dart';
-import 'package:specon/model/subject.dart';
+import 'package:specon/models/subject_model.dart';
 
 import '../mock_data.dart';
 
@@ -25,7 +25,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final stopwatch = Stopwatch();
-  Subject currentSubject = Subject(name: "", code: "", assessments: []);
+  SubjectModel currentSubject =
+      SubjectModel(name: "", code: "", assessments: [], semester: "", year: "");
   Map<String, dynamic> currentRequest = {};
   bool avatarIsPressed = false;
   bool newRequest = false;
@@ -64,7 +65,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void setCurrentSubject(Subject subject) {
+  void setCurrentSubject(SubjectModel subject) {
     setState(() {
       currentSubject = subject;
       requestWidget;

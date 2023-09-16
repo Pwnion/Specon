@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:specon/model/request_type.dart';
-import 'package:specon/model/subject.dart';
+import 'package:specon/models/subject_model.dart';
 import 'package:specon/user_type.dart';
 
 import 'mock_data.dart';
@@ -54,20 +54,32 @@ class BackEnd extends ChangeNotifier {
     // return database[subjectID]['typesOfRequest'];
   }
 
-  List<Subject> getSubjectList(String userID) {
-    final List<Subject> data = [];
-    data.add(Subject(
-        name: 'Foundations of Computing', code: 'COMP10001', assessments: []));
-    data.add(Subject(
-        name: 'Foundations of Algorithms', code: 'COMP10002', assessments: []));
-    data.add(Subject(
+  List<SubjectModel> getSubjectList(String userID) {
+    final List<SubjectModel> data = [];
+    data.add(SubjectModel(
+        name: 'Foundations of Computing',
+        code: 'COMP10001',
+        assessments: [],
+        semester: "",
+        year: ""));
+    data.add(SubjectModel(
+        name: 'Foundations of Algorithms',
+        code: 'COMP10002',
+        assessments: [],
+        semester: "",
+        year: ""));
+    data.add(SubjectModel(
         name: 'Algorithms and Data Structures',
         code: 'COMP20003',
-        assessments: []));
-    data.add(Subject(
+        assessments: [],
+        semester: "",
+        year: ""));
+    data.add(SubjectModel(
         name: 'Intro. to Numerical Computation in C',
         code: 'COMP20005',
-        assessments: []));
+        assessments: [],
+        semester: "",
+        year: ""));
 
     return data;
   }

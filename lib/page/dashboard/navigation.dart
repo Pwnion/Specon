@@ -8,11 +8,11 @@ import 'package:specon/backend.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/page/asm_mana.dart';
-import 'package:specon/model/subject.dart';
+import 'package:specon/models/subject_model.dart';
 
 class Navigation extends StatefulWidget {
   final void Function() openNewRequestForm;
-  final void Function(Subject) setCurrentSubject;
+  final void Function(SubjectModel) setCurrentSubject;
   final Map<String, dynamic> currentUser;
 
   const Navigation(
@@ -27,13 +27,13 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  final List<Subject> subjectList =
+  final List<SubjectModel> subjectList =
       BackEnd().getSubjectList('userID'); // TODO: where to call
 
   // String? selectedSubject;
-  Subject? selectedSubject;
+  SubjectModel? selectedSubject;
 
-  void selectSubject(Subject subject) {
+  void selectSubject(SubjectModel subject) {
     setState(() {
       selectedSubject = subject;
     });
@@ -76,7 +76,6 @@ class _NavigationState extends State<Navigation> {
         ),
       );
 
-      // TODO: listen to changes in assessments and update to UI
       if (subject.assessments.isNotEmpty && subject == selectedSubject) {
         // Add a list of assessments for this subject
         for (final assessment in subject.assessments) {

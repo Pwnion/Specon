@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../model/request_type.dart';
 import '../widgets/request_item.dart';
-import 'package:specon/model/subject.dart';
+import 'package:specon/models/subject_model.dart';
 
 class AsmManager extends StatefulWidget {
-  final Subject subject;
+  final SubjectModel subject;
   final Function refreshFn;
   const AsmManager({Key? key, required this.subject, required this.refreshFn})
       : super(key: key);
