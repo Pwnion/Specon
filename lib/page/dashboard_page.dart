@@ -34,7 +34,6 @@ class _DashboardState extends State<Dashboard> {
   bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
-  bool openPermissionPanel = false;
   String studentName = '';
   Widget? requestWidget;
   Widget? discussionWidget;
@@ -79,7 +78,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget displayThirdColumn() {
     if(newRequest) {
-      return SpeconForm(closeNewRequestForm: closeNewRequestForm); // TODO
+      return SpeconForm(closeNewRequestForm: closeNewRequestForm);
     } else if (showSubmittedRequest) {
       return Center(
         child: discussionWidget = Discussion(
@@ -149,28 +148,34 @@ class _DashboardState extends State<Dashboard> {
               child: const Icon(Icons.sync_outlined, size: 30.0,),
             ),
           ),
-          // Permission Settings Button
-          if(currentUser['userType'] == UserType.subjectCoordinator)
+          // Assessment Manager Button
+          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject['code']!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(right: 15.0),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AsmManager()));
-                },
-                child: const Icon(Icons.document_scanner, size: 30.0,),
+              child: Tooltip(
+                message: 'Assessment Manager',
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AsmManager()));
+                  },
+                  child: const Icon(Icons.document_scanner, size: 30.0,),
+                ),
               ),
             ),
           // Permission Settings Button
-          if(currentUser['userType'] == UserType.subjectCoordinator)
+          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject['code']!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  openPermissionPanel = true;
-                });
-              },
-              child: const Icon(Icons.admin_panel_settings, size: 30.0,),
+            child: Tooltip(
+              message: 'Permission Settings',
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Permission()));
+                  });
+                },
+                child: const Icon(Icons.admin_panel_settings, size: 30.0,),
+              ),
             ),
           ),
           // Notification Button
@@ -216,7 +221,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               VerticalDivider(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.surface,
                 thickness: 3,
                 width: 3,
               ),
@@ -230,7 +235,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               VerticalDivider(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.surface,
                 thickness: 3,
                 width: 3,
               ),
@@ -261,28 +266,6 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
               ),
-          ),
-          if(openPermissionPanel)
-          TapRegion(
-            onTapOutside: (tap) {
-              setState(() {
-                openPermissionPanel = false;
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 5.0, right: 30.0),
-              child: Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: Container(
-                  width: 1680.0,
-                  height: 1200.0,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 5.0, color: Theme.of(context).colorScheme.primary)
-                  ),
-                  child: const Permission()
-                ),
-              ),
-            ),
           ),
         ]
       ),
