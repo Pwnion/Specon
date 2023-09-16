@@ -2,50 +2,44 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RequestModel {
   final String? id;
-  final String studentId;
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String subject;
+  final String requested_user_id;
   final String reason;
-  final String additionalInfo;
+  final String additional_info;
+  final String assessed_user_id;
+  final String status;
+  final String subject;
 
   const RequestModel({
     this.id,
-    required this.studentId,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.subject,
+    required this.requested_user_id,
     required this.reason,
-    required this.additionalInfo,
+    required this.additional_info,
+    required this.assessed_user_id,
+    required this.status,
+    required this.subject,
   });
 
   Map<String, String> toJson() {
     return {
-      'student_id': studentId,
-      'first_name': firstName,
-      'last_name': lastName,
-      'email': email,
-      'subject': subject,
+      'user': requested_user_id,
       'reason': reason,
-      'additional_info': additionalInfo,
+      'additional_info': additional_info,
+      'assessed_by_user': assessed_user_id,
+      'status': status,
     };
   }
 
   factory RequestModel.fromSnapshot(
-    DocumentSnapshot<Map<String, dynamic>> document
-  ) {
+      DocumentSnapshot<Map<String, dynamic>> document) {
     final data = document.data()!;
     return RequestModel(
       id: document.id,
-      studentId: data['student_id'],
-      firstName: data['first_name'],
-      lastName: data['last_name'],
-      email: data['email'],
-      subject: data['subject'],
+      requested_user_id: data['requested_user_id'],
       reason: data['reason'],
-      additionalInfo: data['additional_info'],
+      additional_info: data['additional_info'],
+      assessed_user_id: data['assessed_user_id'],
+      status: data['status'],
+      subject: data['subject'],
     );
   }
 }
