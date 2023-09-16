@@ -5,14 +5,14 @@ import '../model/request_type.dart';
 class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;
   final Function onDeleteItem;
+  final Function(String, String) onUpdateName; // Add this line in your class
 
   const RequestTypeItem(
-    {
-      Key? key,
+      {Key? key,
       required this.requestType,
       required this.onDeleteItem,
-    }
-  ) : super(key: key);
+      required this.onUpdateName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +22,7 @@ class RequestTypeItem extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 5
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         tileColor: Theme.of(context).colorScheme.background,
         title: Text(
           requestType.name,
@@ -41,23 +38,188 @@ class RequestTypeItem extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
           ),
         ),
-        trailing: Container(
-          height: 35,
-          width: 35,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.error,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: IconButton(
-            color: Theme.of(context).colorScheme.surface,
-            iconSize: 18,
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              onDeleteItem(requestType.id);
-            },
-          ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: IconButton(
+                color: Theme.of(context).colorScheme.surface,
+                iconSize: 18,
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  _editItem(context);
+                },
+              ),
+            ),
+            const SizedBox(width: 10), // Add a bit of space between buttons
+            Container(
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.error,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: IconButton(
+                color: Theme.of(context).colorScheme.surface,
+                iconSize: 18,
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  _confirmDelete(context);
+                },
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Future<void> _editItem(BuildContext context) async {
+    String newName = requestType.name;
+    bool showError = false;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Edit Item Name'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        newName = value;
+                        showError = false;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'New Name',
+                    ),
+                  ),
+                  if (showError)
+                    const Text(
+                      'Invalid name. Please try again.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Save'),
+                  onPressed: () {
+                    setState(() {
+                      if (newName.isNotEmpty) {
+                        // Perform rename operation here
+                        requestType.name = newName;
+                        onUpdateName(requestType.id, newName);
+
+                        Navigator.of(context).pop();
+                      } else {
+                        showError = true;
+                      }
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    String typedName = '';
+    bool showError = false;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Confirm Delete'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'To confirm, type ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: '"${requestType.name}"',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: ' in the box below.',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        typedName = value;
+                        showError = false;
+                      });
+                    },
+                  ),
+                  if (showError)
+                    const Text(
+                      'You have entered the wrong name.',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Delete'),
+                  onPressed: () {
+                    setState(() {
+                      if (typedName == requestType.name) {
+                        onDeleteItem(requestType.id);
+                        Navigator.of(context).pop();
+                      } else {
+                        showError = true;
+                      }
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

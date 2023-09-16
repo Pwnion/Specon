@@ -17,12 +17,8 @@ class Discussion extends StatefulWidget {
   final Map<String, dynamic> currentUser;
 
   const Discussion(
-    {
-      Key? key,
-      required this.getCurrentRequest,
-      required this.currentUser
-    }
-  ) : super(key: key);
+      {Key? key, required this.getCurrentRequest, required this.currentUser})
+      : super(key: key);
 
   @override
   State<Discussion> createState() => _DiscussionState();
@@ -53,7 +49,11 @@ class _DiscussionState extends State<Discussion> {
             child: Text(
               widget.getCurrentRequest()['subject'] + ' - Extension',
               textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.surface, wordSpacing: 5, letterSpacing: 1),
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Theme.of(context).colorScheme.surface,
+                  wordSpacing: 5,
+                  letterSpacing: 1),
             ),
           ),
           Expanded(
@@ -77,22 +77,28 @@ class _DiscussionState extends State<Discussion> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             const SizedBox(width: 4),
-                            const Icon(Icons.account_circle_outlined, size: 40.0),
+                            const Icon(Icons.account_circle_outlined,
+                                size: 40.0),
                             const SizedBox(width: 12),
                             // 2nd line should have student num (now temporary submit by), but it is necessary to store in discussion list?
                             Text(
                               '${discussionThread[index]['name']}\n${discussionThread[index]['submittedBy']}',
-                              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
                             ),
                             // accept decline button
-                            if(widget.currentUser['userType'] != UserType.student)
+                            if (widget.currentUser['userType'] !=
+                                UserType.student)
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton(
                                       onPressed: () {
-                                        BackEnd().accept(discussionThread[index]['discussionID']);
+                                        BackEnd().accept(discussionThread[index]
+                                            ['discussionID']);
                                       },
                                       child: const Text('Accept'),
                                     ),
@@ -116,7 +122,10 @@ class _DiscussionState extends State<Discussion> {
                             Expanded(
                               child: Text(
                                 discussionThread[index]['reason'],
-                                style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color:
+                                        Theme.of(context).colorScheme.surface),
                                 overflow: TextOverflow.clip,
                               ),
                             ),
@@ -133,7 +142,9 @@ class _DiscussionState extends State<Discussion> {
                           ),
                           child: Text(
                             'Attachments',
-                            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
@@ -155,11 +166,13 @@ class _DiscussionState extends State<Discussion> {
                     minLines: 2,
                     maxLines: 5,
                     keyboardType: TextInputType.multiline,
-                    style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.surface),
                     cursorColor: Theme.of(context).colorScheme.surface,
                     decoration: InputDecoration(
                       hintText: 'Enter response',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.surface),
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.surface),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Theme.of(context).colorScheme.secondary,
