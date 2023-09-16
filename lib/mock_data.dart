@@ -1,5 +1,7 @@
 import 'package:specon/user_type.dart';
 
+import 'model/request_type.dart';
+
 const Map<String, dynamic> database = {
   'COMP30022': {
     'requests': [
@@ -208,48 +210,56 @@ const List<Map<String, dynamic>> allRequests = [
   },
 ];
 
-final List<Map<String, dynamic>> subjectList = [
-  {'code': 'COMP10001', 'name': 'Foundations of Computing', 'assessments': []},
-  {'code': 'COMP10002', 'name': 'Foundations of Algorithms', 'assessments': []},
-  {
-    'code': 'COMP20003',
-    'name': 'Algorithms and Data Structures',
-    'assessments': []
-  },
-  {
-    'code': 'COMP20005',
-    'name': 'Intro. to Numerical Computation in C',
-    'assessments': []
-  },
-  {'code': 'COMP20007', 'name': 'Design of Algorithms', 'assessments': []},
-  {
-    'code': 'COMP20008',
-    'name': 'Elements of Data Processing',
-    'assessments': []
-  },
-  {
-    'code': 'SWEN20003',
-    'name': 'Object Oriented Software Development',
-    'assessments': []
-  },
-  {
-    'code': 'COMP30013',
-    'name': 'Advanced Studies in Computing',
-    'assessments': []
-  },
-  {'code': 'COMP30019', 'name': 'Graphics and Interaction', 'assessments': []},
-  {'code': 'COMP30020', 'name': 'Declarative Programming', 'assessments': []},
-  {'code': 'COMP30022', 'name': 'IT Project', 'assessments': []},
-  {'code': 'COMP30023', 'name': 'Computer Systems', 'assessments': []},
-  {'code': 'COMP30024', 'name': 'Artificial Intelligence', 'assessments': []},
-  {'code': 'COMP30026', 'name': 'Models of Computation', 'assessments': []},
-  {'code': 'COMP30027', 'name': 'Machine Learning', 'assessments': []},
-  {
-    'code': 'SWEN30006',
-    'name': 'Software Modelling and Design',
-    'assessments': []
-  },
-];
+// final List<Map<String, dynamic>> subjectList = [
+//   {
+//     'code': 'COMP10001',
+//     'name': 'Foundations of Computing',
+//     'assessments': <RequestType>[]
+//   },
+//   {
+//     'code': 'COMP10002',
+//     'name': 'Foundations of Algorithms',
+//     'assessments': <RequestType>[]
+//   },
+//   {
+//     'code': 'COMP20003',
+//     'name': 'Algorithms and Data Structures',
+//     'assessments': []
+//   },
+//   {
+//     'code': 'COMP20005',
+//     'name': 'Intro. to Numerical Computation in C',
+//     'assessments': []
+//   },
+//   {'code': 'COMP20007', 'name': 'Design of Algorithms', 'assessments': []},
+//   {
+//     'code': 'COMP20008',
+//     'name': 'Elements of Data Processing',
+//     'assessments': []
+//   },
+//   {
+//     'code': 'SWEN20003',
+//     'name': 'Object Oriented Software Development',
+//     'assessments': []
+//   },
+//   {
+//     'code': 'COMP30013',
+//     'name': 'Advanced Studies in Computing',
+//     'assessments': []
+//   },
+//   {'code': 'COMP30019', 'name': 'Graphics and Interaction', 'assessments': []},
+//   {'code': 'COMP30020', 'name': 'Declarative Programming', 'assessments': []},
+//   {'code': 'COMP30022', 'name': 'IT Project', 'assessments': []},
+//   {'code': 'COMP30023', 'name': 'Computer Systems', 'assessments': []},
+//   {'code': 'COMP30024', 'name': 'Artificial Intelligence', 'assessments': []},
+//   {'code': 'COMP30026', 'name': 'Models of Computation', 'assessments': []},
+//   {'code': 'COMP30027', 'name': 'Machine Learning', 'assessments': []},
+//   {
+//     'code': 'SWEN30006',
+//     'name': 'Software Modelling and Design',
+//     'assessments': []
+//   },
+// ];
 
 const Map<String, Map<String, List<String>>> typesOfRequest = {
   'Participation Waiver': {

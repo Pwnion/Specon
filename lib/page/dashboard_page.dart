@@ -10,6 +10,7 @@ import 'package:specon/page/dashboard/requests.dart';
 import 'package:specon/page/dashboard/discussion.dart';
 import 'package:specon/page/permission.dart';
 import 'package:specon/user_type.dart';
+import 'package:specon/model/subject.dart';
 
 import '../mock_data.dart';
 
@@ -24,11 +25,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final stopwatch = Stopwatch();
-  Map<String, dynamic> currentSubject = {
-    'code': '',
-    'name': '',
-    'assessment': []
-  };
+  Subject currentSubject = Subject(name: "", code: "", assessments: []);
   Map<String, dynamic> currentRequest = {};
   bool avatarIsPressed = false;
   bool newRequest = false;
@@ -47,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   String getCurrentSubjectCode() {
-    return currentSubject['code']!;
+    return currentSubject.code;
   }
 
   void openNewRequestForm() {
@@ -67,7 +64,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void setCurrentSubject(Map<String, dynamic> subject) {
+  void setCurrentSubject(Subject subject) {
     setState(() {
       currentSubject = subject;
       requestWidget;
@@ -110,7 +107,7 @@ class _DashboardState extends State<Dashboard> {
               style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             ))),
         leadingWidth: 110.0,
-        title: Text('${currentSubject['code']!} - ${currentSubject['name']!}',
+        title: Text('${currentSubject.code} - ${currentSubject.name}',
             style: TextStyle(
                 color: Theme.of(context).colorScheme.surface, fontSize: 20.0)),
         centerTitle: true,

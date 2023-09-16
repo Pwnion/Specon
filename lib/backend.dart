@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:specon/model/request_type.dart';
+import 'package:specon/model/subject.dart';
 import 'package:specon/user_type.dart';
 
 import 'mock_data.dart';
@@ -52,8 +54,22 @@ class BackEnd extends ChangeNotifier {
     // return database[subjectID]['typesOfRequest'];
   }
 
-  List<Map<String, dynamic>> getSubjectList(String userID) {
-    return subjectList;
+  List<Subject> getSubjectList(String userID) {
+    final List<Subject> data = [];
+    data.add(Subject(
+        name: 'Foundations of Computing', code: 'COMP10001', assessments: []));
+    data.add(Subject(
+        name: 'Foundations of Algorithms', code: 'COMP10002', assessments: []));
+    data.add(Subject(
+        name: 'Algorithms and Data Structures',
+        code: 'COMP20003',
+        assessments: []));
+    data.add(Subject(
+        name: 'Intro. to Numerical Computation in C',
+        code: 'COMP20005',
+        assessments: []));
+
+    return data;
   }
 
   List<String> getAssessments(String subjectID) {

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../model/request_type.dart';
 import '../widgets/request_item.dart';
+import 'package:specon/model/subject.dart';
 
 class AsmManager extends StatefulWidget {
-  final Map<String, dynamic>? subject;
+  final Subject? subject;
   const AsmManager({Key? key, this.subject}) : super(key: key);
 
   @override
@@ -55,7 +56,7 @@ class _AsmManagerState extends State<AsmManager> {
                       ),
                       widget.subject != null
                           ? TextSpan(
-                              text: '"${widget.subject!['code']}"',
+                              text: '"${widget.subject!.code}"',
                               style: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -161,9 +162,9 @@ class _AsmManagerState extends State<AsmManager> {
                   );
                 } else {
                   if (widget.subject != null) {
-                    widget.subject!['assessments'] = _foundRequestType;
+                    widget.subject!.assessments = _foundRequestType;
                   }
-                  print(widget.subject!['assessments']);
+                  print(widget.subject!.assessments);
                   Navigator.pop(context);
                 }
               },
