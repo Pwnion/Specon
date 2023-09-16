@@ -37,15 +37,11 @@ class _SpeconFormState extends State<SpeconForm> {
     final List<TextEditingController> controllers = <TextEditingController>[];
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User user = auth.currentUser!;
-    print("BITCH FACE");
 
     final dataBase = DataBase();
 
-    print("CUNT");
-
     final UserModel currentUser =
         await dataBase.getUserFromEmail("email", user.email!);
-    print("POOOO");
     final Map<String, dynamic> jsonUser = currentUser.toJson();
 
     for (final field in preFilled) {
@@ -153,7 +149,6 @@ class _SpeconFormState extends State<SpeconForm> {
         future: basicForm,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            print(snapshot.hasData);
             final List<TextEditingController> controllers =
                 snapshot.data!['Controllers'];
             final List<Widget> textFields = snapshot.data!['Form'];
