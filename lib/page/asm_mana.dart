@@ -14,14 +14,14 @@ class AsmManager extends StatefulWidget {
 
 class _AsmManagerState extends State<AsmManager> {
   final _requestTypesList = RequestType.importTypes();
-  final _requestTypeController = TextEditingController();
+  // final _requestTypeController = TextEditingController();
 
-  List<RequestType> _foundRequestType = []; // Initialize it here
+  final List<RequestType> _foundRequestType = []; // Initialize it here
 
   @override
   void initState() {
     super.initState();
-    _foundRequestType = widget.subject.assessments;
+    _foundRequestType.addAll(widget.subject.assessments);
   }
 
   @override
@@ -88,8 +88,7 @@ class _AsmManagerState extends State<AsmManager> {
                     final List<RequestType> importedTypes =
                         RequestType.importTypes();
                     setState(() {
-                      _requestTypesList.addAll(importedTypes);
-                      _foundRequestType = _requestTypesList;
+                      _foundRequestType.addAll(importedTypes);
                     });
                   },
                   child: const Text('Import from Canvas'),
@@ -167,7 +166,9 @@ class _AsmManagerState extends State<AsmManager> {
                   );
                 } else {
                   if (widget.subject.code != "") {
-                    widget.subject.assessments = _foundRequestType;
+                    setState(() {
+                      widget.subject.assessments = List.from(_foundRequestType);
+                    });
                   }
                   Navigator.pop(context);
                 }
@@ -264,7 +265,7 @@ class _AsmManagerState extends State<AsmManager> {
 
   void _deleteRequestTypeItem(String id) {
     setState(() {
-      _requestTypesList.removeWhere((item) => item.id == id);
+      _foundRequestType.removeWhere((item) => item.id == id);
     });
   }
 
@@ -276,7 +277,6 @@ class _AsmManagerState extends State<AsmManager> {
         type: requestType,
       ));
     });
-    _requestTypeController.clear();
   }
 
   void _runFilter(String enteredKeyword) {
@@ -288,7 +288,7 @@ class _AsmManagerState extends State<AsmManager> {
         return item.name.toLowerCase().contains(enteredKeyword.toLowerCase());
       }).toList();
     }
-    setState(() => _foundRequestType = results);
+    setState(() => _foundRequestType.addAll(results));
   }
 
   Widget searchBox() {

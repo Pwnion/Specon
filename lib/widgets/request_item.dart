@@ -57,7 +57,7 @@ class RequestTypeItem extends StatelessWidget {
   }
 
   Future<void> _editItem(BuildContext context) async {
-    String newName = requestType.name!;
+    String newName = requestType.name;
     bool showError = false;
 
     return showDialog<void>(
@@ -67,7 +67,7 @@ class RequestTypeItem extends StatelessWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Edit Item Name'),
+              title: const Text('Edit Item Name'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -78,12 +78,12 @@ class RequestTypeItem extends StatelessWidget {
                         showError = false;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'New Name',
                     ),
                   ),
                   if (showError)
-                    Text(
+                    const Text(
                       'Invalid name. Please try again.',
                       style: TextStyle(color: Colors.red),
                     ),
@@ -91,13 +91,13 @@ class RequestTypeItem extends StatelessWidget {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     setState(() {
                       if (newName.isNotEmpty) {
@@ -129,25 +129,25 @@ class RequestTypeItem extends StatelessWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: Text('Confirm Delete'),
+              title: const Text('Confirm Delete'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   RichText(
                     text: TextSpan(
                       children: [
-                        TextSpan(
+                        const TextSpan(
                           text: 'To confirm, type ',
                           style: TextStyle(color: Colors.black),
                         ),
                         TextSpan(
                           text: '"${requestType.name}"',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        TextSpan(
+                        const TextSpan(
                           text: ' in the box below.',
                           style: TextStyle(color: Colors.black),
                         ),
@@ -163,7 +163,7 @@ class RequestTypeItem extends StatelessWidget {
                     },
                   ),
                   if (showError)
-                    Text(
+                    const Text(
                       'You have entered the wrong name.',
                       style: TextStyle(color: Colors.red),
                     ),
@@ -171,13 +171,13 @@ class RequestTypeItem extends StatelessWidget {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Delete'),
+                  child: const Text('Delete'),
                   onPressed: () {
                     setState(() {
                       if (typedName == requestType.name) {

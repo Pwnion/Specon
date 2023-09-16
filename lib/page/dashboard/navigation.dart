@@ -73,6 +73,7 @@ class _NavigationState extends State<Navigation> {
         ),
       );
 
+      // TODO: listen to changes in assessments and update to UI
       if (subject.assessments.isNotEmpty && subject == selectedSubject) {
         // Add a list of assessments for this subject
         for (final assessment in subject.assessments) {
