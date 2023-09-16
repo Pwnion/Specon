@@ -77,7 +77,7 @@ class _DashboardState extends State<Dashboard> {
     if(newRequest) {
       return SpeconForm(
           closeNewRequestForm: closeNewRequestForm,
-          currentSubjectCode: currentSubject['code']!
+          currentSubjectCode: currentSubject.code
       );
     } else if (showSubmittedRequest) {
       return Center(
@@ -168,7 +168,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           // Permission Settings Button
-          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject['code']!.isNotEmpty)
+          if(currentUser['userType'] == UserType.subjectCoordinator && currentSubject.code.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: Tooltip(
@@ -182,6 +182,7 @@ class _DashboardState extends State<Dashboard> {
                 child: const Icon(Icons.admin_panel_settings, size: 30.0,),
               ),
             ),
+          ),
           // Notification Button
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
@@ -277,6 +278,8 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           ),
+        ]
+      )
     );
   }
 }

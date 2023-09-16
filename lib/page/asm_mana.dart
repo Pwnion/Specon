@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../model/request_type.dart';
+import '../models/request_type.dart';
 import '../widgets/request_item.dart';
 import 'package:specon/models/subject_model.dart';
 

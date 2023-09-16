@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:specon/model/request_type.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/user_type.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../model/request_type.dart';
+import '../models/request_type.dart';
 
 class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;

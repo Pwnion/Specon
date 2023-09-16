@@ -1,6 +1,6 @@
 import 'package:specon/user_type.dart';
 
-import 'model/request_type.dart';
+import 'models/request_type.dart';
 
 const Map<String, dynamic> database = {
   'COMP30022': {

@@ -1,4 +1,4 @@
-import 'package:specon/model/request_type.dart';
+import 'package:specon/models/request_type.dart';
 
 class SubjectModel {
   final String name; // not final because we can change name
