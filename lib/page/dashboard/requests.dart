@@ -5,7 +5,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
-import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
   final String Function() getCurrentSubject;
@@ -32,7 +31,7 @@ class _RequestsState extends State<Requests> {
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
   
-  String _currentSubject = ''; // TODO: Get from dashboard
+  String _currentSubject = '';
   String _dropdownValue = '';
   String _searchString = '';
   List _allRequests = [];
@@ -179,6 +178,7 @@ class _RequestsState extends State<Requests> {
                   child: RawScrollbar(
                     controller: _scrollController,
                     thumbColor: Colors.white38,
+                    thumbVisibility: true,
                     radius: const Radius.circular(20),
                     thickness: 5,
                     child: ListView.builder(

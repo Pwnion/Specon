@@ -15,7 +15,7 @@ class _PermissionState extends State<Permission> {
   
   var inEditMode = false;
   var editButtonText = 'Edit';
-  
+
   List<Widget> buildUserColumns(final List users) {
     return users.map((user) => Text(user)).toList();
   }
@@ -62,6 +62,28 @@ class _PermissionState extends State<Permission> {
     return permissionWidgets;
   }
 
+  Widget userGroupBuilder(String userGroupName) {
+
+    final controller = TextEditingController(text: userGroupName);
+
+    if(inEditMode) {
+      return Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: EditableText(
+          controller: controller,
+          focusNode: FocusNode(),
+          style: const TextStyle(color: Colors.black),
+          textAlign: TextAlign.center,
+          cursorColor: Colors.red,
+          backgroundCursorColor: Colors.red,
+        ),
+      );
+    }
+    else {
+      return Text(userGroupName);
+    }
+  }
+
   Widget buildPermissionRows() {
     return Flexible(
       child: Scrollbar(
@@ -84,7 +106,9 @@ class _PermissionState extends State<Permission> {
                         left: BorderSide(color: Theme.of(context).colorScheme.primary),
                       )
                     ),
-                    child: Center(child: Text(permissionGroups[index]['group'])),
+                    child: Center(
+                        child: userGroupBuilder(permissionGroups[index]['group']),
+                    ),
                   ),
                   // Users
                   Expanded(
