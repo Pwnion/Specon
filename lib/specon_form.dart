@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'models/userModel.dart';
 
 import 'page/db.dart';
 import 'models/request_model.dart';
@@ -15,10 +16,10 @@ class SpeconForm extends StatefulWidget {
 
 class _SpeconFormState extends State<SpeconForm> {
   static const List<String> _preFilledFieldTitles = [
-    'Given Name',
-    'Last Name',
-    'Email',
-    'Student ID',
+    'first_name',
+    'last_name',
+    'email',
+    'student_id',
   ];
 
   static const List<String> _toFillFields = [
@@ -28,16 +29,28 @@ class _SpeconFormState extends State<SpeconForm> {
   ];
 
   String requestType = '';
+  late final Future<Map<String, dynamic>> basicForm;
 
-  Map<String, dynamic> buildForm(List<String> preFilled, List<String> toFill) {
+  Future<Map<String, dynamic>> buildForm(
+      List<String> preFilled, List<String> toFill) async {
     final List<Widget> textFormFields = <Widget>[];
     final List<TextEditingController> controllers = <TextEditingController>[];
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User user = auth.currentUser!;
+    print("BITCH FACE");
 
-    for (final field in toFill) {
+    final dataBase = DataBase();
+
+    print("CUNT");
+
+    final UserModel currentUser =
+        await dataBase.getUserFromEmail("email", user.email!);
+    print("POOOO");
+    final Map<String, dynamic> jsonUser = currentUser.toJson();
+
+    for (final field in preFilled) {
       final TextEditingController newController =
-          TextEditingController(text: user.email);
+          TextEditingController(text: jsonUser[field]);
       controllers.add(newController);
       textFormFields.add(
         SizedBox(
@@ -114,6 +127,7 @@ class _SpeconFormState extends State<SpeconForm> {
       );
       textFormFields.add(const SizedBox(height: 15));
     }
+
     return {'Form': textFormFields, 'Controllers': controllers};
   }
 
@@ -127,103 +141,113 @@ class _SpeconFormState extends State<SpeconForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final Map<String, dynamic> basicForm =
-        buildForm(_preFilledFieldTitles, _toFillFields);
-    final List<TextEditingController> controllers = basicForm['Controllers'];
-    final List<Widget> textFields = basicForm['Form'];
+  void initState() {
+    super.initState();
 
-    return Column(
-      children: [
-        Stack(
-          children: [
-            // X button to close form
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                onPressed: () {
-                  setState(() {
+    basicForm = buildForm(_preFilledFieldTitles, _toFillFields);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: basicForm,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            print(snapshot.hasData);
+            final List<TextEditingController> controllers =
+                snapshot.data!['Controllers'];
+            final List<Widget> textFields = snapshot.data!['Form'];
+
+            return Column(
+              children: [
+                Stack(
+                  children: [
+                    // X button to close form
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            widget.closeNewRequestForm();
+                          });
+                        },
+                        icon: const Icon(Icons.close,
+                            size: 40.0, color: Colors.white),
+                      ),
+                    ),
+                    // Form title
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: const Text(
+                          'Request Form',
+                          style: TextStyle(fontSize: 30.0, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20.0),
+                // Information part
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 40.0),
+                    // Basic information column
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        color: Theme.of(context).colorScheme.background,
+                        child: Column(
+                          children: textFields,
+                        ),
+                      ),
+                    ),
+                    // Detailed information column
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                        child: Column(children: [
+                          const SizedBox(height: 15),
+                          Text(requestType,
+                              style: TextStyle(
+                                  fontSize: 20.0,
+                                  color:
+                                      Theme.of(context).colorScheme.onSecondary,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor:
+                                      Theme.of(context).colorScheme.onSecondary,
+                                  decorationThickness: 2)),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    final dataBase = DataBase();
+
+                    final RequestModel request = RequestModel(
+                      requested_user_id: controllers[0].text,
+                      assessed_user_id: controllers[0].text,
+                      subject: controllers[4].text,
+                      reason: controllers[6].text,
+                      additional_info: controllers[5].text,
+                      status: "open",
+                    );
+                    dataBase.createRequest(request);
                     widget.closeNewRequestForm();
-                  });
-                },
-                icon: const Icon(Icons.close, size: 40.0, color: Colors.white),
-              ),
-            ),
-            // Form title
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: const Text(
-                  'Request Form',
-                  style: TextStyle(fontSize: 30.0, color: Colors.white),
+                  },
+                  child: const Text('Submit'),
                 ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20.0),
-        // Information part
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(width: 40.0),
-            // Basic information column
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Theme.of(context).colorScheme.background,
-                child: Column(
-                  children: textFields,
-                ),
-              ),
-            ),
-            // Detailed information column
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: Column(children: [
-                  const SizedBox(height: 15),
-                  Text(requestType,
-                      style: TextStyle(
-                          fontSize: 20.0,
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor:
-                              Theme.of(context).colorScheme.onSecondary,
-                          decorationThickness: 2)),
-                  // if (requestType.isNotEmpty) const SizedBox(height: 23),
-                  // if (requestType.isNotEmpty)
-                  //   Container(
-                  //     color: Theme.of(context).colorScheme.secondary,
-                  //     child: const Column(
-                  //       children: []
-                  //     ),
-                  //   ),
-                ]),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () async {
-            final dataBase = DataBase();
-            final RequestModel request = RequestModel(
-              requested_user_id: controllers[0].text,
-              assessed_user_id: controllers[0].text,
-              subject: controllers[4].text,
-              reason: controllers[6].text,
-              additional_info: controllers[5].text,
-              status: "open",
+              ],
             );
-            dataBase.createRequest(request);
-            widget.closeNewRequestForm();
-          },
-          child: const Text('Submit'),
-        ),
-      ],
-    );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }

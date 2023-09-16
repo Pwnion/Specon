@@ -9,10 +9,10 @@ class UserModel {
   final String lastName;
   final String emailAddress;
   final String role;
-  final List<String> subjects;
+  final List<dynamic> subjects;
 
   const UserModel({
-    this.id,
+    required this.id,
     required this.studentID,
     required this.firstName,
     required this.middleName,
