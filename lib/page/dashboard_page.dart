@@ -78,7 +78,10 @@ class _DashboardState extends State<Dashboard> {
 
   Widget displayThirdColumn() {
     if(newRequest) {
-      return SpeconForm(closeNewRequestForm: closeNewRequestForm);
+      return SpeconForm(
+          closeNewRequestForm: closeNewRequestForm,
+          currentSubjectCode: currentSubject['code']!
+      );
     } else if (showSubmittedRequest) {
       return Center(
         child: discussionWidget = Discussion(
