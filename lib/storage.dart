@@ -9,16 +9,17 @@ final documentsRef = storageRef.child("documents");
 
 PlatformFile? pickedFile;
 
-Future selectFile() async{
-  final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
-  if(result == null){
+Future selectFile() async {
+  final result = await FilePicker.platform
+      .pickFiles(type: FileType.any, allowMultiple: false);
+  if (result == null) {
     return;
   }
   pickedFile = result.files.first;
   print(pickedFile!.name);
 }
 
-Future uploadFile(int requestID) async{
+Future uploadFile(int requestID) async {
   final ref = documentsRef.child("${requestID.toString()}/${pickedFile!.name}");
   final fileBytes = pickedFile!.bytes; // on web app this is necessary
   final uploadTask = ref.putData(fileBytes!);
@@ -36,11 +37,11 @@ Future uploadFile(int requestID) async{
         print("Upload was canceled");
         break;
       case TaskState.error:
-      // Handle unsuccessful uploads
+        // Handle unsuccessful uploads
         break;
       case TaskState.success:
-      // Handle successful uploads on complete
-      // ...
+        // Handle successful uploads on complete
+        // ...
         break;
     }
   });

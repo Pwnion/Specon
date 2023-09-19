@@ -39,4 +39,26 @@ class DataBase {
 
     return userModel;
   }
+
+  Future<List<RequestModel>> getRequests(
+      String subjectID, String userID) async {
+    final requestsRef =
+        _db.collection("subjects").doc(subjectID).collection("requests");
+    final query =
+        await requestsRef.where("requested_user_id", isEqualTo: userID).get();
+    print(query);
+
+    List<RequestModel> requests = [];
+
+    for (final request in query.docs) {
+      requests.add(RequestModel(
+          requested_user_id: request["requested_user_id"],
+          reason: request["reason"],
+          additional_info: request["additional_info"],
+          assessed_user_id: request["assessed_user_id"],
+          state: request["state"],
+          subject: request["subject"]));
+    }
+    return requests;
+  }
 }
