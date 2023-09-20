@@ -332,92 +332,84 @@ class _SpeconFormState extends State<SpeconForm> {
 
   @override
   Widget build(BuildContext context) {
+
+    final Map<String, dynamic> form = buildForm(widget.currentUser);
+    final List<TextEditingController> controllers = form['Controllers'];
+    final List<Widget> textFields = form['Form'];
+
     return Scrollbar(
       thumbVisibility: true,
       controller: _requestFromController,
       child: SingleChildScrollView(
         controller: _requestFromController,
-        child: FutureBuilder(
-          future: currentUser,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              final Map<String, dynamic> form = buildForm(snapshot.data!);
-              final List<TextEditingController> controllers =
-                  form['Controllers'];
-              final List<Widget> textFields = form['Form'];
-
-              return Column(
-                children: [
-                  Stack(
-                    children: [
-                      // X button to close form
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              widget.closeNewRequestForm();
-                            });
-                          },
-                          icon: const Icon(Icons.close,
-                              size: 40.0, color: Colors.white),
-                        ),
-                      ),
-                      // Form title
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: const Text(
-                            'Request Form',
-                            style: TextStyle(fontSize: 30.0, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20.0),
-                  // Information part
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(width: 40.0),
-                      // Basic information column
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          color: Theme.of(context).colorScheme.background,
-                          child: Column(
-                            children: textFields,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final dataBase = DataBase();
-
-                      final RequestModel request = RequestModel(
-                        requested_user_id: controllers[0].text,
-                        assessed_user_id: controllers[0].text,
-                        subject: controllers[4].text,
-                        reason: controllers[6].text,
-                        additional_info: controllers[5].text,
-                        state: "open",
-                      );
-                      dataBase.submitRequest(widget.currentUser, widget.currentSubject, request);
-                      widget.closeNewRequestForm();
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                // X button to close form
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.closeNewRequestForm();
+                      });
                     },
-                    child: const Text('Submit'),
+                    icon: const Icon(Icons.close,
+                        size: 40.0, color: Colors.white),
                   ),
-                ],
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          }
+                ),
+                // Form title
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: const Text(
+                      'Request Form',
+                      style: TextStyle(fontSize: 30.0, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            // Information part
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(width: 40.0),
+                // Basic information column
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Theme.of(context).colorScheme.background,
+                    child: Column(
+                      children: textFields,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Submit button
+            ElevatedButton(
+              onPressed: () async {
+                final dataBase = DataBase();
+
+                final RequestModel request = RequestModel(
+                  requested_user_id: controllers[0].text,
+                  assessed_user_id: controllers[0].text,
+                  subject: controllers[4].text,
+                  reason: controllers[6].text,
+                  additional_info: controllers[5].text,
+                  state: "open",
+                );
+                dataBase.submitRequest(widget.currentUser, widget.currentSubject, request);
+                widget.closeNewRequestForm();
+              },
+              child: const Text('Submit'),
+            ),
+          ],
         ),
       ),
     );
