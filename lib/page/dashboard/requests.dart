@@ -5,18 +5,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
+import 'package:specon/models/request_model.dart';
+import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/userModel.dart';
+import 'package:specon/page/db.dart';
 
 class Requests extends StatefulWidget {
-  final String Function() getCurrentSubject;
+
+  final SubjectModel Function() getCurrentSubject;
   final void Function(Map<String, dynamic>) openSubmittedRequest;
   final UserModel currentUser;
 
   const Requests(
-      {Key? key,
-      required this.getCurrentSubject,
-      required this.openSubmittedRequest,
-      required this.currentUser})
+    {Key? key,
+    required this.getCurrentSubject,
+    required this.openSubmittedRequest,
+    required this.currentUser
+    })
       : super(key: key);
 
   @override
@@ -32,49 +37,52 @@ class _RequestsState extends State<Requests> {
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 
-  String _currentSubject = ''; // TODO: Get from dashboard
+  SubjectModel _currentSubject =
+    SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   String _dropdownValueAssess = '';
   String _dropdownValueState = '';
   String _searchString = '';
-  List _allRequests = [];
-  List _foundRequests = []; // result showing on screen
+  bool fetchingRequests = true;
+  List<RequestModel> _allRequests = [];
+  List<RequestModel> _foundRequests = []; // result showing on screen
+
+  static final dataBase = DataBase();
 
   // First filter
   void _applyDropdownFilters() {
-    final List filteredByAssignment;
+
+    final List<RequestModel> filteredByAssignment;
+
     if (_dropdownValueAssess != 'All assessment') {
       filteredByAssignment = _allRequests.where((request) {
-        return request['assessment'].contains(_dropdownValueAssess);
+        return request.assessment == _dropdownValueAssess;
       }).toList();
     } else {
-      filteredByAssignment = _allRequests.where((request) {
-        return request['assessment'].contains('');
-      }).toList();
+      filteredByAssignment = _allRequests;
     }
     _foundRequests = filteredByAssignment;
 
-    final List filteredByState;
+    final List<RequestModel> filteredByState;
+
     if (_dropdownValueState != 'All state') {
       filteredByState = _foundRequests.where((request) {
-        return request['state'].contains(_dropdownValueState);
+        return request.state == _dropdownValueState;
       }).toList();
     } else {
-      filteredByState = _foundRequests.where((request) {
-        return request['state'].contains('');
-      }).toList();
+      filteredByState = _foundRequests;
     }
     _foundRequests = filteredByState;
   }
 
   // Second filter // TODO: Make it search for keywords in request as well, not just name search
   void _filterBySearch() {
-    final List searchResult;
+    final List<RequestModel> searchResult;
     if (_searchString.isEmpty) {
       searchResult = _foundRequests;
     } else {
       // apply search logic, should change later or not?
       searchResult = _foundRequests.where((request) {
-        return request['name']
+        return request.requestedBy
             .toLowerCase()
             .contains(_searchString.toLowerCase());
       }).toList();
@@ -98,17 +106,22 @@ class _RequestsState extends State<Requests> {
       _dropdownValueState = filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
+      fetchingRequests = true;
+      dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
+        setState(() {
+          fetchingRequests = false;
+          _allRequests = requests;
+        });
+      });
     }
 
-    return AnimatedBuilder(
-        animation: BackEnd(),
-        builder: (context, child) {
-          _allRequests = BackEnd().getRequests(_currentSubject, widget.currentUser); // TODO: await?
-          _applyDropdownFilters();
-          _filterBySearch();
+    // Fetch subject requests if a subject is selected
+    if(_currentSubject.code.isNotEmpty && !fetchingRequests) {
+      _applyDropdownFilters();
+      _filterBySearch();
 
-          return Scaffold(
-              body: Padding(
+      return Scaffold(
+          body: Padding(
             padding: const EdgeInsets.all(1.0),
             child: Column(
               children: [
@@ -125,23 +138,41 @@ class _RequestsState extends State<Requests> {
                         });
                       },
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface),
-                      cursorColor: Theme.of(context).colorScheme.surface,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .surface),
+                      cursorColor: Theme
+                          .of(context)
+                          .colorScheme
+                          .surface,
                       decoration: InputDecoration(
                         labelText: 'Name Search',
                         labelStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.surface),
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .surface),
                         suffixIcon: Icon(Icons.search,
-                            color: Theme.of(context).colorScheme.surface),
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .surface),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             width: 1,
-                            color: Theme.of(context).colorScheme.background,
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .background,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onPrimary,
                           ),
                         ),
                       ),
@@ -149,9 +180,11 @@ class _RequestsState extends State<Requests> {
                   ),
                 ),
                 // end of search bar
-
                 Divider(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .surface,
                   thickness: 3,
                   height: 1,
                 ),
@@ -163,10 +196,19 @@ class _RequestsState extends State<Requests> {
                     // state filter
                     DropdownButton<String>(
                       iconDisabledColor:
-                          Theme.of(context).colorScheme.background,
-                      focusColor: Theme.of(context).colorScheme.background,
+                      Theme
+                          .of(context)
+                          .colorScheme
+                          .background,
+                      focusColor: Theme
+                          .of(context)
+                          .colorScheme
+                          .background,
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .onPrimary,
                           fontSize: 12),
                       padding: const EdgeInsets.all(1),
                       value: _dropdownValueState,
@@ -189,10 +231,19 @@ class _RequestsState extends State<Requests> {
                     // assessment filter
                     DropdownButton<String>(
                       iconDisabledColor:
-                          Theme.of(context).colorScheme.background,
-                      focusColor: Theme.of(context).colorScheme.background,
+                      Theme
+                          .of(context)
+                          .colorScheme
+                          .background,
+                      focusColor: Theme
+                          .of(context)
+                          .colorScheme
+                          .background,
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .secondary,
                           fontSize: 12),
                       padding: const EdgeInsets.all(1),
                       value: _dropdownValueAssess,
@@ -214,7 +265,10 @@ class _RequestsState extends State<Requests> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 5.0),
                   child: Divider(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .surface,
                     thickness: 3,
                     height: 1,
                   ),
@@ -230,14 +284,15 @@ class _RequestsState extends State<Requests> {
                     child: ListView.builder(
                         itemCount: _foundRequests.length,
                         controller: _scrollController,
-                        itemBuilder: (context, index) => Padding(
+                        itemBuilder: (context, index) =>
+                            Padding(
                               padding: const EdgeInsets.only(right: 6.0),
                               child: InkWell(
                                 onTap: () {
                                   setState(() {
                                     // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                                    widget.openSubmittedRequest(
-                                        _foundRequests[index]);
+                                    // widget.openSubmittedRequest(
+                                    //     _foundRequests[index]); // TODO
                                   });
                                 },
                                 child: Card(
@@ -245,57 +300,67 @@ class _RequestsState extends State<Requests> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       Container(
-                                        margin: const EdgeInsets.only(top: 10),
+                                        margin: const EdgeInsets.only(
+                                            top: 10),
                                         // request first row
                                         child: Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                          CrossAxisAlignment.end,
                                           children: [
                                             const SizedBox(width: 4),
-                                            const Icon(Icons.album, size: 20.0),
+                                            const Icon(
+                                                Icons.album, size: 20.0),
                                             const SizedBox(width: 12),
-                                            Text(_foundRequests[index]['name']),
+                                            Text(
+                                                _foundRequests[index]
+                                                    .requestedBy),
                                             // green tick icon
                                             Expanded(
                                               child: Container(
-                                                padding: const EdgeInsets.only(
+                                                padding: const EdgeInsets
+                                                    .only(
                                                     right: 7.0),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.end,
+                                                  MainAxisAlignment.end,
                                                   children: [
                                                     Visibility(
                                                       visible: _foundRequests[
-                                                                      index]
-                                                                  ['state'] ==
-                                                              'Approved'
+                                                      index]
+                                                          .state ==
+                                                          'Approved'
                                                           ? true
                                                           : false,
                                                       child: const Icon(
-                                                          Icons.gpp_good_sharp,
-                                                          color: Colors.green),
+                                                          Icons
+                                                              .gpp_good_sharp,
+                                                          color: Colors
+                                                              .green),
                                                     ),
                                                     Visibility(
                                                       visible: _foundRequests[
-                                                                      index]
-                                                                  ['state'] ==
-                                                              'Flagged'
+                                                      index]
+                                                          .state ==
+                                                          'Flagged'
                                                           ? true
                                                           : false,
                                                       child: const Icon(
                                                           Icons.flag,
-                                                          color: Colors.orange),
+                                                          color: Colors
+                                                              .orange),
                                                     ),
                                                     Visibility(
                                                       visible: _foundRequests[
-                                                                      index]
-                                                                  ['state'] ==
-                                                              'Declined'
+                                                      index]
+                                                          .state ==
+                                                          'Declined'
                                                           ? true
                                                           : false,
                                                       child: const Icon(
-                                                          Icons.not_interested,
-                                                          color: Colors.red),
+                                                          Icons
+                                                              .not_interested,
+                                                          color: Colors
+                                                              .red),
                                                     ),
                                                   ],
                                                 ),
@@ -310,11 +375,11 @@ class _RequestsState extends State<Requests> {
                                         // bottom row
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          MainAxisAlignment.start,
                                           children: [
                                             const SizedBox(width: 8),
                                             Text(_foundRequests[index]
-                                                ['assessment']),
+                                                .assessment),
                                             const SizedBox(width: 8),
                                             const Text('4h'),
                                             const SizedBox(width: 8),
@@ -330,7 +395,19 @@ class _RequestsState extends State<Requests> {
                 ),
               ],
             ),
-          ));
-        });
+          )
+      );
+    }
+    // No subject is selected
+    else {
+      return Center(
+        child: Text('Select a subject',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface,
+            fontSize: 25
+          )
+        )
+      );
+    }
   }
 }

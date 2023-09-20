@@ -13,14 +13,6 @@ class DataBase {
 
   static UserModel? user;
 
-  createRequest(RequestModel request) async {
-    await _db
-        .collection("subjects")
-        .doc(request.subject)
-        .collection("requests")
-        .add(request.toJson());
-  }
-
   Future<UserModel> getUserFromEmail(String emailToMatch) async {
     final usersRef = _db.collection("users");
     final query =
@@ -58,16 +50,15 @@ class DataBase {
       for(final request in requestsFromDB) {
         requests.add(
           RequestModel(
-            requested_user_id: request["requested_user_id"],
-            reason: request["reason"],
-            additional_info: request["additional_info"],
-            assessed_user_id: request["assessed_user_id"],
-            state: request["state"],
-            subject: request["subject"]
+            requestedBy: request['requested_by'],
+            reason: request['reason'],
+            additionalInfo: request['additional_info'],
+            assessedBy: request['assessed_by'],
+            assessment: request['assessment'],
+            state: request['state'],
           )
         );
       }
-
     return requests;
     // }
 
@@ -78,7 +69,6 @@ class DataBase {
     // print(query);
 
   }
-
 
   Future<List<SubjectModel>> getEnrolledSubjects() async {
     List<SubjectModel> subjects = [];
@@ -102,7 +92,6 @@ class DataBase {
     }
     return subjects;
   }
-
 
   Future<void> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
 

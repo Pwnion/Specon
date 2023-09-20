@@ -27,7 +27,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final stopwatch = Stopwatch();
   SubjectModel currentSubject =
-      SubjectModel(name: "", code: "", assessments: [], semester: "", year: "", databasePath: '');
+    SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   Map<String, dynamic> currentRequest = {};
   bool avatarIsPressed = false;
   bool newRequest = false;
@@ -35,7 +35,8 @@ class _DashboardState extends State<Dashboard> {
   Widget? requestWidget;
 
   static final FirebaseAuth auth = FirebaseAuth.instance;
-  final Future<UserModel> userFromDB = DataBase().getUserFromEmail(auth.currentUser!.email!);
+  static final dataBase = DataBase();
+  final Future<UserModel> userFromDB = dataBase.getUserFromEmail(auth.currentUser!.email!);
 
   void openSubmittedRequest(Map<String, dynamic> currentRequest) {
     setState(() {
@@ -45,10 +46,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  String getCurrentSubjectCode() {
-    return currentSubject.code;
-  }
-
   void openNewRequestForm() {
     setState(() {
       newRequest = true;
@@ -56,9 +53,9 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Map<String, dynamic> getCurrentRequest() {
-    return currentRequest;
-  }
+  Map<String, dynamic> getCurrentRequest() => currentRequest;
+
+  SubjectModel getCurrentSubject() => currentSubject;
 
   void closeNewRequestForm() {
     setState(() {
@@ -251,9 +248,9 @@ class _DashboardState extends State<Dashboard> {
                     SizedBox(
                       width: 300.0,
                       child: requestWidget = Requests(
-                        getCurrentSubject: getCurrentSubjectCode,
+                        getCurrentSubject: getCurrentSubject,
                         openSubmittedRequest: openSubmittedRequest,
-                        currentUser: currentUser,
+                        currentUser: currentUser
                       ),
                     ),
                     VerticalDivider(

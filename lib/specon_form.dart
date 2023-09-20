@@ -43,15 +43,15 @@ class _SpeconFormState extends State<SpeconForm> {
   };
 
   final List<String> _fieldTitles = [
-    'First Name',
-    'Last Name',
-    'Email',
-    'Student ID',
+    'First Name', // 0
+    'Last Name', // 1
+    'Email', // 2
+    'Student ID', // 3
     'Subject',
     'Assessment',
     'Extend due date to (if applicable)',
-    'Additional Information',
-    'Reason'
+    'Additional Information', // 4
+    'Reason' // 5
   ];
 
   String requestType = '';
@@ -136,7 +136,7 @@ class _SpeconFormState extends State<SpeconForm> {
     return SizedBox(
       width: 420.0,
       child: DropdownButtonFormField(
-          value: widget.currentSubjectCode.isNotEmpty ? widget.currentSubjectCode : null,
+          value: dropdownItems.first, // TODO: need to change to match selected subject
           items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -397,12 +397,12 @@ class _SpeconFormState extends State<SpeconForm> {
                 final dataBase = DataBase();
 
                 final RequestModel request = RequestModel(
-                  requested_user_id: controllers[0].text,
-                  assessed_user_id: controllers[0].text,
-                  subject: controllers[4].text,
-                  reason: controllers[6].text,
-                  additional_info: controllers[5].text,
-                  state: "open",
+                  requestedBy: controllers[0].text, // TODO: should put in user's reference instead
+                  assessedBy: '',
+                  assessment: 'Project 1',
+                  reason: controllers[5].text,
+                  additionalInfo: controllers[4].text,
+                  state: 'Open',
                 );
                 dataBase.submitRequest(widget.currentUser, widget.currentSubject, request);
                 widget.closeNewRequestForm();
