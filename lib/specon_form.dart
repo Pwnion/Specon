@@ -27,25 +27,28 @@ class SpeconForm extends StatefulWidget {
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-  static const List<String> _preFilledFieldTitles = [
-    'first_name',
-    'last_name',
-    'email',
-    'student_id',
+
+  final List<String> _preFilledFieldTitles = [
+  'First Name',
+  'Last Name',
+  'Email',
+  'Student ID',
   ];
 
-  static const List<String> _toFillFields = [
-    'Subject',
-    'Additional Information',
-    'Reason'
-  ];
+  final Map<String, String> _databaseFields = {
+    'First Name': 'first_name',
+    'Last Name': 'last_name',
+    'Email': 'email',
+    'Student ID': 'student_id',
+  };
 
-  static const List<String> _fieldTitles = [
-    'first_name',
-    'last_name',
-    'email',
-    'student_id',
+  final List<String> _fieldTitles = [
+    'First Name',
+    'Last Name',
+    'Email',
+    'Student ID',
     'Subject',
+    'Assessment',
     'Extend due date to (if applicable)',
     'Additional Information',
     'Reason'
@@ -71,6 +74,9 @@ class _SpeconFormState extends State<SpeconForm> {
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   double _currentSliderValue = 0;
+
+  final List<String> subjectList = ['COMP10001', 'COMP10002', 'COMP20003', 'COMP20005'];
+  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam'];
 
   String dateConversionString(int daysExtended) {
 
@@ -117,6 +123,54 @@ class _SpeconFormState extends State<SpeconForm> {
     );
   }
 
+  Widget buildDropdownField(String field) {
+
+    List<String> dropdownItems = [];
+
+    if(field == 'Subject') {
+      dropdownItems = subjectList; // TODO: Get from database
+    } else {
+      dropdownItems = assessmentList; // TODO: Get from database
+    }
+
+    return SizedBox(
+      width: 420.0,
+      child: DropdownButtonFormField(
+          value: widget.currentSubjectCode.isNotEmpty ? widget.currentSubjectCode : null,
+          items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value, style: const TextStyle(color: Colors.white)),
+            );
+          }).toList(),
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.onSecondary,
+                width: 0.5,
+              ),
+            ),
+            labelText: field,
+            labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18),
+            floatingLabelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Color(0xFFD78521),
+                width: 1,
+              ),
+            ),
+          ),
+          onChanged: (value) {
+          }
+      ),
+    );
+  }
+
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
     final List<TextEditingController> controllers = <TextEditingController>[];
@@ -128,18 +182,19 @@ class _SpeconFormState extends State<SpeconForm> {
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
         final TextEditingController newController =
-        TextEditingController(text: jsonUser[field]);
+        TextEditingController(text: jsonUser[_databaseFields[field]]);
         controllers.add(newController);
         textFormFields.add(
           SizedBox(
             width: 420.0,
             child: TextField(
-              enabled: false,
+              readOnly: true,
+              // enabled: false,
               controller: newController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              style: const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
-                disabledBorder: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.onSecondary,
                     width: 0.5,
@@ -164,10 +219,15 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
         );
         textFormFields.add(const SizedBox(height: 15));
-
       }
 
-      // Slider
+      // Subject & Assessment field
+      else if (field == 'Subject' || field == 'Assessment') {
+        textFormFields.add(buildDropdownField(field));
+        textFormFields.add(const SizedBox(height: 15.0));
+      }
+
+      // Extension date field
       else if (field == 'Extend due date to (if applicable)') {
 
         // Display dates
@@ -235,6 +295,7 @@ class _SpeconFormState extends State<SpeconForm> {
             width: 420.0,
             child: TextFormField(
               enabled: true,
+              maxLines: null,
               controller: newController,
               style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
@@ -267,15 +328,6 @@ class _SpeconFormState extends State<SpeconForm> {
       }
     }
     return {'Form': textFormFields, 'Controllers': controllers};
-  }
-
-  List<DropdownMenuItem<String>> buildRequestType(Map requestTypes) {
-    return requestTypes.keys.map((requestType) {
-      return DropdownMenuItem<String>(
-        value: requestType,
-        child: Text(requestType, style: const TextStyle(color: Colors.white)),
-      );
-    }).toList();
   }
 
   @override
