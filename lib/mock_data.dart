@@ -1,61 +1,4 @@
-import 'package:specon/user_type.dart';
-
-import 'models/request_type.dart';
-
-const Map<String, dynamic> database = {
-  'COMP30022': {
-    'requests': [
-      {
-        'requestID': 1,
-        'submittedBy': 1,
-        'name': 'Alex',
-        'assessment': 'Project 1',
-        'state': 'approved'
-      },
-      {
-        'requestID': 2,
-        'submittedBy': 1,
-        'name': 'Bob',
-        'assessment': 'Project 2',
-        'state': 'pending'
-      },
-      {
-        'requestID': 3,
-        'submittedBy': 2,
-        'name': 'Aren',
-        'assessment': 'Final Exam',
-        'state': 'pending'
-      },
-    ],
-    'typesOfRequest': {
-      'Participation Waiver': {
-        'fields': ['Class', 'Reason'],
-        'allowedToView': ['Tutor']
-      },
-      'Due date extension': {
-        'fields': ['How long', 'Reason'],
-        'allowedToView': ['Tutor']
-      },
-      'Change tutorial': {
-        'fields': ['From Class', 'To Class', 'Reason'],
-        'allowedToView': []
-      },
-      'Others': {
-        'fields': ['What', 'Why'],
-        'allowedToView': []
-      },
-    },
-    'assessments': [
-      'All',
-      'Project 1',
-      'Project 2',
-      'Final Exam',
-      'Mid Semester Exam',
-    ]
-  }
-};
-
-const List<Map<String, dynamic>> allRequests = [
+List<Map<String, dynamic>> allRequests = [
   {
     'requestID': 1,
     'submittedBy': 1,
@@ -210,84 +153,6 @@ const List<Map<String, dynamic>> allRequests = [
   },
 ];
 
-// final List<Map<String, dynamic>> subjectList = [
-//   {
-//     'code': 'COMP10001',
-//     'name': 'Foundations of Computing',
-//     'assessments': <RequestType>[]
-//   },
-//   {
-//     'code': 'COMP10002',
-//     'name': 'Foundations of Algorithms',
-//     'assessments': <RequestType>[]
-//   },
-//   {
-//     'code': 'COMP20003',
-//     'name': 'Algorithms and Data Structures',
-//     'assessments': []
-//   },
-//   {
-//     'code': 'COMP20005',
-//     'name': 'Intro. to Numerical Computation in C',
-//     'assessments': []
-//   },
-//   {'code': 'COMP20007', 'name': 'Design of Algorithms', 'assessments': []},
-//   {
-//     'code': 'COMP20008',
-//     'name': 'Elements of Data Processing',
-//     'assessments': []
-//   },
-//   {
-//     'code': 'SWEN20003',
-//     'name': 'Object Oriented Software Development',
-//     'assessments': []
-//   },
-//   {
-//     'code': 'COMP30013',
-//     'name': 'Advanced Studies in Computing',
-//     'assessments': []
-//   },
-//   {'code': 'COMP30019', 'name': 'Graphics and Interaction', 'assessments': []},
-//   {'code': 'COMP30020', 'name': 'Declarative Programming', 'assessments': []},
-//   {'code': 'COMP30022', 'name': 'IT Project', 'assessments': []},
-//   {'code': 'COMP30023', 'name': 'Computer Systems', 'assessments': []},
-//   {'code': 'COMP30024', 'name': 'Artificial Intelligence', 'assessments': []},
-//   {'code': 'COMP30026', 'name': 'Models of Computation', 'assessments': []},
-//   {'code': 'COMP30027', 'name': 'Machine Learning', 'assessments': []},
-//   {
-//     'code': 'SWEN30006',
-//     'name': 'Software Modelling and Design',
-//     'assessments': []
-//   },
-// ];
-
-const Map<String, Map<String, List<String>>> typesOfRequest = {
-  'Participation Waiver': {
-    'fields': ['Class', 'Reason'],
-    'allowedToView': ['Tutor']
-  },
-  'Due date extension': {
-    'fields': ['How long', 'Reason'],
-    'allowedToView': ['Tutor']
-  },
-  'Change tutorial': {
-    'fields': ['From Class', 'To Class', 'Reason'],
-    'allowedToView': []
-  },
-  'Others': {
-    'fields': ['What', 'Why'],
-    'allowedToView': []
-  },
-};
-
-const List<String> basicFieldTitles = [
-  'Given Name',
-  'Last Name',
-  'Email',
-  'Student ID',
-  'Subject'
-];
-
 const List<String> assessments = [
   'All assessment',
   'Project 1',
@@ -398,22 +263,7 @@ List<Map<String, dynamic>> allDiscussion = [
   },
 ];
 
-const Map<String, int> currentRequest = {'requestID': 1};
-
 // permission.dart
-const List<Map<String, dynamic>> users = [
-  {'userID': 1, 'name': 'Alex', 'userType': UserType.subjectCoordinator},
-  {'userID': 2, 'name': 'Tawfiq', 'userType': UserType.subjectCoordinator},
-  {'userID': 3, 'name': 'Aden', 'userType': UserType.tutor},
-  {'userID': 4, 'name': 'Brian', 'userType': UserType.tutor},
-  {'userID': 5, 'name': 'Drey', 'userType': UserType.tutor},
-  {'userID': 6, 'name': 'Jeremy', 'userType': UserType.tutor},
-  {'userID': 7, 'name': 'Lucas', 'userType': UserType.tutor},
-  {'userID': 8, 'name': 'Maddie', 'userType': UserType.student},
-  {'userID': 9, 'name': 'Nathan', 'userType': UserType.student},
-  {'userID': 10, 'name': 'Ollie', 'userType': UserType.student},
-];
-
 List<Map<String, dynamic>> permissionGroups = [
   {
     'group': 'Head Tutor',
@@ -442,14 +292,6 @@ const List<String> typesOfPermissions = [
   "Change tutorial",
   "Others",
 ];
-
-Map<String, dynamic> currentUser = {
-  'userID': 2,
-  'givenName': 'Harry',
-  'lastName': 'Styles',
-  'email': 'harrys@student.unimelb.edu.au',
-  'userType': UserType.subjectCoordinator
-};
 
 const Map<String, dynamic> permGroup = {
   'group': 'Lecturer',

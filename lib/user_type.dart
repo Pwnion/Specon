@@ -12,3 +12,18 @@ enum UserType {
   itasTutor,
   collegeTutor
 }
+
+class UserTypeUtils{
+
+  static UserType convertString(String roleString){
+
+    switch (roleString) {
+      case 'subject_coordinator':
+        return UserType.subjectCoordinator;
+      case 'tutor':
+        return UserType.tutor;
+      default:
+        return UserType.student;
+    }
+  }
+}
