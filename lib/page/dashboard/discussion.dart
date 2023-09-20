@@ -3,6 +3,9 @@
 /// This will display a summary of the filled out [ConsiderationForm] and
 /// a section to have a discussion between a student, tutor and subject
 /// coordinator.
+/// Main Author: Brian
+
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../dashboard_page.dart';
 import '../../mock_data.dart';
@@ -26,9 +29,36 @@ class Discussion extends StatefulWidget {
 class _DiscussionState extends State<Discussion> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
+  UploadTask? _uploadTask;
 
   /// download documents from the cloud storage related to the selected request
-  void downloadAttachment() {}
+  //void _downloadAttachment() {}
+
+  /// display upload documents status, should be in submit request form later
+  void _displayUploadState(){
+    _uploadTask!.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          final progress =
+              100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+          print("Upload is $progress% complete.");
+          break;
+        case TaskState.paused:
+          print("Upload is paused.");
+          break;
+        case TaskState.canceled:
+          print("Upload was canceled");
+          break;
+        case TaskState.error:
+        // Handle unsuccessful uploads
+          break;
+        case TaskState.success:
+        // Handle successful uploads on complete
+        // ...
+          break;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +174,7 @@ class _DiscussionState extends State<Discussion> {
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: selectFile,  //downloadAttachment,
+                          onPressed: ()=> downloadFiles(currentRequest['requestID']),  //downloadAttachment, 
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
@@ -160,13 +190,32 @@ class _DiscussionState extends State<Discussion> {
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: ()=>uploadFile(currentRequest['requestID']),  //downloadAttachment,
+                          onPressed: (){
+                            _uploadTask = uploadFile(currentRequest['requestID']);
+                            _displayUploadState();
+                          },  //downloadAttachment,
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
                           child: Text(
                             'upload',
                             style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                      // temporary select file button
+                      Container(
+                        margin: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: TextButton(
+                          onPressed: selectFile,  //downloadAttachment, 
+                          style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                          ),
+                          child: Text(
+                            'select file',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
