@@ -9,19 +9,20 @@ final documentsRef = storageRef.child("documents");
 
 PlatformFile? pickedFile;
 
-Future selectFile() async{
+Future<bool> selectFile() async{
   final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
   if(result == null){
-    return;
+    return false;
   }
   pickedFile = result.files.first;
   print(pickedFile!.name);
+  return true;
 }
 
-Future uploadFile(int requestID) async{
+UploadTask uploadFile(int requestID) {
   final ref = documentsRef.child("${requestID.toString()}/${pickedFile!.name}");
   final fileBytes = pickedFile!.bytes; // on web app this is necessary
-  final uploadTask = ref.putData(fileBytes!);
+  return ref.putData(fileBytes!);
   uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
     switch (taskSnapshot.state) {
       case TaskState.running:
