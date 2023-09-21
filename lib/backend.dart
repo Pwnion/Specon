@@ -14,37 +14,6 @@ class BackEnd extends ChangeNotifier {
     return _instance;
   }
 
-  List<Map<String, dynamic>> getRequests(
-      final String subjectID, UserModel user) {
-    final List<Map<String, dynamic>> filteredByUserType;
-    final List<Map<String, dynamic>> filteredBySubject =
-        <Map<String, dynamic>>[];
-
-    if (subjectID.isEmpty) return [];
-
-    // Only show the student's request
-    if (user.role == UserType.student) {
-      filteredByUserType = allRequests.where((request) {
-        return request['submittedBy'] == user.id;
-      }).toList();
-      // Show everything
-    } else if (user.role == UserType.subjectCoordinator) {
-      filteredByUserType = allRequests;
-      // Show based on restrictions given by coordinator (Tutor, etc)
-    } else {
-      filteredByUserType =
-          allRequests; // TODO: Determine which role gets to view what types of request
-    }
-
-    for (final request in filteredByUserType) {
-      if (request['subject'] == subjectID) {
-        filteredBySubject.add(request);
-      }
-    }
-
-    return filteredBySubject;
-  }
-
   List<String> getAssessments(String subjectID) {
     return assessments;
   }

@@ -39,8 +39,12 @@ class DataBase {
 
     List<RequestModel> requests = [];
 
-    // TODO: Make it return all requests for now
-    // if (user.role == UserType.subjectCoordinator) {
+    if (subject.databasePath.isEmpty){
+      return [];
+    }
+
+    // Subject Coordinator
+    if (user.role == UserType.subjectCoordinator) {
 
       // Get subject's reference
       final requestsRef = await _db.doc(subject.databasePath).collection('requests').get();
@@ -51,6 +55,7 @@ class DataBase {
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
+            requestedByStudentID: request['requested_by_student_id'],
             reason: request['reason'],
             additionalInfo: request['additional_info'],
             assessedBy: request['assessed_by'],
@@ -59,15 +64,60 @@ class DataBase {
           )
         );
       }
+    }
+
+    // Student
+    else if (user.role == UserType.student) {
+
+      // Query for student's requests from the subject
+      final requestListFromDB = await _db
+          .doc(subject.databasePath)
+          .collection('requests')
+          .where('requested_by_student_id', isEqualTo: user.studentID)
+          .get();
+
+      for(final request in requestListFromDB.docs){
+        requests.add(
+          RequestModel(
+            requestedBy: request['requested_by'],
+            reason: request['reason'],
+            additionalInfo: request['additional_info'],
+            assessedBy: request['assessed_by'],
+            assessment: request['assessment'],
+            state: request['state'],
+            requestedByStudentID: request['requested_by_student_id']
+          )
+        );
+      }
+
+      // TODO: doesn't work, need to ask Aden
+      // final usersRef = _db.collection("users");
+      // final query =
+      // await usersRef.where('email', isEqualTo: user.emailAddress).get();
+      //
+      // final fetchedUser = query.docs[0];
+      // final requestsFromUser = fetchedUser['requests']; // TODO: some students may not have requests yet, which will cause error, possible solution: initialise empty request array
+      //
+      // for (final request in requestsFromUser){
+      //
+      //   // Get requests from selected subject
+      //   if(request.toString().contains(subject.databasePath)){
+      //     final DocumentReference requestRef = _db.doc(request.toString());
+      //     try{
+      //       await requestRef.get();
+      //     } on Exception catch (e) {
+      //       print(e);
+      //     }
+      //   }
+      // }
+    }
+
+    // TODO: for permission (Tutor, etc)
+    else {
+      return [];
+    }
+
     return requests;
-    // }
-
-    // TODO: For student
-    // final requestsRef = _db.collection("subjects").doc(subjectID).collection("requests");
-    // final query =
-    //     await requestsRef.where("requested_user_id", isEqualTo: userID).get();
-    // print(query);
-
   }
 
   Future<List<SubjectModel>> getEnrolledSubjects() async {

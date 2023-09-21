@@ -397,7 +397,8 @@ class _SpeconFormState extends State<SpeconForm> {
                 final dataBase = DataBase();
 
                 final RequestModel request = RequestModel(
-                  requestedBy: controllers[0].text, // TODO: should put in user's reference instead
+                  requestedBy: controllers[0].text,
+                  requestedByStudentID: widget.currentUser.studentID,
                   assessedBy: '',
                   assessment: 'Project 1',
                   reason: controllers[5].text,
