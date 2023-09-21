@@ -3,6 +3,7 @@
 /// Shows all requests in a list. These are submitted requests for students
 /// and received requests for tutors and subject coordinators.
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
@@ -90,6 +91,16 @@ class _RequestsState extends State<Requests> {
     _foundRequests = searchResult;
   }
 
+  void fetchRequestsFromDB() {
+    dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
+      if (requests != _allRequests){
+        setState(() {
+          _allRequests = requests;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Reset filter stuff after new subject is clicked
@@ -111,7 +122,7 @@ class _RequestsState extends State<Requests> {
     }
 
     // Show requests if not fetching requests from database
-    if (!fetchingRequests) {
+    if (!fetchingRequests && _currentSubject.code.isNotEmpty) {
       _applyDropdownFilters();
       _filterBySearch();
 
@@ -269,6 +280,20 @@ class _RequestsState extends State<Requests> {
                 ),
               ),
               // Display requests
+
+              // Listen for database changes
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .doc(_currentSubject.databasePath)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    fetchRequestsFromDB();
+                  }
+                  return Container();
+                }
+              ),
+
               Expanded(
                 child: RawScrollbar(
                   controller: _scrollController,

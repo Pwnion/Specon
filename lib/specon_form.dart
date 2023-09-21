@@ -377,7 +377,6 @@ class _SpeconFormState extends State<SpeconForm> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(width: 40.0),
                 // Basic information column
                 Expanded(
                   flex: 1,
@@ -405,7 +404,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   additionalInfo: controllers[4].text,
                   state: 'Open',
                 );
-                dataBase.submitRequest(widget.currentUser, widget.currentSubject, request);
+                dataBase.submitRequest(widget.currentUser, widget.currentSubject, request); // TODO: need to select subject in navigation for now, will fix
                 widget.closeNewRequestForm();
               },
               child: const Text('Submit'),
