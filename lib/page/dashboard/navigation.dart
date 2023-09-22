@@ -14,12 +14,14 @@ import 'package:specon/models/subject_model.dart';
 class Navigation extends StatefulWidget {
   final void Function() openNewRequestForm;
   final void Function(SubjectModel) setCurrentSubject;
+  final void Function(List<SubjectModel>) setSubjectList;
   final UserModel currentUser;
 
   const Navigation(
     {Key? key,
     required this.openNewRequestForm,
     required this.setCurrentSubject,
+    required this.setSubjectList,
     required this.currentUser,
     }
   ) : super(key: key);
@@ -32,7 +34,8 @@ class _NavigationState extends State<Navigation> {
 
   SubjectModel? selectedSubject;
   static final _db = DataBase();
-  final Future<List<SubjectModel>> subjectListFromDB = _db.getEnrolledSubjects();
+  List<SubjectModel> subjectList = [];
+  bool fetchingFromDB = true;
 
   void selectSubject(SubjectModel subject) {
     setState(() {
@@ -80,42 +83,48 @@ class _NavigationState extends State<Navigation> {
   }
 
   @override
+  void initState() {
+    _db.getEnrolledSubjects().then((subjects) {
+      subjectList = subjects;
+      fetchingFromDB = false;
+      widget.setSubjectList(subjects);
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: subjectListFromDB,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          final subjectList = snapshot.data!;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Display new request button only if user is a student
-              if (widget.currentUser.role == UserType.student)
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).colorScheme.secondary)
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        widget.openNewRequestForm();
-                      });
-                    },
-                    child: Text(
-                      'New Request',
-                      style: TextStyle(color: Theme.of(context).colorScheme.surface),
-                    ),
-                  ),
+
+    if (!fetchingFromDB) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // Display new request button only if user is a student
+          if (widget.currentUser.role == UserType.student)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.secondary)
                 ),
-              ..._buildSubjectsColumn(subjectList),
-            ],
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
-      }
-    );
+                onPressed: () {
+                  setState(() {
+                    widget.openNewRequestForm();
+                  });
+                },
+                child: Text(
+                  'New Request',
+                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                ),
+              ),
+            ),
+          ..._buildSubjectsColumn(subjectList!),
+        ],
+      );
+    }
+    else {
+      return const CircularProgressIndicator();
+    }
   }
 }

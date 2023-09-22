@@ -24,10 +24,15 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
   final stopwatch = Stopwatch();
   SubjectModel currentSubject =
     SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
+  List<SubjectModel> subjectList = [];
   Map<String, dynamic> currentRequest = {};
   bool avatarIsPressed = false;
   bool newRequest = false;
@@ -57,6 +62,8 @@ class _DashboardState extends State<Dashboard> {
 
   SubjectModel getCurrentSubject() => currentSubject;
 
+  List<SubjectModel> getSubjectList() => subjectList;
+
   void closeNewRequestForm() {
     setState(() {
       newRequest = false;
@@ -68,7 +75,12 @@ class _DashboardState extends State<Dashboard> {
       currentSubject = subject;
       requestWidget;
       showSubmittedRequest = false;
-      newRequest = false;
+    });
+  }
+
+  void setSubjectList(List<SubjectModel> subjects){
+    setState(() {
+      subjectList = subjects;
     });
   }
 
@@ -76,9 +88,9 @@ class _DashboardState extends State<Dashboard> {
     if (newRequest) {
       return SpeconForm(
         closeNewRequestForm: closeNewRequestForm,
-        currentSubjectCode: currentSubject.code,
         currentUser: currentUser,
         currentSubject: currentSubject,
+        getSubjectList: getSubjectList,
       );
     }
     else if (showSubmittedRequest) {
@@ -100,7 +112,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context){
-
+    super.build(context);
     return FutureBuilder(
       future: userFromDB,
       builder: (context, snapshot) {
@@ -236,6 +248,7 @@ class _DashboardState extends State<Dashboard> {
                       child: Navigation(
                         openNewRequestForm: openNewRequestForm,
                         setCurrentSubject: setCurrentSubject,
+                        setSubjectList: setSubjectList,
                         currentUser: currentUser,
                       ),
                     ),

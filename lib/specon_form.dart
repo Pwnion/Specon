@@ -8,17 +8,17 @@ import 'models/request_model.dart';
 
 class SpeconForm extends StatefulWidget {
   final Function closeNewRequestForm;
-  final String currentSubjectCode;
   final UserModel currentUser;
   final SubjectModel currentSubject;
+  final List<SubjectModel> Function() getSubjectList;
 
   const SpeconForm(
     {
       super.key,
       required this.closeNewRequestForm,
-      required this.currentSubjectCode,
       required this.currentUser,
-      required this.currentSubject
+      required this.currentSubject,
+      required this.getSubjectList
     }
   );
 
@@ -73,10 +73,11 @@ class _SpeconFormState extends State<SpeconForm> {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  SubjectModel? selectedSubject;
+  List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
-
-  final List<String> subjectList = ['COMP10001', 'COMP10002', 'COMP20003', 'COMP20005'];
-  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam'];
+  final List<String> subjectNamesList = [];
+  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam']; // TODO: Need to get from database
 
   String dateConversionString(int daysExtended) {
 
@@ -125,19 +126,12 @@ class _SpeconFormState extends State<SpeconForm> {
 
   Widget buildDropdownField(String field) {
 
-    List<String> dropdownItems = [];
-
     if(field == 'Subject') {
-      dropdownItems = subjectList; // TODO: Get from database
-    } else {
-      dropdownItems = assessmentList; // TODO: Get from database
-    }
-
-    return SizedBox(
-      width: 420.0,
-      child: DropdownButtonFormField(
-          value: dropdownItems.first, // TODO: need to change to match selected subject
-          items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+      return SizedBox(
+        width: 420.0,
+        child: DropdownButtonFormField(
+          value: widget.currentSubject.code.isNotEmpty ? widget.currentSubject.code : null,
+          items: subjectNamesList.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value, style: const TextStyle(color: Colors.white)),
@@ -166,9 +160,52 @@ class _SpeconFormState extends State<SpeconForm> {
             ),
           ),
           onChanged: (value) {
+            setState(() {
+              selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+            });
           }
-      ),
-    );
+        ),
+      );
+    }
+    else {
+      return SizedBox(
+        width: 420.0,
+        child: DropdownButtonFormField(
+            value: assessmentList.first, // TODO: need to change to match selected subject
+            items: assessmentList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+            }
+        ),
+      );
+    }
   }
 
   Map<String, dynamic> buildForm(UserModel currentUser) {
@@ -331,6 +368,17 @@ class _SpeconFormState extends State<SpeconForm> {
   }
 
   @override
+  void initState() {
+    subjectList = widget.getSubjectList();
+
+    for (final subject in subjectList){
+      subjectNamesList.add(subject.code);
+    }
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final Map<String, dynamic> form = buildForm(widget.currentUser);
@@ -393,8 +441,6 @@ class _SpeconFormState extends State<SpeconForm> {
             // Submit button
             ElevatedButton(
               onPressed: () async {
-                final dataBase = DataBase();
-
                 final RequestModel request = RequestModel(
                   requestedBy: controllers[0].text,
                   requestedByStudentID: widget.currentUser.studentID,
@@ -404,7 +450,11 @@ class _SpeconFormState extends State<SpeconForm> {
                   additionalInfo: controllers[4].text,
                   state: 'Open',
                 );
-                dataBase.submitRequest(widget.currentUser, widget.currentSubject, request); // TODO: need to select subject in navigation for now, will fix
+                dataBase.submitRequest(
+                  widget.currentUser,
+                  selectedSubject == null ? widget.currentSubject : selectedSubject!,
+                  request
+                ); //
                 widget.closeNewRequestForm();
               },
               child: const Text('Submit'),
