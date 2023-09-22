@@ -78,6 +78,7 @@ class _SpeconFormState extends State<SpeconForm> {
   double _currentSliderValue = 0;
   final List<String> subjectNamesList = [];
   final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam']; // TODO: Need to get from database
+  final _formKey = GlobalKey<FormState>();
 
   String dateConversionString(int daysExtended) {
 
@@ -126,47 +127,60 @@ class _SpeconFormState extends State<SpeconForm> {
 
   Widget buildDropdownField(String field) {
 
+    // Subject field
     if(field == 'Subject') {
       return SizedBox(
         width: 420.0,
-        child: DropdownButtonFormField(
-          value: widget.currentSubject.code.isNotEmpty ? widget.currentSubject.code : null,
-          items: subjectNamesList.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value, style: const TextStyle(color: Colors.white)),
-            );
-          }).toList(),
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.onSecondary,
-                width: 0.5,
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected a subject';
+              }
+              return null;
+            },
+            value: widget.currentSubject.code.isNotEmpty ? widget.currentSubject.code : null,
+            items: subjectNamesList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
               ),
             ),
-            labelText: field,
-            labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18),
-            floatingLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xFFD78521),
-                width: 1,
-              ),
-            ),
+            onChanged: (value) {
+              setState(() {
+                selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+              });
+            }
           ),
-          onChanged: (value) {
-            setState(() {
-              selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
-            });
-          }
         ),
       );
     }
+
+    // Assessment field
     else {
       return SizedBox(
         width: 420.0,
@@ -456,6 +470,8 @@ class _SpeconFormState extends State<SpeconForm> {
                   request
                 ); //
                 widget.closeNewRequestForm();
+                // TODO: set subject to form subject
+                // TODO: selected the submitted request
               },
               child: const Text('Submit'),
             ),
