@@ -3,7 +3,7 @@
 /// This will display a summary of the filled out [ConsiderationForm] and
 /// a section to have a discussion between a student, tutor and subject
 /// coordinator.
-/// Main Author: Brian
+/// Author: Kuo Wei Wu
 
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -119,7 +119,7 @@ class _DiscussionState extends State<Discussion> {
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                             ),
-                            // accept decline  flag button
+                            // accept decline flag button
                             if(widget.currentUser.role != 'student' && discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(

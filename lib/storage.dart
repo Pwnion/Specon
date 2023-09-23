@@ -1,15 +1,20 @@
-import 'dart:typed_data';
+/// Functionality relate to cloud storage
+///
+/// This will manage every functionality related to cloud
+/// storage, including upload, download...etc
+/// Author: Kuo Wei Wu
 
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
-final storage = FirebaseStorage.instance;
-final storageRef = FirebaseStorage.instance.ref();
-final documentsRef = storageRef.child("documents");
+final _storage = FirebaseStorage.instance;
+final _storageRef = _storage.ref();
+final _documentsRef = _storageRef.child("documents");
 PlatformFile? pickedFile;
 
-
+/// Make user's computer pop up a file window to select file
 Future<bool> selectFile() async{
   final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
   if(result == null){
@@ -20,14 +25,16 @@ Future<bool> selectFile() async{
   return true;
 }
 
+/// upload the selected file to cloud storage in the path 'documents/{requestID}'
 UploadTask uploadFile(int requestID) {
-  final ref = documentsRef.child("${requestID.toString()}/${pickedFile!.name}");
+  final ref = _documentsRef.child("${requestID.toString()}/${pickedFile!.name}");
   final fileBytes = pickedFile!.bytes; // on web app this is necessary
   return ref.putData(fileBytes!);
 }
 
+/// download all file that is in 'documents/{requestID}'
 void downloadFiles (int requestID) async{
-  final downloadList = await documentsRef.child(requestID.toString()).listAll();
+  final downloadList = await _documentsRef.child(requestID.toString()).listAll();
 
   for (var item in downloadList.items) {
     try {
