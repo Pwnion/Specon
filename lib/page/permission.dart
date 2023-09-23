@@ -79,17 +79,32 @@ class _PermissionState extends State<Permission> {
   Widget userGroupBuilder(String userGroupName) {
 
     final controller = TextEditingController(text: userGroupName);
+    var newGroupName = userGroupName;
 
     if(inEditMode) {
       return Container(
         decoration: const BoxDecoration(color: Colors.white),
         child: EditableText(
+          forceLine: false,
+          autofocus: false,
           controller: controller,
           focusNode: FocusNode(),
           style: const TextStyle(color: Colors.black),
           textAlign: TextAlign.center,
           cursorColor: Colors.red,
           backgroundCursorColor: Colors.red,
+          onChanged: (value) {
+            newGroupName = value;
+          },
+          onTapOutside: (pointer) {
+            setState(() {
+              for (final permissionGroup in permissionGroups) {
+                if (permissionGroup['group'] == userGroupName){
+                  permissionGroup['group'] = newGroupName;
+                }
+              }
+            });
+          }, // TODO: Can be made tidier
         ),
       );
     }
