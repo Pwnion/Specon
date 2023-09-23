@@ -11,6 +11,7 @@ class SpeconForm extends StatefulWidget {
   final UserModel currentUser;
   final SubjectModel currentSubject;
   final List<SubjectModel> Function() getSubjectList;
+  final void Function(SubjectModel) setCurrentSubject;
 
   const SpeconForm(
     {
@@ -18,7 +19,8 @@ class SpeconForm extends StatefulWidget {
       required this.closeNewRequestForm,
       required this.currentUser,
       required this.currentSubject,
-      required this.getSubjectList
+      required this.getSubjectList,
+      required this.setCurrentSubject
     }
   );
 
@@ -74,11 +76,14 @@ class _SpeconFormState extends State<SpeconForm> {
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
+  String selectedAssessment = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
   final List<String> subjectNamesList = [];
-  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam']; // TODO: Need to get from database
-  final _formKey = GlobalKey<FormState>();
+  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam', 'Others']; // TODO: Need to get from database
+  final _subjectFormKey = GlobalKey<FormState>();
+  final _assessmentFormKey = GlobalKey<FormState>();
+
 
   String dateConversionString(int daysExtended) {
 
@@ -132,7 +137,7 @@ class _SpeconFormState extends State<SpeconForm> {
       return SizedBox(
         width: 420.0,
         child: Form(
-          key: _formKey,
+          key: _subjectFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
             validator: (value) {
@@ -184,8 +189,17 @@ class _SpeconFormState extends State<SpeconForm> {
     else {
       return SizedBox(
         width: 420.0,
-        child: DropdownButtonFormField(
-            value: assessmentList.first, // TODO: need to change to match selected subject
+        child: Form(
+          key: _assessmentFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected an assessment';
+              }
+              return null;
+            },
+            value: null, // TODO: need to change to match selected subject
             items: assessmentList.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -201,11 +215,13 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               labelText: field,
               labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
               floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
@@ -215,8 +231,9 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
             ),
             onChanged: (value) {
-              selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+              selectedAssessment = value!;
             }
+          ),
         ),
       );
     }
@@ -455,22 +472,31 @@ class _SpeconFormState extends State<SpeconForm> {
             // Submit button
             ElevatedButton(
               onPressed: () async {
+
+                // Check validity of dropdowns
+                if (!_subjectFormKey.currentState!.validate() ||
+                    !_assessmentFormKey.currentState!.validate()) {
+                  return;
+                }
+
                 final RequestModel request = RequestModel(
                   requestedBy: controllers[0].text,
                   requestedByStudentID: widget.currentUser.studentID,
                   assessedBy: '',
-                  assessment: 'Project 1',
+                  assessment: selectedAssessment,
                   reason: controllers[5].text,
                   additionalInfo: controllers[4].text,
                   state: 'Open',
                 );
-                dataBase.submitRequest(
+                await dataBase.submitRequest(
                   widget.currentUser,
                   selectedSubject == null ? widget.currentSubject : selectedSubject!,
                   request
                 ); //
                 widget.closeNewRequestForm();
-                // TODO: set subject to form subject
+                widget.setCurrentSubject(
+                  selectedSubject == null ? widget.currentSubject : selectedSubject!
+                );
                 // TODO: selected the submitted request
               },
               child: const Text('Submit'),
