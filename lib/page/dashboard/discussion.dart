@@ -10,13 +10,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../dashboard_page.dart';
 import '../../mock_data.dart';
 import 'package:flutter/material.dart';
+import 'package:specon/models/userModel.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/storage.dart';
 
 class Discussion extends StatefulWidget {
   final Map<String, dynamic> Function() getCurrentRequest;
-  final Map<String, dynamic> currentUser;
+  final UserModel currentUser;
 
   const Discussion(
       {Key? key, required this.getCurrentRequest, required this.currentUser})
@@ -119,7 +120,7 @@ class _DiscussionState extends State<Discussion> {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             // accept decline  flag button
-                            if(widget.currentUser['userType'] != UserType.student && discussionThread[index]["type"] == "request")
+                            if(widget.currentUser.role != 'student' && discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -266,12 +267,12 @@ class _DiscussionState extends State<Discussion> {
                           setState(() {
                             allDiscussion.add({
                               'discussionID': currentRequest['requestID'],
-                              'submittedBy': currentUser['userID'],
-                              'name': currentUser['name'],
+                              'submittedBy': widget.currentUser.id,
+                              'name': widget.currentUser.firstName,
                               'subject': currentRequest['subject'],
                               'assessment': currentRequest['assessment'],
                               'reason': _textController.value.text,
-                              'type': currentUser['userType'] == UserType.student? "request": "respond",
+                              'type': widget.currentUser.role == 'student'? 'request': 'respond',
                             });
                           });
                         }

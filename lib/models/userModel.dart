@@ -1,14 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:specon/user_type.dart';
 
 class UserModel {
-  final String? id;
+  final String id;
   final String studentID;
   // TODO: Use better name because staff will have a staff number
   final String firstName;
   final String middleName;
   final String lastName;
   final String emailAddress;
-  final String role;
+  final UserType role;
   final List<dynamic> subjects;
 
   const UserModel({
@@ -30,7 +30,7 @@ class UserModel {
       'last_name': lastName,
       'email': emailAddress,
       'role': role,
-      'sujects': subjects,
+      'subjects': subjects,
     };
   }
 }

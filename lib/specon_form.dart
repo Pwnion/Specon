@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:specon/models/subject_model.dart';
 import 'models/userModel.dart';
 
 import 'page/db.dart';
@@ -7,43 +8,50 @@ import 'models/request_model.dart';
 
 class SpeconForm extends StatefulWidget {
   final Function closeNewRequestForm;
-  final String currentSubjectCode;
+  final UserModel currentUser;
+  final SubjectModel currentSubject;
+  final List<SubjectModel> Function() getSubjectList;
 
   const SpeconForm(
-      {
-        super.key,
-        required this.closeNewRequestForm,
-        required this.currentSubjectCode
-      }
-      );
+    {
+      super.key,
+      required this.closeNewRequestForm,
+      required this.currentUser,
+      required this.currentSubject,
+      required this.getSubjectList
+    }
+  );
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-  static const List<String> _preFilledFieldTitles = [
-    'first_name',
-    'last_name',
-    'email',
-    'student_id',
+
+  final List<String> _preFilledFieldTitles = [
+  'First Name',
+  'Last Name',
+  'Email',
+  'Student ID',
   ];
 
-  static const List<String> _toFillFields = [
-    'Subject',
-    'Additional Information',
-    'Reason'
-  ];
+  final Map<String, String> _databaseFields = {
+    'First Name': 'first_name',
+    'Last Name': 'last_name',
+    'Email': 'email',
+    'Student ID': 'student_id',
+  };
 
-  static const List<String> _fieldTitles = [
-    'first_name',
-    'last_name',
-    'email',
-    'student_id',
+  final List<String> _fieldTitles = [
+    'First Name', // 0
+    'Last Name', // 1
+    'Email', // 2
+    'Student ID', // 3
     'Subject',
+    'Assessment',
     'Extend due date to (if applicable)',
-    'Additional Information',
-    'Reason'
+    'Additional Information', // 4
+    'Reason' // 5
   ];
 
   String requestType = '';
@@ -64,8 +72,13 @@ class _SpeconFormState extends State<SpeconForm> {
   };
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
-  final Future<UserModel> currentUser = dataBase.getUserFromEmail("email", auth.currentUser!.email!);
+  final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  SubjectModel? selectedSubject;
+  List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
+  final List<String> subjectNamesList = [];
+  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam']; // TODO: Need to get from database
+  final _formKey = GlobalKey<FormState>();
 
   String dateConversionString(int daysExtended) {
 
@@ -112,6 +125,103 @@ class _SpeconFormState extends State<SpeconForm> {
     );
   }
 
+  Widget buildDropdownField(String field) {
+
+    // Subject field
+    if(field == 'Subject') {
+      return SizedBox(
+        width: 420.0,
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected a subject';
+              }
+              return null;
+            },
+            value: widget.currentSubject.code.isNotEmpty ? widget.currentSubject.code : null,
+            items: subjectNamesList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+              });
+            }
+          ),
+        ),
+      );
+    }
+
+    // Assessment field
+    else {
+      return SizedBox(
+        width: 420.0,
+        child: DropdownButtonFormField(
+            value: assessmentList.first, // TODO: need to change to match selected subject
+            items: assessmentList.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
+            }
+        ),
+      );
+    }
+  }
+
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
     final List<TextEditingController> controllers = <TextEditingController>[];
@@ -123,18 +233,19 @@ class _SpeconFormState extends State<SpeconForm> {
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
         final TextEditingController newController =
-        TextEditingController(text: jsonUser[field]);
+        TextEditingController(text: jsonUser[_databaseFields[field]]);
         controllers.add(newController);
         textFormFields.add(
           SizedBox(
             width: 420.0,
             child: TextField(
-              enabled: false,
+              readOnly: true,
+              // enabled: false,
               controller: newController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              style: const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
-                disabledBorder: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.onSecondary,
                     width: 0.5,
@@ -159,10 +270,15 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
         );
         textFormFields.add(const SizedBox(height: 15));
-
       }
 
-      // Slider
+      // Subject & Assessment field
+      else if (field == 'Subject' || field == 'Assessment') {
+        textFormFields.add(buildDropdownField(field));
+        textFormFields.add(const SizedBox(height: 15.0));
+      }
+
+      // Extension date field
       else if (field == 'Extend due date to (if applicable)') {
 
         // Display dates
@@ -230,6 +346,7 @@ class _SpeconFormState extends State<SpeconForm> {
             width: 420.0,
             child: TextFormField(
               enabled: true,
+              maxLines: null,
               controller: newController,
               style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
@@ -264,103 +381,102 @@ class _SpeconFormState extends State<SpeconForm> {
     return {'Form': textFormFields, 'Controllers': controllers};
   }
 
-  List<DropdownMenuItem<String>> buildRequestType(Map requestTypes) {
-    return requestTypes.keys.map((requestType) {
-      return DropdownMenuItem<String>(
-        value: requestType,
-        child: Text(requestType, style: const TextStyle(color: Colors.white)),
-      );
-    }).toList();
+  @override
+  void initState() {
+    subjectList = widget.getSubjectList();
+
+    for (final subject in subjectList){
+      subjectNamesList.add(subject.code);
+    }
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    final Map<String, dynamic> form = buildForm(widget.currentUser);
+    final List<TextEditingController> controllers = form['Controllers'];
+    final List<Widget> textFields = form['Form'];
+
     return Scrollbar(
       thumbVisibility: true,
       controller: _requestFromController,
       child: SingleChildScrollView(
         controller: _requestFromController,
-        child: FutureBuilder(
-            future: currentUser,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                final Map<String, dynamic> form = buildForm(snapshot.data!);
-                final List<TextEditingController> controllers =
-                    form['Controllers'];
-                final List<Widget> textFields = form['Form'];
-
-                return Column(
-                  children: [
-                    Stack(
-                      children: [
-                        // X button to close form
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                widget.closeNewRequestForm();
-                              });
-                            },
-                            icon: const Icon(Icons.close,
-                                size: 40.0, color: Colors.white),
-                          ),
-                        ),
-                        // Form title
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: const Text(
-                              'Request Form',
-                              style: TextStyle(fontSize: 30.0, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20.0),
-                    // Information part
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(width: 40.0),
-                        // Basic information column
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            color: Theme.of(context).colorScheme.background,
-                            child: Column(
-                              children: textFields,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final dataBase = DataBase();
-
-                        final RequestModel request = RequestModel(
-                          requested_user_id: controllers[0].text,
-                          assessed_user_id: controllers[0].text,
-                          subject: controllers[4].text,
-                          reason: controllers[6].text,
-                          additional_info: controllers[5].text,
-                          state: "open",
-                        );
-                        dataBase.createRequest(request);
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                // X button to close form
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
                         widget.closeNewRequestForm();
-                      },
-                      child: const Text('Submit'),
+                      });
+                    },
+                    icon: const Icon(Icons.close,
+                        size: 40.0, color: Colors.white),
+                  ),
+                ),
+                // Form title
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: const Text(
+                      'Request Form',
+                      style: TextStyle(fontSize: 30.0, color: Colors.white),
                     ),
-                  ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            // Information part
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Basic information column
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Theme.of(context).colorScheme.background,
+                    child: Column(
+                      children: textFields,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Submit button
+            ElevatedButton(
+              onPressed: () async {
+                final RequestModel request = RequestModel(
+                  requestedBy: controllers[0].text,
+                  requestedByStudentID: widget.currentUser.studentID,
+                  assessedBy: '',
+                  assessment: 'Project 1',
+                  reason: controllers[5].text,
+                  additionalInfo: controllers[4].text,
+                  state: 'Open',
                 );
-              } else {
-                return const CircularProgressIndicator();
-              }
-            }),
+                dataBase.submitRequest(
+                  widget.currentUser,
+                  selectedSubject == null ? widget.currentSubject : selectedSubject!,
+                  request
+                ); //
+                widget.closeNewRequestForm();
+                // TODO: set subject to form subject
+                // TODO: selected the submitted request
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
     );
   }

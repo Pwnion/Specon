@@ -9,8 +9,6 @@ class RequestType {
     required this.id,
   });
 
-  // ...
-
   // fake request types
   static List<RequestType> importTypes() {
     return [
