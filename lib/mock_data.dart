@@ -1,3 +1,7 @@
+/// Temporary mock data to use for testing throughout the application.
+///
+/// Author: Aden McCusker
+
 List<Map<String, dynamic>> allRequests = [
   {
     'requestID': 1,

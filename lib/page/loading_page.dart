@@ -1,4 +1,6 @@
 /// A page that indicates that the entire page is loading.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 

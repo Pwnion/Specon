@@ -1,4 +1,6 @@
 /// Initialises project-level things and redirects to the [Landing] page.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 import 'package:url_strategy/url_strategy.dart';

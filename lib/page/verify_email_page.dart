@@ -1,4 +1,6 @@
 /// A page that waits for email verification to complete.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

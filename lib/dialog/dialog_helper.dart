@@ -1,4 +1,6 @@
 /// A file with helper dialog functions to easily display dialogs in the app.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 

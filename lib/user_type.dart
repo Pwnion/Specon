@@ -1,3 +1,7 @@
+/// Some utility code for handling different types of users.
+///
+/// Author: Aden McCusker
+
 /// The type of user that can be authenticated in the app.
 enum UserType {
   student,
@@ -13,10 +17,8 @@ enum UserType {
   collegeTutor
 }
 
-class UserTypeUtils{
-
+class UserTypeUtils {
   static UserType convertString(String roleString){
-
     switch (roleString) {
       case 'subject_coordinator':
         return UserType.subjectCoordinator;

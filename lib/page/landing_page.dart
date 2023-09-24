@@ -1,4 +1,6 @@
 /// Redirects to the [Login] or [Dashboard] page based on authentication state.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
