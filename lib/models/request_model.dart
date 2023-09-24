@@ -1,3 +1,5 @@
+/// Author: Jeremy Annal
+
 class RequestModel {
   final String requestedBy;
   final String reason;
@@ -7,15 +9,14 @@ class RequestModel {
   final String state;
   final String requestedByStudentID;
 
-  const RequestModel({
-    required this.requestedBy,
-    required this.reason,
-    required this.additionalInfo,
-    required this.assessedBy,
-    required this.assessment,
-    required this.state,
-    required this.requestedByStudentID
-  });
+  const RequestModel(
+      {required this.requestedBy,
+      required this.reason,
+      required this.additionalInfo,
+      required this.assessedBy,
+      required this.assessment,
+      required this.state,
+      required this.requestedByStudentID});
 
   Map<String, String> toJson() {
     return {

@@ -1,8 +1,6 @@
 /// Initialises project-level things and redirects to the [Landing] page.
 
 import 'package:flutter/material.dart';
-import 'package:specon/page/dashboard_page.dart';
-import 'package:specon/user_type.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -14,8 +12,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'page/landing_page.dart';
 import 'page/loading_page.dart';
 import 'page/error_page.dart';
-
-import './page/asm_mana.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

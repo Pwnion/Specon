@@ -1,8 +1,9 @@
+/// Author: Jeremy Annal
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/subject_model.dart';
-import 'models/userModel.dart';
-
+import 'models/user_model.dart';
 import 'page/db.dart';
 import 'models/request_model.dart';
 
@@ -14,27 +15,23 @@ class SpeconForm extends StatefulWidget {
   final void Function(SubjectModel) setCurrentSubject;
 
   const SpeconForm(
-    {
-      super.key,
+      {super.key,
       required this.closeNewRequestForm,
       required this.currentUser,
       required this.currentSubject,
       required this.getSubjectList,
-      required this.setCurrentSubject
-    }
-  );
+      required this.setCurrentSubject});
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-
   final List<String> _preFilledFieldTitles = [
-  'First Name',
-  'Last Name',
-  'Email',
-  'Student ID',
+    'First Name',
+    'Last Name',
+    'Email',
+    'Student ID',
   ];
 
   final Map<String, String> _databaseFields = {
@@ -59,10 +56,13 @@ class _SpeconFormState extends State<SpeconForm> {
   String requestType = '';
   late Future<Map<String, dynamic>> basicForm;
 
-  final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
+  final _dueDateSelectorController =
+      TextEditingController(text: 'Use slider below');
   final _requestFromController = ScrollController();
-  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
-  final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
+  final _mockAssessmentDueDate = DateTime(
+      2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  final _mockMaxExtendDays =
+      10; // TODO: Set by subject coordinator, + 2 days maybe?
   final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
@@ -74,24 +74,29 @@ class _SpeconFormState extends State<SpeconForm> {
   };
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
-  final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  final Future<UserModel> currentUser =
+      dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
   String selectedAssessment = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
   final List<String> subjectNamesList = [];
-  final List<String> assessmentList = ['Project 1', 'Project 2', 'Project 3', 'Mid Semester Test', 'Final Exam', 'Others']; // TODO: Need to get from database
+  final List<String> assessmentList = [
+    'Project 1',
+    'Project 2',
+    'Project 3',
+    'Mid Semester Test',
+    'Final Exam',
+    'Others'
+  ]; // TODO: Need to get from database
   final _subjectFormKey = GlobalKey<FormState>();
   final _assessmentFormKey = GlobalKey<FormState>();
 
-
   String dateConversionString(int daysExtended) {
-
     var displayString = '';
     var extendedDate = dateAfterExtension(daysExtended);
 
-    displayString +=
-    '${_mockAssessmentDueDate.day}-'
+    displayString += '${_mockAssessmentDueDate.day}-'
         '${_mockAssessmentDueDate.month}-'
         '${_mockAssessmentDueDate.year} '
         '${_mockAssessmentDueDate.hour}'
@@ -111,12 +116,14 @@ class _SpeconFormState extends State<SpeconForm> {
   }
 
   DateTime dateAfterExtension(int daysExtended) {
-
     int daysExtendedExcludingWeekend = 0;
     int daysExtendedIncludingWeekend = 0;
 
-    while(daysExtendedExcludingWeekend < daysExtended) {
-      if(DateTime(_mockAssessmentDueDate.year,_mockAssessmentDueDate.month, _mockAssessmentDueDate.day + daysExtendedIncludingWeekend + 1).weekday <= 5) {
+    while (daysExtendedExcludingWeekend < daysExtended) {
+      if (DateTime(_mockAssessmentDueDate.year, _mockAssessmentDueDate.month,
+                  _mockAssessmentDueDate.day + daysExtendedIncludingWeekend + 1)
+              .weekday <=
+          5) {
         daysExtendedExcludingWeekend++;
       }
       daysExtendedIncludingWeekend++;
@@ -126,61 +133,63 @@ class _SpeconFormState extends State<SpeconForm> {
         _mockAssessmentDueDate.month,
         _mockAssessmentDueDate.day + daysExtendedIncludingWeekend,
         _mockAssessmentDueDate.hour,
-        _mockAssessmentDueDate.minute
-    );
+        _mockAssessmentDueDate.minute);
   }
 
   Widget buildDropdownField(String field) {
-
     // Subject field
-    if(field == 'Subject') {
+    if (field == 'Subject') {
       return SizedBox(
         width: 420.0,
         child: Form(
           key: _subjectFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-            validator: (value) {
-              if (value == null) {
-                return 'Please selected a subject';
-              }
-              return null;
-            },
-            value: widget.currentSubject.code.isNotEmpty ? widget.currentSubject.code : null,
-            items: subjectNamesList.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value, style: const TextStyle(color: Colors.white)),
-              );
-            }).toList(),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  width: 0.5,
+              validator: (value) {
+                if (value == null) {
+                  return 'Please selected a subject';
+                }
+                return null;
+              },
+              value: widget.currentSubject.code.isNotEmpty
+                  ? widget.currentSubject.code
+                  : null,
+              items: subjectNamesList
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:
+                      Text(value, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    width: 0.5,
+                  ),
+                ),
+                labelText: field,
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFD78521),
+                    width: 1,
+                  ),
                 ),
               ),
-              labelText: field,
-              labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
-              floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFD78521),
-                  width: 1,
-                ),
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedSubject = subjectList[subjectNamesList.indexOf(value!)];
-              });
-            }
-          ),
+              onChanged: (value) {
+                setState(() {
+                  selectedSubject =
+                      subjectList[subjectNamesList.indexOf(value!)];
+                });
+              }),
         ),
       );
     }
@@ -193,47 +202,46 @@ class _SpeconFormState extends State<SpeconForm> {
           key: _assessmentFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-            validator: (value) {
-              if (value == null) {
-                return 'Please selected an assessment';
-              }
-              return null;
-            },
-            value: null, // TODO: need to change to match selected subject
-            items: assessmentList.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value, style: const TextStyle(color: Colors.white)),
-              );
-            }).toList(),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  width: 0.5,
+              validator: (value) {
+                if (value == null) {
+                  return 'Please selected an assessment';
+                }
+                return null;
+              },
+              value: null, // TODO: need to change to match selected subject
+              items:
+                  assessmentList.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:
+                      Text(value, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    width: 0.5,
+                  ),
+                ),
+                labelText: field,
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFD78521),
+                    width: 1,
+                  ),
                 ),
               ),
-              labelText: field,
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFD78521),
-                  width: 1,
-                ),
-              ),
-            ),
-            onChanged: (value) {
-              selectedAssessment = value!;
-            }
-          ),
+              onChanged: (value) {
+                selectedAssessment = value!;
+              }),
         ),
       );
     }
@@ -246,11 +254,10 @@ class _SpeconFormState extends State<SpeconForm> {
     final Map<String, dynamic> jsonUser = currentUser.toJson();
 
     for (final field in _fieldTitles) {
-
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
         final TextEditingController newController =
-        TextEditingController(text: jsonUser[_databaseFields[field]]);
+            TextEditingController(text: jsonUser[_databaseFields[field]]);
         controllers.add(newController);
         textFormFields.add(
           SizedBox(
@@ -259,7 +266,8 @@ class _SpeconFormState extends State<SpeconForm> {
               readOnly: true,
               // enabled: false,
               controller: newController,
-              style: const TextStyle(color: Colors.white54), // TODO: Color theme
+              style:
+                  const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -297,7 +305,6 @@ class _SpeconFormState extends State<SpeconForm> {
 
       // Extension date field
       else if (field == 'Extend due date to (if applicable)') {
-
         // Display dates
         textFormFields.add(
           SizedBox(
@@ -305,7 +312,8 @@ class _SpeconFormState extends State<SpeconForm> {
             child: TextFormField(
               readOnly: true,
               controller: _dueDateSelectorController,
-              style: const TextStyle(color: Colors.white54), // TODO: set color scheme
+              style: const TextStyle(
+                  color: Colors.white54), // TODO: set color scheme
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -314,8 +322,12 @@ class _SpeconFormState extends State<SpeconForm> {
                   ),
                 ),
                 labelText: field,
-                labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
-                floatingLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: 22),
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 22),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -340,11 +352,11 @@ class _SpeconFormState extends State<SpeconForm> {
               onChanged: (double value) {
                 setState(() {
                   _currentSliderValue = value;
-                  if(value == 0.0) {
+                  if (value == 0.0) {
                     _dueDateSelectorController.text = 'Use slider below';
-                  }
-                  else {
-                    _dueDateSelectorController.text = dateConversionString(value.toInt());
+                  } else {
+                    _dueDateSelectorController.text =
+                        dateConversionString(value.toInt());
                   }
                 });
               },
@@ -365,7 +377,8 @@ class _SpeconFormState extends State<SpeconForm> {
               enabled: true,
               maxLines: null,
               controller: newController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -402,7 +415,7 @@ class _SpeconFormState extends State<SpeconForm> {
   void initState() {
     subjectList = widget.getSubjectList();
 
-    for (final subject in subjectList){
+    for (final subject in subjectList) {
       subjectNamesList.add(subject.code);
     }
 
@@ -411,7 +424,6 @@ class _SpeconFormState extends State<SpeconForm> {
 
   @override
   Widget build(BuildContext context) {
-
     final Map<String, dynamic> form = buildForm(widget.currentUser);
     final List<TextEditingController> controllers = form['Controllers'];
     final List<Widget> textFields = form['Form'];
@@ -472,7 +484,6 @@ class _SpeconFormState extends State<SpeconForm> {
             // Submit button
             ElevatedButton(
               onPressed: () async {
-
                 // Check validity of dropdowns
                 if (!_subjectFormKey.currentState!.validate() ||
                     !_assessmentFormKey.currentState!.validate()) {
@@ -489,14 +500,15 @@ class _SpeconFormState extends State<SpeconForm> {
                   state: 'Open',
                 );
                 await dataBase.submitRequest(
-                  widget.currentUser,
-                  selectedSubject == null ? widget.currentSubject : selectedSubject!,
-                  request
-                ); //
+                    widget.currentUser,
+                    selectedSubject == null
+                        ? widget.currentSubject
+                        : selectedSubject!,
+                    request); //
                 widget.closeNewRequestForm();
-                widget.setCurrentSubject(
-                  selectedSubject == null ? widget.currentSubject : selectedSubject!
-                );
+                widget.setCurrentSubject(selectedSubject == null
+                    ? widget.currentSubject
+                    : selectedSubject!);
                 // TODO: selected the submitted request
               },
               child: const Text('Submit'),
