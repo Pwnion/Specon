@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
 
 class Requests extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/subject_model.dart';
-import 'models/userModel.dart';
+import 'models/user_model.dart';
 
 import 'page/db.dart';
 import 'models/request_model.dart';

@@ -1,3 +1,5 @@
+/// A file with helper dialog functions to easily display dialogs in the app.
+
 import 'package:flutter/material.dart';
 
 import 'loading_dialog.dart';

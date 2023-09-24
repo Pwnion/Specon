@@ -17,6 +17,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
   void initState() {
     super.initState();
 
+    /// Poll for email verification every 5 seconds and exit loop if verified
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 5));
       await _auth.currentUser!.reload();
