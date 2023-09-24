@@ -3,14 +3,15 @@
 /// This will display a summary of the filled out [ConsiderationForm] and
 /// a section to have a discussion between a student, tutor and subject
 /// coordinator.
+/// Author: Kuo Wei Wu
 
+import 'package:firebase_storage/firebase_storage.dart';
+
+import '../dashboard_page.dart';
+import '../../mock_data.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/userModel.dart';
 import 'package:specon/user_type.dart';
-
-import '../../mock_data.dart';
-import '../dashboard_page.dart';
-
 import 'package:specon/backend.dart';
 import 'package:specon/storage.dart';
 
@@ -29,8 +30,36 @@ class Discussion extends StatefulWidget {
 class _DiscussionState extends State<Discussion> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
+  UploadTask? _uploadTask;
 
-  void downloadAttachment() {}
+  /// download documents from the cloud storage related to the selected request
+  //void _downloadAttachment() {}
+
+  /// display upload documents status, should be in submit request form later
+  void _displayUploadState(){
+    _uploadTask!.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          final progress =
+              100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+          print("Upload is $progress% complete.");
+          break;
+        case TaskState.paused:
+          print("Upload is paused.");
+          break;
+        case TaskState.canceled:
+          print("Upload was canceled");
+          break;
+        case TaskState.error:
+        // Handle unsuccessful uploads
+          break;
+        case TaskState.success:
+        // Handle successful uploads on complete
+        // ...
+          break;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +73,7 @@ class _DiscussionState extends State<Discussion> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // title of the discussion thread
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20),
             child: Text(
@@ -56,6 +86,7 @@ class _DiscussionState extends State<Discussion> {
                   letterSpacing: 1),
             ),
           ),
+          // All discussion text are put in a listView.builder as a card
           Expanded(
             flex: 5,
             child: ListView.builder(
@@ -88,7 +119,7 @@ class _DiscussionState extends State<Discussion> {
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                             ),
-                            // accept decline  flag button
+                            // accept decline flag button
                             if(widget.currentUser.role != 'student' && discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(
@@ -144,7 +175,7 @@ class _DiscussionState extends State<Discussion> {
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: selectFile,  //downloadAttachment,
+                          onPressed: ()=> downloadFiles(currentRequest['requestID']),  //downloadAttachment, 
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
@@ -156,11 +187,14 @@ class _DiscussionState extends State<Discussion> {
                           ),
                         ),
                       ),
-                      // temporary upload button
+                      // temporary upload button, upload button should be on application form
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: ()=>uploadFile(currentRequest['requestID']),  //downloadAttachment,
+                          onPressed: (){
+                            _uploadTask = uploadFile(currentRequest['requestID']);
+                            _displayUploadState();
+                          },  //downloadAttachment,
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
@@ -170,12 +204,29 @@ class _DiscussionState extends State<Discussion> {
                           ),
                         ),
                       ),
+                      // temporary select file button
+                      Container(
+                        margin: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: TextButton(
+                          onPressed: selectFile,  //downloadAttachment, 
+                          style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                          ),
+                          child: Text(
+                            'select file',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
           ),
+          // response box and a submit button that updates the discussion thread data
           Expanded(
             flex: 2,
             child: Container(
@@ -206,11 +257,12 @@ class _DiscussionState extends State<Discussion> {
                       ),
                     ),
                   ),
+                  // button that submit the response
                   Container(
                     margin: const EdgeInsets.only(left: 10,right: 10, top: 20),
                     child: OutlinedButton(
                       onPressed: () {
-                        // update database, and check if field has any word
+                        // only update database if field has any word
                         if(_textController.value.text != ""){
                           setState(() {
                             allDiscussion.add({
