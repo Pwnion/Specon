@@ -36,13 +36,13 @@ class _AsmManagerState extends State<AsmManager> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
-        // Change to Column for better control
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 10,
               vertical: 15,
             ),
+            // back button and subject code
             child: Row(
               children: [
                 BackButton(
@@ -102,7 +102,7 @@ class _AsmManagerState extends State<AsmManager> {
             ),
           ),
           Expanded(
-            // Expanded to take remaining space
+            // Container displaying assessment lists
             child: Container(
                 decoration: BoxDecoration(
                   border:
@@ -144,6 +144,7 @@ class _AsmManagerState extends State<AsmManager> {
                         }).toList(),
                       )),
           ),
+          // import or update button
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
@@ -204,7 +205,6 @@ class _AsmManagerState extends State<AsmManager> {
       isScrollControlled: true,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          // Wrap the content in StatefulBuilder
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -220,7 +220,6 @@ class _AsmManagerState extends State<AsmManager> {
                     value: selectedItem,
                     onChanged: (value) {
                       setState(() {
-                        // Use setState from StatefulBuilder
                         selectedItem = value;
                       });
                     },
