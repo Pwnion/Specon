@@ -16,6 +16,7 @@ class Navigation extends StatefulWidget {
   final void Function(SubjectModel) setCurrentSubject;
   final void Function(List<SubjectModel>) setSubjectList;
   final UserModel currentUser;
+  final SubjectModel currentSubject;
 
   const Navigation(
     {Key? key,
@@ -23,6 +24,7 @@ class Navigation extends StatefulWidget {
     required this.setCurrentSubject,
     required this.setSubjectList,
     required this.currentUser,
+    required this.currentSubject,
     }
   ) : super(key: key);
 
@@ -96,6 +98,11 @@ class _NavigationState extends State<Navigation> {
   Widget build(BuildContext context) {
 
     if (!fetchingFromDB) {
+
+      if(widget.currentSubject != selectedSubject){
+        selectedSubject = widget.currentSubject;
+      }
+
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -119,7 +126,7 @@ class _NavigationState extends State<Navigation> {
                 ),
               ),
             ),
-          ..._buildSubjectsColumn(subjectList!),
+          ..._buildSubjectsColumn(subjectList),
         ],
       );
     }

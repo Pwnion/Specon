@@ -30,8 +30,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
   bool get wantKeepAlive => true;
 
   final stopwatch = Stopwatch();
-  SubjectModel currentSubject =
-    SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
+  SubjectModel currentSubject = SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   List<SubjectModel> subjectList = [];
   Map<String, dynamic> currentRequest = {};
   bool avatarIsPressed = false;
@@ -91,6 +90,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
         currentUser: currentUser,
         currentSubject: currentSubject,
         getSubjectList: getSubjectList,
+        setCurrentSubject: setCurrentSubject,
       );
     }
     else if (showSubmittedRequest) {
@@ -104,8 +104,11 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
     else {
       return Center(
         child: Text('Select a request',
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.surface, fontSize: 25)),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface,
+            fontSize: 25
+          )
+        ),
       );
     }
   }
@@ -118,28 +121,32 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           final currentUser = snapshot.data!;
-
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Theme.of(context).colorScheme.primary,
               elevation: 0.0,
               // Logo
               leading: InkWell(
-                  onTap: () {},
-                  child: const Center(
-                      child: Text(
-                        'Specon',
-                        style: TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold),
-                      ))),
+                onTap: () {},
+                child: const Center(
+                  child: Text(
+                    'Specon',
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight:
+                      FontWeight.bold
+                    ),
+                  )
+                )
+              ),
               leadingWidth: 110.0,
+              // Subject code and name title
               title: Text('${currentSubject.code} - ${currentSubject.name}',
-                  style: TextStyle(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .surface,
-                      fontSize: 20.0)),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface,
+                  fontSize: 20.0
+                )
+              ),
               centerTitle: true,
               actions: [
                 // Home Button
@@ -153,55 +160,57 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                     ),
                   ),
                 ),
-                // Permission Settings Button
+                // Assessment Manager Button
                 if (currentUser.role == UserType.subjectCoordinator)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    AsmManager(
-                                      subject: currentSubject,
-                                      refreshFn: setState,
-                                    )));
-                      },
-                      child: const Icon(
-                        Icons.document_scanner,
-                        size: 30.0,
-                      ),
-                    ),
-                  ),
-                // Permission Settings Button
-                if (currentUser.role == UserType.subjectCoordinator)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: Tooltip(
-                      message: 'Permission Settings',
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const Permission()));
-                          });
-                        },
-                        child: const Icon(
-                          Icons.admin_panel_settings,
-                          size: 30.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                // Notification Button
                 Padding(
                   padding: const EdgeInsets.only(right: 15.0),
                   child: InkWell(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AsmManager(
+                            subject: currentSubject,
+                            refreshFn: setState,
+                          )
+                        )
+                      );
                     },
+                    child: const Icon(
+                      Icons.document_scanner,
+                      size: 30.0,
+                    ),
+                  ),
+                ),
+                // Permission Settings Button
+                if (currentUser.role == UserType.subjectCoordinator)
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: Tooltip(
+                    message: 'Permission Settings',
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const Permission()
+                            )
+                          );
+                        });
+                      },
+                      child: const Icon(
+                        Icons.admin_panel_settings,
+                        size: 30.0,
+                      ),
+                    ),
+                  ),
+                ),
+                // Notification Button
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: InkWell(
+                    onTap: () {},
                     child: const Icon(
                       Icons.notifications,
                       size: 30.0,
@@ -214,25 +223,20 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                   child: InkWell(
                     onTap: () {
                       setState(() {
-                        if (stopwatch.isRunning &&
-                            stopwatch.elapsedMilliseconds < 200) {
+                        if (stopwatch.isRunning && stopwatch.elapsedMilliseconds < 200) {
                           stopwatch.stop();
-                        } else {
+                        }
+                        else {
                           avatarIsPressed = true;
                         }
                       });
                     },
                     child: CircleAvatar(
-                      backgroundColor: Theme
-                          .of(context)
-                          .colorScheme
-                          .secondary,
-                      child: Text('LC',
-                          style: TextStyle(
-                              color: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .surface)), // TODO: Make LC a variable, so that it changes depending on user's name
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      child: Text(currentUser.firstName[0],
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface)
+                      ),
                     ),
                   ),
                 ),
@@ -250,8 +254,10 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                         setCurrentSubject: setCurrentSubject,
                         setSubjectList: setSubjectList,
                         currentUser: currentUser,
+                        currentSubject: currentSubject,
                       ),
                     ),
+                    // Divider
                     VerticalDivider(
                       color: Theme.of(context).colorScheme.surface,
                       thickness: 3,
@@ -266,6 +272,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                         currentUser: currentUser
                       ),
                     ),
+                    // Divider
                     VerticalDivider(
                       color: Theme.of(context).colorScheme.surface,
                       thickness: 3,
@@ -280,34 +287,31 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
 
                 // Menu displayed when avatar is pressed
                 if (avatarIsPressed)
-                  TapRegion(
-                    onTapOutside: (tap) {
-                      setState(() {
-                        avatarIsPressed = false;
-                        stopwatch.reset();
-                        stopwatch.start();
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 10.0, right: 15.0),
-                      child: Align(
-                        alignment: AlignmentDirectional.topEnd,
-                        child: Container(
-                          width: 200,
-                          height: 200,
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .surface,
-                        ),
+                TapRegion(
+                  onTapOutside: (tap) {
+                    setState(() {
+                      avatarIsPressed = false;
+                      stopwatch.reset();
+                      stopwatch.start();
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0, right: 15.0),
+                    child: Align(
+                      alignment: AlignmentDirectional.topEnd,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                   ),
+                ),
               ]
             )
           );
-        } else {
+        }
+        else {
           return const CircularProgressIndicator();
         }
       }
