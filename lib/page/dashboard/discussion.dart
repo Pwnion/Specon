@@ -5,12 +5,9 @@
 /// coordinator.
 
 import 'package:flutter/material.dart';
-import 'package:specon/models/userModel.dart';
-import 'package:specon/user_type.dart';
-
+import 'package:specon/models/user_model.dart';
 import '../../mock_data.dart';
 import '../dashboard_page.dart';
-
 import 'package:specon/backend.dart';
 import 'package:specon/storage.dart';
 
@@ -89,7 +86,8 @@ class _DiscussionState extends State<Discussion> {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             // accept decline  flag button
-                            if(widget.currentUser.role != 'student' && discussionThread[index]["type"] == "request")
+                            if (widget.currentUser.role != 'student' &&
+                                discussionThread[index]["type"] == "request")
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -102,14 +100,17 @@ class _DiscussionState extends State<Discussion> {
                                       child: const Text('Accept'),
                                     ),
                                     TextButton(
-                                      onPressed: (){
-                                        BackEnd().decline(discussionThread[index]['discussionID']);
+                                      onPressed: () {
+                                        BackEnd().decline(
+                                            discussionThread[index]
+                                                ['discussionID']);
                                       },
                                       child: const Text('Decline'),
                                     ),
                                     TextButton(
-                                      onPressed: (){
-                                        BackEnd().flag(discussionThread[index]['discussionID']);
+                                      onPressed: () {
+                                        BackEnd().flag(discussionThread[index]
+                                            ['discussionID']);
                                       },
                                       child: const Text('Flag'),
                                     )
@@ -140,33 +141,37 @@ class _DiscussionState extends State<Discussion> {
                         ),
                       ),
                       // display attach file download button
-                      if(discussionThread[index]['type'] == 'request')
-                      Container(
-                        margin: const EdgeInsets.only(top: 10, bottom: 10),
-                        child: TextButton(
-                          onPressed: selectFile,  //downloadAttachment,
-                          style: TextButton.styleFrom(
-                            alignment: Alignment.centerLeft,
-                          ),
-                          child: Text(
-                            'Attachments',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context).colorScheme.secondary),
+                      if (discussionThread[index]['type'] == 'request')
+                        Container(
+                          margin: const EdgeInsets.only(top: 10, bottom: 10),
+                          child: TextButton(
+                            onPressed: selectFile, //downloadAttachment,
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                            ),
+                            child: Text(
+                              'Attachments',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
                           ),
                         ),
-                      ),
                       // temporary upload button
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         child: TextButton(
-                          onPressed: ()=>uploadFile(currentRequest['requestID']),  //downloadAttachment,
+                          onPressed: () => uploadFile(currentRequest[
+                              'requestID']), //downloadAttachment,
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                           ),
                           child: Text(
                             'upload',
-                            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
@@ -181,8 +186,8 @@ class _DiscussionState extends State<Discussion> {
             child: Container(
               margin: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).colorScheme.primary)
-              ),
+                  border:
+                      Border.all(color: Theme.of(context).colorScheme.primary)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -193,11 +198,15 @@ class _DiscussionState extends State<Discussion> {
                       minLines: 2,
                       maxLines: 2,
                       keyboardType: TextInputType.multiline,
-                      style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface),
                       cursorColor: Theme.of(context).colorScheme.surface,
                       decoration: InputDecoration(
                         hintText: 'Enter response',
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: 13, letterSpacing: 2),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 13,
+                            letterSpacing: 2),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.secondary,
@@ -207,11 +216,11 @@ class _DiscussionState extends State<Discussion> {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(left: 10,right: 10, top: 20),
+                    margin: const EdgeInsets.only(left: 10, right: 10, top: 20),
                     child: OutlinedButton(
                       onPressed: () {
                         // update database, and check if field has any word
-                        if(_textController.value.text != ""){
+                        if (_textController.value.text != "") {
                           setState(() {
                             allDiscussion.add({
                               'discussionID': currentRequest['requestID'],
@@ -220,13 +229,19 @@ class _DiscussionState extends State<Discussion> {
                               'subject': currentRequest['subject'],
                               'assessment': currentRequest['assessment'],
                               'reason': _textController.value.text,
-                              'type': widget.currentUser.role == 'student'? 'request': 'respond',
+                              'type': widget.currentUser.role == 'student'
+                                  ? 'request'
+                                  : 'respond',
                             });
                           });
                         }
                         _textController.clear();
                       },
-                      child: Text('Submit', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
                     ),
                   ),
                 ],

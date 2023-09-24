@@ -4,7 +4,7 @@
 /// filtering by [RequestFilter].
 
 import 'package:flutter/material.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/page/db.dart';
 import 'package:specon/user_type.dart';
@@ -18,22 +18,20 @@ class Navigation extends StatefulWidget {
   final UserModel currentUser;
   final SubjectModel currentSubject;
 
-  const Navigation(
-    {Key? key,
+  const Navigation({
+    Key? key,
     required this.openNewRequestForm,
     required this.setCurrentSubject,
     required this.setSubjectList,
     required this.currentUser,
     required this.currentSubject,
-    }
-  ) : super(key: key);
+  }) : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
-
   SubjectModel? selectedSubject;
   static final _db = DataBase();
   List<SubjectModel> subjectList = [];
@@ -60,7 +58,8 @@ class _NavigationState extends State<Navigation> {
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
-                if (subject.assessments.isEmpty && widget.currentUser.role == UserType.subjectCoordinator) {
+                if (subject.assessments.isEmpty &&
+                    widget.currentUser.role == UserType.subjectCoordinator) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -96,10 +95,8 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!fetchingFromDB) {
-
-      if(widget.currentSubject != selectedSubject){
+      if (widget.currentSubject != selectedSubject) {
         selectedSubject = widget.currentSubject;
       }
 
@@ -112,9 +109,8 @@ class _NavigationState extends State<Navigation> {
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.secondary)
-                ),
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary)),
                 onPressed: () {
                   setState(() {
                     widget.openNewRequestForm();
@@ -122,15 +118,15 @@ class _NavigationState extends State<Navigation> {
                 },
                 child: Text(
                   'New Request',
-                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.surface),
                 ),
               ),
             ),
           ..._buildSubjectsColumn(subjectList),
         ],
       );
-    }
-    else {
+    } else {
       return const CircularProgressIndicator();
     }
   }
