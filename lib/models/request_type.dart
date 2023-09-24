@@ -1,7 +1,9 @@
-/// type of requests
+/// class responsible for type of requests
 /// [name]: name of the requests to display
 /// [type]: different types to call API
 /// [id]: for the order it display
+///
+/// Author: Drey Nguyen
 
 class RequestType {
   String name; // not final because we can change name

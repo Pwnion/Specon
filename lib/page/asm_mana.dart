@@ -1,6 +1,8 @@
-/// Creates list of request types (i.e Assigment extension,
-/// Participation Waiver, ...) for SubectModel
-
+/// Class responsible for managing assessments for a subject.
+///
+/// This widget allows users to add, edit, and reorder assessments for a subject.
+///
+/// Author: Drey Nguyen
 import 'package:flutter/material.dart';
 import '../models/request_type.dart';
 import '../widgets/request_item.dart';
@@ -9,6 +11,11 @@ import 'package:specon/models/subject_model.dart';
 class AsmManager extends StatefulWidget {
   final SubjectModel subject;
   final Function refreshFn;
+
+  /// Constructor for AsmManager widget.
+  ///
+  /// [subject] is the subject for which assessments are managed.
+  /// [refreshFn] is a function to refresh the UI after updates.
   const AsmManager({Key? key, required this.subject, required this.refreshFn})
       : super(key: key);
 
@@ -17,11 +24,10 @@ class AsmManager extends StatefulWidget {
 }
 
 class _AsmManagerState extends State<AsmManager> {
-  ///  We need 2 lists: _requestTypesList: show on the screen (not
-  /// final version, because, they still can add requests, it shows on screen
-  /// and then they cancel which will not be added)
-  /// and _foundRequestType which we will use this to update to the SubjectModel
+  /// Lists to manage request types.
   ///
+  /// [_requestTypesList] is for display purposes.
+  /// [_foundRequestType] is used to update the SubjectModel.
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
 
@@ -42,13 +48,13 @@ class _AsmManagerState extends State<AsmManager> {
               horizontal: 10,
               vertical: 15,
             ),
-            // back button and subject code
+            // Back button and subject code section.
             child: Row(
               children: [
                 BackButton(
                   color: Theme.of(context).colorScheme.surface,
                   onPressed: () {
-                    //requestType: ADD TO MAIN DASHBOARD
+                    // Navigate back to the previous screen.
                     Navigator.pop(context);
                   },
                 ),
@@ -73,7 +79,6 @@ class _AsmManagerState extends State<AsmManager> {
                               .colorScheme
                               .primary, // Change the color here
                           fontSize: 30,
-
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -83,6 +88,7 @@ class _AsmManagerState extends State<AsmManager> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () {
+                    // Import assessments from Canvas.
                     final List<RequestType> importedTypes =
                         RequestType.importTypes();
                     setState(() {
@@ -102,49 +108,48 @@ class _AsmManagerState extends State<AsmManager> {
             ),
           ),
           Expanded(
-            // Container displaying assessment lists
+            // Container displaying assessment lists.
             child: Container(
-                decoration: BoxDecoration(
-                  border:
-                      Border.all(color: Theme.of(context).colorScheme.primary),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: _foundRequestType.isEmpty
-                    ? Center(
-                        child: Text(
-                          'Nothing to show here',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                          ),
+              decoration: BoxDecoration(
+                border:
+                    Border.all(color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: _foundRequestType.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Nothing to show here',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w500,
                         ),
-                      )
-                    : ReorderableListView(
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) newIndex--;
-                            final item = _foundRequestType.removeAt(oldIndex);
-                            _foundRequestType.insert(newIndex, item);
-                          });
-                        },
-                        children:
-                            _foundRequestType.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final item = entry.value;
+                      ),
+                    )
+                  : ReorderableListView(
+                      onReorder: (oldIndex, newIndex) {
+                        setState(() {
+                          if (newIndex > oldIndex) newIndex--;
+                          final item = _foundRequestType.removeAt(oldIndex);
+                          _foundRequestType.insert(newIndex, item);
+                        });
+                      },
+                      children: _foundRequestType.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final item = entry.value;
 
-                          return RequestTypeItem(
-                            // Use RequestTypeItem widget here
-                            key: ValueKey(index),
-                            requestType: item,
-                            onDeleteItem: _deleteRequestTypeItem,
-                            onUpdateName:
-                                updateRequestTypeName, // Add this line
-                          );
-                        }).toList(),
-                      )),
+                        return RequestTypeItem(
+                          // Use RequestTypeItem widget here.
+                          key: ValueKey(index),
+                          requestType: item,
+                          onDeleteItem: _deleteRequestTypeItem,
+                          onUpdateName: updateRequestTypeName, // Add this line.
+                        );
+                      }).toList(),
+                    ),
+            ),
           ),
-          // import or update button
+          // Import or update button section.
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
@@ -153,6 +158,7 @@ class _AsmManagerState extends State<AsmManager> {
             child: ElevatedButton(
               onPressed: () {
                 if (_foundRequestType.isEmpty) {
+                  // Show error message if no assessments to import.
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -188,10 +194,10 @@ class _AsmManagerState extends State<AsmManager> {
     );
   }
 
-  /// helper function that updates the request name real time after update
+  /// Helper function that updates the request name in real-time after an update.
   void updateRequestTypeName(String id, String newName) {
     setState(() {
-      // Find the RequestType by ID and update its name
+      // Find the RequestType by ID and update its name.
       _foundRequestType.firstWhere((type) => type.id == id).name = newName;
     });
   }
@@ -302,6 +308,7 @@ class _AsmManagerState extends State<AsmManager> {
     setState(() => _foundRequestType.addAll(results));
   }
 
+  /// Widget for the search box.
   Widget searchBox() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
