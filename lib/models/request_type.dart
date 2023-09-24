@@ -1,3 +1,8 @@
+/// type of requests
+/// [name]: name of the requests to display
+/// [type]: different types to call API
+/// [id]: for the order it display
+
 class RequestType {
   String name; // not final because we can change name
   final String type;

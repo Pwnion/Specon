@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+/// Creates list of request types (i.e Assigment extension,
+/// Participation Waiver, ...) for SubectModel
 
+import 'package:flutter/material.dart';
 import '../models/request_type.dart';
 import '../widgets/request_item.dart';
 import 'package:specon/models/subject_model.dart';
@@ -15,10 +17,13 @@ class AsmManager extends StatefulWidget {
 }
 
 class _AsmManagerState extends State<AsmManager> {
-  final _requestTypesList = RequestType.importTypes();
-  // final _requestTypeController = TextEditingController();
-
-  final List<RequestType> _foundRequestType = []; // Initialize it here
+  ///  We need 2 lists: _requestTypesList: show on the screen (not
+  /// final version, because, they still can add requests, it shows on screen
+  /// and then they cancel which will not be added)
+  /// and _foundRequestType which we will use this to update to the SubjectModel
+  ///
+  final List<RequestType> _requestTypesList = RequestType.importTypes();
+  final List<RequestType> _foundRequestType = [];
 
   @override
   void initState() {
@@ -182,6 +187,7 @@ class _AsmManagerState extends State<AsmManager> {
     );
   }
 
+  /// helper function that updates the request name real time after update
   void updateRequestTypeName(String id, String newName) {
     setState(() {
       // Find the RequestType by ID and update its name
@@ -190,10 +196,8 @@ class _AsmManagerState extends State<AsmManager> {
   }
 
   Future<void> _showAddNewItemDialog() async {
-    String newItemName = ''; // Declare newItemName variable
-    String? selectedItem; // Move the selectedItem declaration here
-
-    // Remove the declaration of selectedItem here
+    String newItemName = '';
+    String? selectedItem;
 
     await showModalBottomSheet(
       context: context,

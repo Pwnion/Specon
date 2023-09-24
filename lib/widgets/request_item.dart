@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+/// A stateless singular widget for request
 
+import 'package:flutter/material.dart';
 import '../models/request_type.dart';
 
 class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;
   final Function onDeleteItem;
-  final Function(String, String) onUpdateName; // Add this line in your class
+  final Function(String, String) onUpdateName; // real time update name
 
   const RequestTypeItem(
       {Key? key,
