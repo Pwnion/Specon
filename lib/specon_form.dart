@@ -487,6 +487,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   reason: controllers[5].text,
                   additionalInfo: controllers[4].text,
                   state: 'Open',
+                  databasePath: ''
                 );
                 await dataBase.submitRequest(
                   widget.currentUser,

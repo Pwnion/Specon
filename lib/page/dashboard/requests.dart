@@ -15,7 +15,7 @@ import 'package:specon/page/db.dart';
 class Requests extends StatefulWidget {
 
   final SubjectModel Function() getCurrentSubject;
-  final void Function(Map<String, dynamic>) openSubmittedRequest;
+  final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
 
   const Requests(
@@ -313,8 +313,7 @@ class _RequestsState extends State<Requests> {
                         onTap: () {
                           setState(() {
                             // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                            // widget.openSubmittedRequest(
-                            //     _foundRequests[index]); // TODO
+                            widget.openSubmittedRequest(_foundRequests[index]);
                           });
                         },
                         child: Card(
