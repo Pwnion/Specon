@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/user_type.dart';
@@ -14,8 +15,13 @@ class BackEnd extends ChangeNotifier {
     return _instance;
   }
 
-  List<String> getAssessments(String subjectID) {
-    return assessments;
+  List<String> getAssessments(SubjectModel subject) {
+    List<String> assessment = ['All assessment'];
+    for (final i in subject.assessments) {
+      assessment.add(i.name);
+    }
+
+    return assessment;
   }
 
   List<String> getRequestStates() {
