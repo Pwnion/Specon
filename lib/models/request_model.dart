@@ -6,6 +6,7 @@ class RequestModel {
   final String assessment;
   final String state;
   final String requestedByStudentID;
+  final String databasePath;
 
   const RequestModel({
     required this.requestedBy,
@@ -14,7 +15,8 @@ class RequestModel {
     required this.assessedBy,
     required this.assessment,
     required this.state,
-    required this.requestedByStudentID
+    required this.requestedByStudentID,
+    required this.databasePath
   });
 
   Map<String, String> toJson() {
