@@ -1,4 +1,5 @@
 /// Author: Jeremy Annal
+
 import 'package:specon/user_type.dart';
 
 class UserModel {

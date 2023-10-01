@@ -2,8 +2,11 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:specon/models/subject_model.dart';
 import 'models/user_model.dart';
+
+
 import 'page/db.dart';
 import 'models/request_model.dart';
 
@@ -517,5 +520,43 @@ class _SpeconFormState extends State<SpeconForm> {
         ),
       ),
     );
+  }
+
+  List<TextField> displayRequest(RequestModel request) {
+    List<TextField> form = [];
+
+    Map<String, String> requestMap = request.toJson();
+    for (String key in requestMap.keys) {
+      TextField info = TextField(
+        readOnly: true,
+        // enabled: false,
+        controller: TextEditingController(text: requestMap[key]),
+        style: const TextStyle(color: Colors.white54), // TODO: Color theme
+        cursorColor: Theme.of(context).colorScheme.onSecondary,
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSecondary,
+              width: 0.5,
+            ),
+          ),
+          labelText: key,
+          labelStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
+          floatingLabelStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color(0xFFD78521),
+              width: 1,
+            ),
+          ),
+        ),
+      );
+      form.add(info);
+    }
+
+    return form;
   }
 }

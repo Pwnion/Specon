@@ -1,6 +1,8 @@
 /// The page for logging in to the application.
 ///
 /// This page will never be shown if the application is opened via Canvas.
+///
+/// Author: Aden McCusker
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,8 +39,19 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
+  /// Attempt to authenticate the user with an [email] and [password].
+  ///
+  /// First try to match the given [email] and [password] to an already
+  /// created Firebase Authentication account. If it doesn't exist,
+  /// then try to create a new account with the given [email], but only if
+  /// a user with the given [email] has signed in through Canvas first
+  /// and is therefore already registered in the database. If a new account
+  /// is created this way, also ensure that the user has verified their email
+  /// address before being allowed to login, so as to not hijack another
+  /// user's Canvas account.
   Future<void> _authenticate(String email, String password) async {
     try {
+      // Attempt to sign in with an already existing account.
       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password
@@ -80,6 +93,8 @@ class _LoginState extends State<Login> {
             'email',
             isEqualTo: email
           ).get();
+
+          // Ensure a new account has already signed in through Canvas before.
           if(userAlreadyExistsQuery.docs.isEmpty) {
             setState(() {
               _emailErrorMessage = 'Please initialise this email address through Canvas first';
@@ -88,6 +103,7 @@ class _LoginState extends State<Login> {
             return;
           }
 
+          // Create a new Firebase Authentication account for the user.
           try {
             await _auth.createUserWithEmailAndPassword(
               email: email,
@@ -106,6 +122,7 @@ class _LoginState extends State<Login> {
     }
   }
 
+  /// Begin the authentication flow.
   void _attemptLogin() async {
     showLoadingDialog(
       context,

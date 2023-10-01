@@ -2,6 +2,7 @@
 ///
 /// Shows all requests in a list. These are submitted requests for students
 /// and received requests for tutors and subject coordinators.
+/// Authors: Kuo Wei WU, Zhi Xiang Chan
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
+import 'package:specon/specon_form.dart';
 
 class Requests extends StatefulWidget {
   final SubjectModel Function() getCurrentSubject;
@@ -32,7 +34,6 @@ class _RequestsState extends State<Requests> {
   final List<String> filterSelectionsAssess =
       BackEnd().getAssessments('subjectID'); // TODO: where to call
   final List<String> filterSelectionsState = BackEnd().getRequestStates();
-
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 
@@ -52,7 +53,7 @@ class _RequestsState extends State<Requests> {
 
   static final dataBase = DataBase();
 
-  // First filter
+  /// filter request via the filter buttons, listens to any selection changes
   void _applyDropdownFilters() {
     final List<RequestModel> filteredByAssignment;
 
@@ -77,7 +78,9 @@ class _RequestsState extends State<Requests> {
     _foundRequests = filteredByState;
   }
 
-  // Second filter // TODO: Make it search for keywords in request as well, not just name search
+
+  // TODO: Make it search for keywords in request as well, not just name search
+  /// filter selection from the value entered in the search bar
   void _filterBySearch() {
     final List<RequestModel> searchResult;
     if (_searchString.isEmpty) {
@@ -93,6 +96,7 @@ class _RequestsState extends State<Requests> {
     _foundRequests = searchResult;
   }
 
+  /// get all requests from the database
   void fetchRequestsFromDB() {
     dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
       if (requests != _allRequests) {
@@ -242,16 +246,17 @@ class _RequestsState extends State<Requests> {
             // Display requests
 
             // Listen for database changes
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .doc(_currentSubject.databasePath)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.active) {
-                    fetchRequestsFromDB();
-                  }
-                  return Container();
-                }),
+
+            // StreamBuilder(
+            //     stream: FirebaseFirestore.instance
+            //         .doc(_currentSubject.databasePath)
+            //         .snapshots(),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.active) {
+            //         fetchRequestsFromDB();
+            //       }
+            //       return Container();
+            //     }),
 
             Expanded(
               child: RawScrollbar(
