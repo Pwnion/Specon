@@ -78,7 +78,6 @@ class _RequestsState extends State<Requests> {
     _foundRequests = filteredByState;
   }
 
-
   // TODO: Make it search for keywords in request as well, not just name search
   /// filter selection from the value entered in the search bar
   void _filterBySearch() {
@@ -178,7 +177,7 @@ class _RequestsState extends State<Requests> {
             // end of search bar
             Divider(
               color: Theme.of(context).colorScheme.surface,
-              thickness: 3,
+              thickness: 0.5,
               height: 1,
             ),
             // Filter Button
@@ -239,7 +238,7 @@ class _RequestsState extends State<Requests> {
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Divider(
                 color: Theme.of(context).colorScheme.surface,
-                thickness: 3,
+                thickness: 0.5,
                 height: 1,
               ),
             ),
@@ -262,8 +261,8 @@ class _RequestsState extends State<Requests> {
                 controller: _scrollController,
                 thumbColor: Colors.white38,
                 thumbVisibility: true,
-                radius: const Radius.circular(20),
-                thickness: 5,
+                radius: const Radius.circular(5),
+                thickness: 0,
                 child: ListView.builder(
                     itemCount: _foundRequests.length,
                     controller: _scrollController,
@@ -278,6 +277,9 @@ class _RequestsState extends State<Requests> {
                               });
                             },
                             child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                              color: Theme.of(context).colorScheme.surface,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
