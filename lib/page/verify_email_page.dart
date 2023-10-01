@@ -1,4 +1,6 @@
 /// A page that waits for email verification to complete.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +19,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
   void initState() {
     super.initState();
 
+    /// Poll for email verification every 5 seconds and exit loop if verified
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 5));
       await _auth.currentUser!.reload();

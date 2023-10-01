@@ -1,3 +1,7 @@
+/// A popup dialog that blocks user interaction to indicate that the application is loading.
+///
+/// Author: Aden McCusker
+
 import 'package:flutter/material.dart';
 
 class Loading extends StatefulWidget {

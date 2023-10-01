@@ -4,7 +4,7 @@
 /// filtering by [RequestFilter].
 
 import 'package:flutter/material.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/page/db.dart';
 import 'package:specon/user_type.dart';

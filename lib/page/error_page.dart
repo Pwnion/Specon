@@ -1,4 +1,6 @@
 /// An error page for when things have really gone wrong.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 

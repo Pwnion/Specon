@@ -10,7 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../dashboard_page.dart';
 import '../../mock_data.dart';
 import 'package:flutter/material.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/storage.dart';

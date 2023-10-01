@@ -1,6 +1,7 @@
 /// The main page for an authenticated user.
 ///
 /// Content changes based on the [UserType] that is authenticated.
+/// Authors: Kuo Wei WU (Brian), Zhi Xiang CHAN (Lucas), Aden MCCUSKER, Jeremy ANNAL, Hung Long NGUYEN (Drey)
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import 'package:specon/page/dashboard/discussion.dart';
 import 'package:specon/page/permission.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 
 class Dashboard extends StatefulWidget {
   final UserType userType;
@@ -29,19 +30,18 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
   @override
   bool get wantKeepAlive => true;
 
-  final stopwatch = Stopwatch();
   SubjectModel currentSubject = SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   List<SubjectModel> subjectList = [];
   Map<String, dynamic> currentRequest = {};
-  bool avatarIsPressed = false;
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
 
-  static final FirebaseAuth auth = FirebaseAuth.instance;
-  static final dataBase = DataBase();
-  final Future<UserModel> userFromDB = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final _database = DataBase();
+  final Future<UserModel> _userFromDB = _database.getUserFromEmail(_auth.currentUser!.email!);
 
+  /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(Map<String, dynamic> currentRequest) {
     setState(() {
       showSubmittedRequest = true;
@@ -50,6 +50,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
     });
   }
 
+  /// Function that opens a new request form, closes any submitted request that was shown in column 3
   void openNewRequestForm() {
     setState(() {
       newRequest = true;
@@ -57,18 +58,23 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
     });
   }
 
+  /// Getter for current selected request in column 2, TODO: will need to change return type to RequestModel
   Map<String, dynamic> getCurrentRequest() => currentRequest;
 
+  /// Getter for current selected subject in column 1
   SubjectModel getCurrentSubject() => currentSubject;
 
+  /// Getter for user's enrolled subjects
   List<SubjectModel> getSubjectList() => subjectList;
 
+  /// Function that closes new request form that was shown in column 3
   void closeNewRequestForm() {
     setState(() {
       newRequest = false;
     });
   }
 
+  /// Setter for current selected subject in column 1, refreshes column 2, and closes any submitted request that was shown in column 3
   void setCurrentSubject(SubjectModel subject) {
     setState(() {
       currentSubject = subject;
@@ -77,13 +83,16 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
     });
   }
 
+  /// Getter for user's enrolled subjects
   void setSubjectList(List<SubjectModel> subjects){
     setState(() {
       subjectList = subjects;
     });
   }
 
+  /// Function that determines which widget should be display in column 3
   Widget displayThirdColumn(UserModel currentUser) {
+    // Show new Request Form
     if (newRequest) {
       return SpeconForm(
         closeNewRequestForm: closeNewRequestForm,
@@ -93,6 +102,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
         setCurrentSubject: setCurrentSubject,
       );
     }
+    // Show a submitted request's details
     else if (showSubmittedRequest) {
       return Center(
         child: Discussion(
@@ -101,6 +111,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
         ),
       );
     }
+    // Nothing is selected, show 'select a request'
     else {
       return Center(
         child: Text('Select a request',
@@ -117,7 +128,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
   Widget build(BuildContext context){
     super.build(context);
     return FutureBuilder(
-      future: userFromDB,
+      future: _userFromDB,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           final currentUser = snapshot.data!;
@@ -219,23 +230,24 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                 ),
                 // Avatar Button
                 Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        if (stopwatch.isRunning && stopwatch.elapsedMilliseconds < 200) {
-                          stopwatch.stop();
-                        }
-                        else {
-                          avatarIsPressed = true;
-                        }
-                      });
-                    },
-                    child: CircleAvatar(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: PopupMenuButton(
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem(
+                        child: const Text(
+                          'Logout'
+                        ),
+                        onTap: () => _auth.signOut(),
+                      ),
+                    ],
+                    tooltip: 'User Options',
+                    iconSize: 50,
+                    icon: CircleAvatar(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                       child: Text(currentUser.firstName[0],
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface)
+                            color: Theme.of(context).colorScheme.surface
+                        )
                       ),
                     ),
                   ),
@@ -283,29 +295,6 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
                       child: displayThirdColumn(currentUser),
                     ),
                   ]
-                ),
-
-                // Menu displayed when avatar is pressed
-                if (avatarIsPressed)
-                TapRegion(
-                  onTapOutside: (tap) {
-                    setState(() {
-                      avatarIsPressed = false;
-                      stopwatch.reset();
-                      stopwatch.start();
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0, right: 15.0),
-                    child: Align(
-                      alignment: AlignmentDirectional.topEnd,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-                    ),
-                  ),
                 ),
               ]
             )

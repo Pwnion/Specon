@@ -1,4 +1,6 @@
 /// Redirects to the [Login] or [Dashboard] page based on authentication state.
+///
+/// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,15 +24,19 @@ class Landing extends StatelessWidget {
       builder: (context, snapshot) {
         if(snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
+
+          // If the user isn't authenticated, navigate to the Login page.
           if(user == null) {
             return const Login();
           }
 
+          // If the user's email isn't verified, navigate to the VerifyEmail page.
           if(!user.emailVerified) {
             user.sendEmailVerification();
             return const VerifyEmail();
           }
 
+          // Otherwise, navigate to the main dashboard with the appropriate permissions.
           return const Dashboard(
             userType: UserType.subjectCoordinator, // TODO: Get actual type from Canvas.
           );

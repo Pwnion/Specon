@@ -1,7 +1,7 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/user_type.dart';
 
 import '../firebase_options.dart';
