@@ -54,6 +54,8 @@ class _NavigationState extends State<Navigation> {
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
             elevation: 0.0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             color: subject == selectedSubject
                 ? Theme.of(context).colorScheme.surface
                 : Theme.of(context).colorScheme.background,
