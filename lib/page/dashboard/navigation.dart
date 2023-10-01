@@ -128,8 +128,9 @@ class _NavigationState extends State<Navigation> {
                 },
                 child: Text(
                   'New Request',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontSize: 14),
                 ),
               ),
             ),
