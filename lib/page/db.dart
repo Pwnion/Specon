@@ -172,3 +172,24 @@ class DataBase {
   }
 
 }
+
+Future<void> acceptRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Approved'});
+}
+
+Future<void> declineRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Declined'});
+}
+
+Future<void> flagRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Flagged'});
+}

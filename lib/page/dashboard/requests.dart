@@ -285,17 +285,17 @@ class _RequestsState extends State<Requests> {
               // Display requests
 
               // Listen for database changes
-              StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .doc(_currentSubject.databasePath)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.active) {
-                    fetchRequestsFromDB();
-                  }
-                  return Container();
-                }
-              ),
+              // StreamBuilder(
+              //   stream: FirebaseFirestore.instance
+              //       .doc(_currentSubject.databasePath)
+              //       .snapshots(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.active) {
+              //       fetchRequestsFromDB();
+              //     }
+              //     return Container();
+              //   }
+              // ),
 
               Expanded(
                 child: RawScrollbar(

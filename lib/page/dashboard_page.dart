@@ -33,7 +33,7 @@ class _DashboardState extends State<Dashboard> with AutomaticKeepAliveClientMixi
 
   SubjectModel currentSubject = SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   List<SubjectModel> subjectList = [];
-  RequestModel currentRequest = const RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
+  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;

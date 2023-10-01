@@ -5,6 +5,7 @@
 /// coordinator.
 /// Author: Kuo Wei Wu
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
@@ -70,6 +71,8 @@ class _DiscussionState extends State<Discussion> {
 
   @override
   Widget build(BuildContext context) {
+
+    DocumentReference docRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
 
     // Fetch discussions from the database
     _db.getDiscussionThreads(widget.currentRequest).then((discussionThread) {
@@ -142,19 +145,19 @@ class _DiscussionState extends State<Discussion> {
                                         children: [
                                           TextButton(
                                             onPressed: () {
-                                              // BackEnd().accept(discussionThread[index]['discussionID']); TODO
+                                              acceptRequest(widget.currentRequest);
                                             },
                                             child: const Text('Accept'),
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              // BackEnd().decline(discussionThread[index]['discussionID']); TODO
+                                              declineRequest(widget.currentRequest);
                                             },
                                             child: const Text('Decline'),
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              // BackEnd().flag(discussionThread[index]['discussionID']); TODO
+                                              flagRequest(widget.currentRequest);
                                             },
                                             child: const Text('Flag'),
                                           )
@@ -192,8 +195,7 @@ class _DiscussionState extends State<Discussion> {
                                 margin: const EdgeInsets.only(
                                     top: 10, bottom: 10),
                                 child: TextButton(
-                                  onPressed: () {},
-                                  // onPressed: ()=> downloadFiles(currentRequest['requestID']),  //downloadAttachment, TODO
+                                  onPressed: ()=> downloadFilesToDisc(docRef.id),  //downloadAttachment, TODO
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                   ),
@@ -212,7 +214,7 @@ class _DiscussionState extends State<Discussion> {
                                   top: 10, bottom: 10),
                               child: TextButton(
                                 onPressed: () {
-                                  // _uploadTask = uploadFile(currentRequest['requestID']); TODO
+                                  _uploadTask = uploadFile(docRef.id);
                                   _displayUploadState();
                                 }, //downloadAttachment,
                                 style: TextButton.styleFrom(

@@ -4,11 +4,11 @@ class RequestModel {
   final String additionalInfo;
   final String assessedBy;
   final String assessment;
-  final String state;
+  String state;
   final String requestedByStudentID;
   final String databasePath;
 
-  const RequestModel({
+  RequestModel({
     required this.requestedBy,
     required this.reason,
     required this.additionalInfo,
