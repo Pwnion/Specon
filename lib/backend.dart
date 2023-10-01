@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/userModel.dart';
 import 'package:specon/user_type.dart';
-
 import 'mock_data.dart';
 
 class BackEnd extends ChangeNotifier {
