@@ -32,6 +32,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
+  bool isPressed = false;
   SubjectModel? selectedSubject;
   static final _db = DataBase();
   List<SubjectModel> subjectList = [];
@@ -54,10 +55,16 @@ class _NavigationState extends State<Navigation> {
           child: MaterialButton(
             elevation: 0.0,
             color: subject == selectedSubject
-                ? Theme.of(context).colorScheme.onBackground
+                ? Theme.of(context).colorScheme.surface
                 : Theme.of(context).colorScheme.background,
+            //color: const Color(0x000000)
+            textColor: subject == selectedSubject
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.onBackground,
+
             onPressed: () {
               setState(() {
+                isPressed = !isPressed;
                 if (subject.assessments.isEmpty &&
                     widget.currentUser.role == UserType.subjectCoordinator) {
                   Navigator.push(
