@@ -78,7 +78,6 @@ class _RequestsState extends State<Requests> {
     _foundRequests = filteredByState;
   }
 
-
   // TODO: Make it search for keywords in request as well, not just name search
   /// filter selection from the value entered in the search bar
   void _filterBySearch() {
@@ -119,9 +118,7 @@ class _RequestsState extends State<Requests> {
 
       // Fetch requests from database
       fetchingRequests = true;
-      dataBase
-          .getRequests(widget.currentUser, _currentSubject)
-          .then((requests) {
+      dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
         setState(() {
           fetchingRequests = false;
           _allRequests = requests;
