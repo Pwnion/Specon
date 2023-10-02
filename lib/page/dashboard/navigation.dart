@@ -81,6 +81,27 @@ class _NavigationState extends State<Navigation> {
       );
 
       if (subject.assessments.isNotEmpty && subject == selectedSubject) {
+        // Add "All Assessments" option at the top
+        subjectWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 50.0, top: 5.0),
+            child: Align(
+              alignment: Alignment.centerLeft, // Align text to the left
+              child: InkWell(
+                onTap: () {
+                  // Add your onTap logic for "All Assessments" here
+                },
+                child: Text(
+                  "All",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
         // Add a list of assessments for this subject
         for (final assessment in subject.assessments) {
           subjectWidgets.add(
@@ -88,10 +109,16 @@ class _NavigationState extends State<Navigation> {
               padding: const EdgeInsets.only(left: 50.0, top: 5.0),
               child: Align(
                 alignment: Alignment.centerLeft, // Align text to the left
-                child: Text(
-                  assessment.name,
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                child: InkWell(
+                  onTap: () {
+                    // Add your onTap logic for individual assessments here
+                  },
+                  child: Text(
+                    assessment.name,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
             ),
