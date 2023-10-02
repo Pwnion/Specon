@@ -17,15 +17,17 @@ class Navigation extends StatefulWidget {
   final void Function(List<SubjectModel>) setSubjectList;
   final UserModel currentUser;
   final SubjectModel currentSubject;
+  final void Function(String) getSelectedAssessment;
 
-  const Navigation({
-    Key? key,
-    required this.openNewRequestForm,
-    required this.setCurrentSubject,
-    required this.setSubjectList,
-    required this.currentUser,
-    required this.currentSubject,
-  }) : super(key: key);
+  const Navigation(
+      {Key? key,
+      required this.openNewRequestForm,
+      required this.setCurrentSubject,
+      required this.setSubjectList,
+      required this.currentUser,
+      required this.currentSubject,
+      required this.getSelectedAssessment})
+      : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
@@ -89,7 +91,7 @@ class _NavigationState extends State<Navigation> {
               alignment: Alignment.centerLeft, // Align text to the left
               child: InkWell(
                 onTap: () {
-                  // Add your onTap logic for "All Assessments" here
+                  widget.getSelectedAssessment("All");
                 },
                 child: Text(
                   "All",
@@ -111,7 +113,7 @@ class _NavigationState extends State<Navigation> {
                 alignment: Alignment.centerLeft, // Align text to the left
                 child: InkWell(
                   onTap: () {
-                    // Add your onTap logic for individual assessments here
+                    widget.getSelectedAssessment(assessment.name);
                   },
                   child: Text(
                     assessment.name,
