@@ -18,22 +18,20 @@ class Navigation extends StatefulWidget {
   final UserModel currentUser;
   final SubjectModel currentSubject;
 
-  const Navigation(
-    {Key? key,
+  const Navigation({
+    Key? key,
     required this.openNewRequestForm,
     required this.setCurrentSubject,
     required this.setSubjectList,
     required this.currentUser,
     required this.currentSubject,
-    }
-  ) : super(key: key);
+  }) : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
-
   SubjectModel? selectedSubject;
   static final _db = DataBase();
   List<SubjectModel> subjectList = [];
@@ -60,7 +58,8 @@ class _NavigationState extends State<Navigation> {
                 : Theme.of(context).colorScheme.background,
             onPressed: () {
               setState(() {
-                if (subject.assessments.isEmpty && widget.currentUser.role == UserType.subjectCoordinator) {
+                if (subject.assessments.isEmpty &&
+                    widget.currentUser.role == UserType.subjectCoordinator) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -80,7 +79,27 @@ class _NavigationState extends State<Navigation> {
           ),
         ),
       );
+
+      if (subject.assessments.isNotEmpty && subject == selectedSubject) {
+        // Add a list of assessments for this subject
+        for (final assessment in subject.assessments) {
+          subjectWidgets.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 50.0, top: 5.0),
+              child: Align(
+                alignment: Alignment.centerLeft, // Align text to the left
+                child: Text(
+                  assessment.name,
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
+            ),
+          );
+        }
+      }
     }
+
     return subjectWidgets;
   }
 
@@ -96,10 +115,8 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!fetchingFromDB) {
-
-      if(widget.currentSubject != selectedSubject){
+      if (widget.currentSubject != selectedSubject) {
         selectedSubject = widget.currentSubject;
       }
 
@@ -112,9 +129,8 @@ class _NavigationState extends State<Navigation> {
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.secondary)
-                ),
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary)),
                 onPressed: () {
                   setState(() {
                     widget.openNewRequestForm();
@@ -122,15 +138,15 @@ class _NavigationState extends State<Navigation> {
                 },
                 child: Text(
                   'New Request',
-                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.surface),
                 ),
               ),
             ),
           ..._buildSubjectsColumn(subjectList),
         ],
       );
-    }
-    else {
+    } else {
       return const CircularProgressIndicator();
     }
   }
