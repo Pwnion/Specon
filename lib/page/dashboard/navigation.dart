@@ -86,7 +86,7 @@ class _NavigationState extends State<Navigation> {
         // Add "All Assessments" option at the top
         subjectWidgets.add(
           Padding(
-            padding: const EdgeInsets.only(left: 50.0, top: 5.0),
+            padding: const EdgeInsets.only(left: 45.0, top: 5.0),
             child: Align(
               alignment: Alignment.centerLeft, // Align text to the left
               child: InkWell(
@@ -108,7 +108,7 @@ class _NavigationState extends State<Navigation> {
         for (final assessment in subject.assessments) {
           subjectWidgets.add(
             Padding(
-              padding: const EdgeInsets.only(left: 50.0, top: 5.0),
+              padding: const EdgeInsets.only(left: 45.0, top: 5.0),
               child: Align(
                 alignment: Alignment.centerLeft, // Align text to the left
                 child: InkWell(
