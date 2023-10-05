@@ -90,6 +90,12 @@ class _DiscussionState extends State<Discussion> {
     discussionThread.insert(0, info);
   }
 
+  void updateLocalRequestState(String state){
+    setState(() {
+      widget.currentRequest.state = state;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -146,18 +152,21 @@ class _DiscussionState extends State<Discussion> {
                           TextButton(
                             onPressed: () {
                               acceptRequest(widget.currentRequest);
+                              updateLocalRequestState("Approved");
                             },
                             child: const Text('Accept'),
                           ),
                           TextButton(
                             onPressed: () {
                               declineRequest(widget.currentRequest);
+                              updateLocalRequestState("Declined");
                             },
                             child: const Text('Decline'),
                           ),
                           TextButton(
                             onPressed: () {
                               flagRequest(widget.currentRequest);
+                              updateLocalRequestState("Flagged");
                             },
                             child: const Text('Flag'),
                           ),
