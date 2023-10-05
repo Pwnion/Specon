@@ -211,27 +211,27 @@ class _RequestsState extends State<Requests> {
                   width: 5,
                 ),
                 // assessment filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueAssess,
-                  items: filterSelectionsAssess
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _dropdownValueAssess = value!;
-                    });
-                  },
-                ),
+                // DropdownButton<String>(
+                //   iconDisabledColor: Theme.of(context).colorScheme.background,
+                //   focusColor: Theme.of(context).colorScheme.background,
+                //   style: TextStyle(
+                //       color: Theme.of(context).colorScheme.secondary,
+                //       fontSize: 12),
+                //   padding: const EdgeInsets.all(1),
+                //   value: _dropdownValueAssess,
+                //   items: filterSelectionsAssess
+                //       .map<DropdownMenuItem<String>>((String value) {
+                //     return DropdownMenuItem<String>(
+                //       value: value,
+                //       child: Text(value),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       _dropdownValueAssess = value!;
+                //     });
+                //   },
+                // ),
               ],
             ),
             Padding(
