@@ -57,9 +57,9 @@ class _RequestsState extends State<Requests> {
   void _applyDropdownFilters() {
     final List<RequestModel> filteredByAssignment;
 
-    if (_dropdownValueAssess != 'All assessment') {
+    if (widget.selectedAssessment != 'All') {
       filteredByAssignment = _allRequests.where((request) {
-        return request.assessment == _dropdownValueAssess;
+        return request.assessment == widget.selectedAssessment;
       }).toList();
     } else {
       filteredByAssignment = _allRequests;
@@ -108,7 +108,6 @@ class _RequestsState extends State<Requests> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.selectedAssessment);
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
