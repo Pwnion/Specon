@@ -5,6 +5,7 @@
 /// coordinator.
 /// Author: Kuo Wei Wu
 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
@@ -39,6 +40,7 @@ class _DiscussionState extends State<Discussion> {
   UploadTask? _uploadTask;
   List discussionThread = [];
   bool fetchingFromDB = true;
+  bool _openResponse = false;
 
   /// download documents from the cloud storage related to the selected request
   //void _downloadAttachment() {}
@@ -68,6 +70,11 @@ class _DiscussionState extends State<Discussion> {
       }
     });
   }
+  void setOpenResponse(bool setTo ){
+    setState(() {
+      _openResponse = setTo;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +96,7 @@ class _DiscussionState extends State<Discussion> {
           children: [
             // Title of the discussion thread
             Padding(
-              padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 0.0, left: 20),
               child: Text(
                 discussionThread[0]['subject'] + ' - ' + discussionThread[0]['assessment'],
                 textAlign: TextAlign.left,
@@ -101,9 +108,59 @@ class _DiscussionState extends State<Discussion> {
                 ),
               ),
             ),
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      '   ${discussionThread[0]['submittedBy']}  ${discussionThread[0]['submittedByUserID']}',
+                      style: TextStyle(
+                        letterSpacing: 3,
+                          color:Theme.of(context).colorScheme.secondary),
+                    ),
+                    // accept decline flag button, only show to non student
+                    if(widget.currentUser.role != UserType.student)
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              acceptRequest(widget.currentRequest);
+                            },
+                            child: const Text('Accept'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              declineRequest(widget.currentRequest);
+                            },
+                            child: const Text('Decline'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              flagRequest(widget.currentRequest);
+                            },
+                            child: const Text('Flag'),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            // just a line divide between accept buttons and discussion thread
+            // Divider(
+            //   color: Theme
+            //       .of(context)
+            //       .colorScheme
+            //       .surface,
+            //   thickness: 3,
+            //   height: 1,
+            // ),
             // All discussion text are put in a listView.builder as a card
             Expanded(
-              flex: 5,
+              flex: 12,
               child: ListView.builder(
                 itemCount: discussionThread.length,
                 controller: _scrollController,
@@ -111,6 +168,12 @@ class _DiscussionState extends State<Discussion> {
                     Padding(
                       padding: const EdgeInsets.only(right: 6.0),
                       child: Card(
+                        shape: BeveledRectangleBorder(
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1.0,
+                          ),
+                        ),
                         surfaceTintColor: Theme.of(context).colorScheme.background,
                         color: Theme.of(context).colorScheme.background,
                         child: Column(
@@ -134,36 +197,6 @@ class _DiscussionState extends State<Discussion> {
                                         fontSize: 14,
                                         color:Theme.of(context).colorScheme .secondary),
                                   ),
-                                  // accept decline flag button
-                                  if(widget.currentUser.role !=
-                                      UserType.student &&
-                                      discussionThread[index]["type"] == "request")
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .end,
-                                        children: [
-                                          TextButton(
-                                            onPressed: () {
-                                              acceptRequest(widget.currentRequest);
-                                            },
-                                            child: const Text('Accept'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              declineRequest(widget.currentRequest);
-                                            },
-                                            child: const Text('Decline'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              flagRequest(widget.currentRequest);
-                                            },
-                                            child: const Text('Flag'),
-                                          )
-                                        ],
-                                      ),
-                                    ),
                                 ],
                               ),
                             ),
@@ -252,64 +285,115 @@ class _DiscussionState extends State<Discussion> {
                     ),
               ),
             ),
+
+            Visibility(
+              visible: !_openResponse,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: OutlinedButton(
+                  onPressed: () => setOpenResponse(true),
+                  child: Text('Reply', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                 ),
+              ),
+            ),
             // response box and a submit button that updates the discussion thread data
-            Expanded(
-              flex: 2,
-              child: Container(
-                margin: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.primary)
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      child: TextFormField(
-                        controller: _textController,
-                        minLines: 2,
-                        maxLines: 2,
-                        keyboardType: TextInputType.multiline,
-                        style: TextStyle(color: Theme.of(context).colorScheme.surface),
-                        cursorColor: Theme.of(context).colorScheme.surface,
-                        decoration: InputDecoration(
-                          hintText: 'Enter response',
-                          hintStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.surface, fontSize: 13, letterSpacing: 2
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
+            
+            Visibility(
+              visible: _openResponse,
+              child: Expanded(
+                flex: 4,
+                child: Container(
+                  margin: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).colorScheme.primary)
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(5),
+                              child: TextFormField(
+                                controller: _textController,
+                                minLines: 2,
+                                maxLines: 3,
+                                keyboardType: TextInputType.multiline,
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                cursorColor: Theme.of(context).colorScheme.surface,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter response',
+                                  hintStyle: TextStyle(
+                                    color: Theme.of(context).colorScheme.surface, fontSize: 13, letterSpacing: 2
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    // button that submit the response
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 10, right: 10, top: 20),
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          // only update database if field has any word
-                          if(_textController.value.text != ""){
-                              await _db.addNewDiscussion(widget.currentRequest,
-                                {
-                                  'assessment': discussionThread[0]['assessment'],
-                                  'reason': _textController.value.text,
-                                  'subject': discussionThread[0]['subject'],
-                                  'submittedBy': widget.currentUser.firstName,
-                                  'submittedByUserID': widget.currentUser.id,
-                                  'type': widget.currentUser.role == UserType.student? 'request': 'respond',
-                              });
-                          }
-                          _textController.clear();
-                        },
-                        child: Text('Submit', style: TextStyle(color: Theme.of(context).colorScheme.secondary)
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            // button that closes the response box
+                            TextButton(
+                                child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                                onPressed: ()=> setOpenResponse(false)
+                            ),
+                            // button that submit the response
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    child: ButtonTheme(
+                                      height: 20,
+                                      minWidth: 30,
+                                      child: TextButton(
+                                        style: ButtonStyle(
+                                            shape: MaterialStatePropertyAll(
+                                              RoundedRectangleBorder(
+                                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                                              )
+                                            )
+                                        ),
+                                        onPressed: () async {
+                                          // only update database if field has any word
+                                          if(_textController.value.text != ""){
+                                              await _db.addNewDiscussion(widget.currentRequest,
+                                                {
+                                                  'assessment': discussionThread[0]['assessment'],
+                                                  'reason': _textController.value.text,
+                                                  'subject': discussionThread[0]['subject'],
+                                                  'submittedBy': widget.currentUser.firstName,
+                                                  'submittedByUserID': widget.currentUser.id,
+                                                  'type': widget.currentUser.role == UserType.student? 'request': 'respond',
+                                              });
+                                          }
+                                          _textController.clear();
+                                        },
+                                        child: Text('Submit', style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.secondary)
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
