@@ -144,6 +144,7 @@ class _RequestsState extends State<Requests> {
               child: SizedBox(
                 height: 25.0,
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
                   onChanged: (value) {
                     setState(() {
@@ -154,7 +155,10 @@ class _RequestsState extends State<Requests> {
                       TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
-                    labelText: 'Name Search',
+                    border: InputBorder.none,
+
+                    labelText: 'Name',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     labelStyle:
                         TextStyle(color: Theme.of(context).colorScheme.surface),
                     suffixIcon: Icon(Icons.search,
@@ -165,11 +169,12 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
+                    // focusedBorder: OutlineInputBorder(
+                    //   borderSide: BorderSide(
+                    //     width: 0,
+                    //     color: Theme.of(context).colorScheme.onPrimary,
+                    //   ),
+                    // ),
                   ),
                 ),
               ),
