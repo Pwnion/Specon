@@ -142,7 +142,7 @@ class _RequestsState extends State<Requests> {
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: SizedBox(
-                height: 50.0,
+                height: 25.0,
                 child: TextField(
                   textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
