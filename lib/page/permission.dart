@@ -14,69 +14,161 @@ class _PermissionState extends State<Permission> {
   var inEditMode = false;
   var editButtonText = 'Edit';
 
-  List<Widget> buildUserColumns(final List users) {
+  static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
+  List permissionGroups = [
+    {'name': 'Head Tutor',
+     'priority': 1,
+     'users': ['Alex'],
+     'assessments': {
+       'Project 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Project 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Project 3': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Assignment 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Assignment 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Mid Semester Test': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Final Exam': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+       'Others': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+      }
+    },
+    {'name': 'Tutor',
+     'priority': 2,
+     'users': ['Lucas'],
+     'assessments': {
+       'Project 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Project 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Project 3': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Assignment 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Assignment 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Mid Semester Test': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Final Exam': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+       'Others': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': false},
+      }
+    },
+    {'name': 'Lecturer',
+     'priority': 3,
+     'users': ['Tawfiq'],
+     'assessments': {
+        'Project 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Project 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Project 3': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Assignment 1': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Assignment 2': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Mid Semester Test': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Final Exam': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true},
+        'Others': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true}
+      }
+    }
+  ];
+
+  List<Widget> buildUserColumn(final List users) {
     return users.map((user) => Text(user)).toList();
   }
 
-  List<Widget> buildPermissionCheckbox(List permissions){
-    final List<Widget> permissionWidgets = [];
-    Widget greenTick = const Icon(Icons.check_box_rounded, color: Colors.green);
+  List<Widget> buildCheckboxRow(Map<String, bool> requestTypePermissions) {
+
+    List<Widget> row = [];
+    const Widget greenTick = Icon(Icons.check_box_rounded, color: Colors.green);
     const Widget redCross = Icon(Icons.close, color: Colors.red);
 
-    for(final permission in typesOfPermissions) {
-      if(!inEditMode) {
-        if(permissions.contains(permission)) {
-          permissionWidgets.add(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(permission),
-                greenTick
-              ]
-            )
-          );
-        } else {
-          permissionWidgets.add(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(permission),
-                redCross
-              ]
-            )
-          );
+    for(final requestType in requestTypes) {
+
+      // Not in Edit Mode
+      if (!inEditMode) {
+        if (requestTypePermissions[requestType]!) {
+          row.add(const SizedBox(width: 70.0, child: greenTick));
         }
-      } else{
-        var isChecked = permissions.contains(permission) ? true : false;
-        permissionWidgets.add(
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(permission),
-              Checkbox(
-                value: isChecked,
-                checkColor: Theme.of(context).colorScheme.surface,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isChecked = value!;
-                    // If checked and permission not in list, add it
-                    if(isChecked && !permissions.contains(permission)) {
-                      permissions.add(permission);
-                    } else if(!isChecked) {
-                      permissions.remove(permission);
-                    }
-                  });
-                },
-              ),
-            ]
-          )
+        else {
+          row.add(const SizedBox(width: 70.0, child: redCross));
+        }
+      }
+
+      // In edit mode
+      else {
+        row.add(
+          Checkbox(
+            value: requestTypePermissions[requestType],
+            checkColor: Theme.of(context).colorScheme.surface,
+            onChanged: (bool? value) {
+              setState(() {
+                requestTypePermissions[requestType] = value!;
+              });
+            },
+          ),
         );
       }
     }
-    return permissionWidgets;
+    return row;
   }
 
-  Widget userGroupBuilder(String userGroupName) {
+  Widget buildPermissionColumn(Map<String, dynamic> assessments){
+    final List<Widget> requestTypeHeaders = [];
+    final List<Widget> rows = [];
+
+    requestTypeHeaders.add(const SizedBox(width:150.0));
+
+    for (final requestType in requestTypes){
+      requestTypeHeaders.add(
+        SizedBox(
+          width: 70.0,
+          child: Center(
+            child: Text(
+              requestType,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        )
+      );
+    }
+
+    rows.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ...requestTypeHeaders
+        ],
+      )
+    );
+
+    if(!inEditMode){
+      rows.add(const SizedBox(height: 4.2));
+    }
+
+    for(final assessment in assessments.keys.toList()){
+
+      rows.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              width:150.0,
+              child: Center(
+                child: Text(
+                  assessment,
+                  style: const TextStyle(fontWeight: FontWeight.bold)
+                )
+              )
+            ),
+
+            ...buildCheckboxRow(assessments[assessment]),
+          ],
+        )
+      );
+
+      if(!inEditMode){
+        rows.add(const SizedBox(height: 7.9));
+      }
+
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ...rows
+      ]
+    );
+  }
+
+  Widget buildGroupColumn(String userGroupName) {
 
     final controller = TextEditingController(text: userGroupName);
     var newGroupName = userGroupName;
@@ -118,10 +210,19 @@ class _PermissionState extends State<Permission> {
       child: Scrollbar(
         thumbVisibility: true,
         controller: _scrollController,
-        child: ListView.builder(
+        child: ReorderableListView.builder(
+          scrollController: _scrollController,
           itemCount: permissionGroups.length,
-          controller: _scrollController,
+          onReorder: (oldIndex, newIndex) {
+
+            if (newIndex > permissionGroups.length) newIndex = permissionGroups.length;
+            if (oldIndex < newIndex) newIndex--;
+
+            // TODO: Change priority on DB
+
+          },
           itemBuilder: (context, index) => Container(
+            key: ValueKey(permissionGroups[index]),
             color: Theme.of(context).colorScheme.surface,
             child: IntrinsicHeight(
               child: Row(
@@ -136,7 +237,7 @@ class _PermissionState extends State<Permission> {
                       )
                     ),
                     child: Center(
-                        child: userGroupBuilder(permissionGroups[index]['group']),
+                        child: buildGroupColumn(permissionGroups[index]['name']),
                     ),
                   ),
                   // Users
@@ -153,7 +254,13 @@ class _PermissionState extends State<Permission> {
                       child: Column(
                         children: [
                           const SizedBox(height: 5.0),
-                          Expanded(child: Column(children: [...buildUserColumns(permissionGroups[index]['users'])],)),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                ...buildUserColumn(permissionGroups[index]['users'])
+                              ]
+                            )
+                          ),
                           const SizedBox(height: 5.0),
                           if (inEditMode)
                           MaterialButton(
@@ -182,9 +289,7 @@ class _PermissionState extends State<Permission> {
                           right: BorderSide(color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
-                      child: Column(
-                        children: [...buildPermissionCheckbox(permissionGroups[index]['permissions'])],
-                      ),
+                      child: Center(child: buildPermissionColumn(permissionGroups[index]['assessments'])),
                     ),
                   ),
                 ],
@@ -238,6 +343,7 @@ class _PermissionState extends State<Permission> {
               ],
             ),
             const SizedBox(height: 10.0),
+            // Headers
             Container(
               height: 40.0,
               color: Theme.of(context).colorScheme.surface,
@@ -280,6 +386,7 @@ class _PermissionState extends State<Permission> {
                 ],
               ),
             ),
+            // Rows for each permission groups
             buildPermissionRows(),
           ],
         ),
