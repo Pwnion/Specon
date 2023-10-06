@@ -85,14 +85,17 @@ class _PermissionState extends State<Permission> {
       // In edit mode
       else {
         row.add(
-          Checkbox(
-            value: requestTypePermissions[requestType],
-            checkColor: Theme.of(context).colorScheme.surface,
-            onChanged: (bool? value) {
-              setState(() {
-                requestTypePermissions[requestType] = value!;
-              });
-            },
+          SizedBox(
+            width: 70.0,
+            child: Checkbox(
+              value: requestTypePermissions[requestType],
+              checkColor: Theme.of(context).colorScheme.surface,
+              onChanged: (bool? value) {
+                setState(() {
+                  requestTypePermissions[requestType] = value!;
+                });
+              },
+            ),
           ),
         );
       }
@@ -215,14 +218,22 @@ class _PermissionState extends State<Permission> {
           itemCount: permissionGroups.length,
           onReorder: (oldIndex, newIndex) {
 
-            if (newIndex > permissionGroups.length) newIndex = permissionGroups.length;
+            final len = permissionGroups.length;
+
+            if (newIndex > len) newIndex = len;
             if (oldIndex < newIndex) newIndex--;
 
-            // TODO: Change priority on DB
+            final permissionGroup = permissionGroups[oldIndex];
 
+            setState(() {
+              permissionGroups.remove(permissionGroup);
+              permissionGroups.insert(newIndex, permissionGroup);
+            });
+            // TODO: Create function to update new priorities for each item
+            // TODO: Change priority on DB
           },
           itemBuilder: (context, index) => Container(
-            key: ValueKey(permissionGroups[index]),
+            key: ValueKey(permissionGroups[index]['priority']),
             color: Theme.of(context).colorScheme.surface,
             child: IntrinsicHeight(
               child: Row(
