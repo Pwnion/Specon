@@ -140,9 +140,9 @@ class _RequestsState extends State<Requests> {
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: SizedBox(
-                height: 25.0,
+                height: 50.0,
                 child: TextField(
                   textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
@@ -156,9 +156,8 @@ class _RequestsState extends State<Requests> {
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-
                     labelText: 'Name',
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
                     labelStyle:
                         TextStyle(color: Theme.of(context).colorScheme.surface),
                     suffixIcon: Icon(Icons.search,
@@ -169,12 +168,6 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-                    // focusedBorder: OutlineInputBorder(
-                    //   borderSide: BorderSide(
-                    //     width: 0,
-                    //     color: Theme.of(context).colorScheme.onPrimary,
-                    //   ),
-                    // ),
                   ),
                 ),
               ),
@@ -191,51 +184,60 @@ class _RequestsState extends State<Requests> {
               // filter drop down button
               children: <Widget>[
                 // state filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueState,
-                  items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
-                    setState(() {
-                      _dropdownValueState = state!;
-                    });
-                  },
+                //TODO: change this to DropdownMenu
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    //itemHeight: 20,
+                    //TODO: add kMinInteractiveDimension somewhere
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(
                   width: 5,
                 ),
                 // assessment filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueAssess,
-                  items: filterSelectionsAssess
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _dropdownValueAssess = value!;
-                    });
-                  },
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
