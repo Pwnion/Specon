@@ -142,7 +142,7 @@ class _RequestsState extends State<Requests> {
             Padding(
               padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
               child: SizedBox(
-                height: 45.0,
+                height: 25.0,
                 child: TextField(
                   controller: _nameSearchController,
                   onChanged: (value) {
@@ -279,7 +279,7 @@ class _RequestsState extends State<Requests> {
                             child: Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5)),
-                              color: Theme.of(context).colorScheme.surface,
+                              color: Colors.white,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
