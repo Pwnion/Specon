@@ -194,8 +194,8 @@ class _PermissionState extends State<Permission> {
           onTapOutside: (pointer) {
             setState(() {
               for (final permissionGroup in permissionGroups) {
-                if (permissionGroup['group'] == userGroupName){
-                  permissionGroup['group'] = newGroupName;
+                if (permissionGroup['name'] == userGroupName){
+                  permissionGroup['name'] = newGroupName;
                 }
               }
             });
