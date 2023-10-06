@@ -60,10 +60,12 @@ class _PermissionState extends State<Permission> {
     }
   ];
 
+  ///
   List<Widget> buildUserColumn(final List users) {
     return users.map((user) => Text(user)).toList();
   }
 
+  ///
   List<Widget> buildCheckboxRow(Map<String, bool> requestTypePermissions) {
 
     List<Widget> row = [];
@@ -81,7 +83,6 @@ class _PermissionState extends State<Permission> {
           row.add(const SizedBox(width: 70.0, child: redCross));
         }
       }
-
       // In edit mode
       else {
         row.add(
@@ -103,6 +104,7 @@ class _PermissionState extends State<Permission> {
     return row;
   }
 
+  ///
   Widget buildPermissionColumn(Map<String, dynamic> assessments){
     final List<Widget> requestTypeHeaders = [];
     final List<Widget> rows = [];
@@ -171,11 +173,13 @@ class _PermissionState extends State<Permission> {
     );
   }
 
+  ///
   Widget buildGroupColumn(String userGroupName) {
 
     final controller = TextEditingController(text: userGroupName);
     var newGroupName = userGroupName;
 
+    // In edit mode
     if(inEditMode) {
       return Container(
         decoration: const BoxDecoration(color: Colors.white),
@@ -203,11 +207,13 @@ class _PermissionState extends State<Permission> {
         ),
       );
     }
+    // Not in edit mode
     else {
       return Text(userGroupName);
     }
   }
 
+  ///
   Widget buildPermissionRows() {
     return Flexible(
       child: Scrollbar(
@@ -238,7 +244,7 @@ class _PermissionState extends State<Permission> {
             child: IntrinsicHeight(
               child: Row(
                 children: [
-                  // Group
+                  // Groups
                   Container(
                     width: 200.0,
                     decoration: BoxDecoration(
@@ -273,16 +279,30 @@ class _PermissionState extends State<Permission> {
                             )
                           ),
                           const SizedBox(height: 5.0),
+
+                          // Plus button
                           if (inEditMode)
                           MaterialButton(
                             color: Theme.of(context).colorScheme.surface,
                             height: 1.0,
                             minWidth: 1.0,
-                            onPressed: () {
-                              setState(() {
-                                permissionGroups[index]['users'].add('Bob');
-                              });
-                            },
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('AlertDialog Title'),
+                                content: const Text('AlertDialog description'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            ),
                             shape: const CircleBorder(),
                             child: const Text('+'),
                           )
