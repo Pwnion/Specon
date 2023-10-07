@@ -10,12 +10,14 @@ class Permission extends StatefulWidget {
 
 class _PermissionState extends State<Permission> {
   final _scrollController = ScrollController();
+  final _addUserScrollController = ScrollController();
   
   var inEditMode = false;
   var editButtonText = 'Edit';
 
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
-  List permissionGroups = [
+  static final List<String> canvasUser = ['Tawfiq', 'Alex', 'Aden', 'Brian', 'Drey', 'Jeremy', 'Lucas', 'Geela'];
+  static List permissionGroups = [
     {'name': 'Head Tutor',
      'priority': 1,
      'users': ['Alex'],
@@ -288,19 +290,52 @@ class _PermissionState extends State<Permission> {
                             minWidth: 1.0,
                             onPressed: () => showDialog<String>(
                               context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('AlertDialog Title'),
-                                content: const Text('AlertDialog description'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                                    child: const Text('Cancel'),
+                              builder: (context) => StatefulBuilder(
+                                builder: (context, setState) => AlertDialog(
+                                  title: const Text('Edit user for (subject code)'),
+                                  content: SizedBox(
+                                    width: 500,
+                                    height: 500,
+                                    child: SingleChildScrollView(
+                                      controller: _addUserScrollController,
+                                      child: ListView.builder(
+                                        controller: _addUserScrollController,
+                                        itemCount: canvasUser.length,
+                                        shrinkWrap: true,
+                                        itemBuilder: (context, index2) => ListTile(
+                                          title: Text(canvasUser[index2]),
+                                          trailing: permissionGroups[index]['users'].contains(canvasUser[index2])
+                                            ? IconButton(
+                                            icon: Icon(Icons.check_circle, color: Colors.green[700]),
+                                            onPressed: () {
+                                              setState(() {
+                                                permissionGroups[index]['users'].remove(canvasUser[index2]);
+                                              });
+                                            }
+                                          )
+                                            : IconButton(
+                                            icon: const Icon(Icons.check_circle_outline, color: Colors.grey),
+                                            onPressed: () {
+                                              setState(() {
+                                                permissionGroups[index]['users'].add(canvasUser[index2]);
+                                              });
+                                            }
+                                          )
+                                        )
+                                      ),
+                                    ),
                                   ),
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, 'OK'),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             shape: const CircleBorder(),
