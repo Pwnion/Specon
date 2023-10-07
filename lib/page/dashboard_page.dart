@@ -285,7 +285,12 @@ class _DashboardState extends State<Dashboard>
                   ]),
                 ]));
           } else {
-            return const CircularProgressIndicator();
+            return const SizedBox(
+              height: 100.0,
+              width: 100.0,
+              child: Center(child: CircularProgressIndicator()),
+            );
+            //return const CircularProgressIndicator();
           }
         });
   }

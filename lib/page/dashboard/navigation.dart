@@ -146,7 +146,11 @@ class _NavigationState extends State<Navigation> {
         ],
       );
     } else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }

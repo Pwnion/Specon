@@ -382,7 +382,11 @@ class _RequestsState extends State<Requests> {
     }
     // Fetching requests from database
     else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }
