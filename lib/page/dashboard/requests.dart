@@ -50,6 +50,8 @@ class _RequestsState extends State<Requests> {
   bool fetchingRequests = true;
   List<RequestModel> _allRequests = [];
   List<RequestModel> _foundRequests = []; // result showing on screen
+  bool assFilterClicked = false;
+  bool statusFilterClicked = false;
 
   static final dataBase = DataBase();
 
@@ -193,7 +195,9 @@ class _RequestsState extends State<Requests> {
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: statusFilterClicked
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
                         fontSize: 12),
                     padding: const EdgeInsets.all(1),
                     value: _dropdownValueState,
@@ -205,6 +209,7 @@ class _RequestsState extends State<Requests> {
                       );
                     }).toList(),
                     onChanged: (state) {
+                      statusFilterClicked = true;
                       setState(() {
                         _dropdownValueState = state!;
                       });
@@ -214,6 +219,7 @@ class _RequestsState extends State<Requests> {
                 const SizedBox(
                   width: 5,
                 ),
+
                 // assessment filter
                 DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
@@ -221,7 +227,9 @@ class _RequestsState extends State<Requests> {
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: assFilterClicked == true
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
                         fontSize: 12),
                     padding: const EdgeInsets.all(1),
                     value: _dropdownValueAssess,
@@ -233,6 +241,7 @@ class _RequestsState extends State<Requests> {
                       );
                     }).toList(),
                     onChanged: (value) {
+                      assFilterClicked = true;
                       setState(() {
                         _dropdownValueAssess = value!;
                       });
