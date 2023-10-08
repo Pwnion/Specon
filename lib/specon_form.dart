@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:specon/models/subject_model.dart';
@@ -6,6 +9,7 @@ import 'models/user_model.dart';
 
 import 'page/db.dart';
 import 'models/request_model.dart';
+import 'package:specon/storage.dart';
 
 class SpeconForm extends StatefulWidget {
   final Function closeNewRequestForm;
@@ -50,7 +54,9 @@ class _SpeconFormState extends State<SpeconForm> {
     'Assessment',
     'Extend due date to (if applicable)',
     'Additional Information', // 4
-    'Reason' // 5
+    'Reason', // 5
+    'Attachments',
+    'AAP'
   ];
 
   String requestType = '';
@@ -89,6 +95,53 @@ class _SpeconFormState extends State<SpeconForm> {
   ]; // TODO: Need to get from database
   final _subjectFormKey = GlobalKey<FormState>();
   final _assessmentFormKey = GlobalKey<FormState>();
+
+  // File related variable
+  bool _showClearButton = false;
+  bool _aapUpdated = false;
+  FilePickerResult? _selectedFiles;
+  FilePickerResult? _selectedAap;
+  String _displayFileNames = "no file selected";
+  String _displayAapName = "original aap (todo)"; // should change to existed one if exist
+  UploadTask? _uploadTask;
+
+  void _setDisplayFileName(String name){
+    setState(() {
+      _displayFileNames = name;
+    });
+  }
+  void _setDisplayAapName(String name){
+    setState(() {
+      _displayAapName = name;
+    });
+  }
+
+  void _setAapUpdated(bool value){
+    setState(() {
+      _aapUpdated = value;
+    });
+  }
+
+  void _setShowClearButton(bool value){
+    setState(() {
+      _showClearButton = value;
+    });
+  }
+
+  /// clear all file selections and related variables
+  void _clearFileVariables(){
+    setState(() {
+      _selectedFiles = null;
+      _displayFileNames = "no file selected";
+    });
+  }
+
+  void _undoAapSelection(){
+    _selectedAap = null;
+    setState(() {
+      _displayAapName = "original.pdf or none";
+    });
+  }
 
   String dateConversionString(int daysExtended) {
     var displayString = '';
@@ -248,6 +301,8 @@ class _SpeconFormState extends State<SpeconForm> {
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
     final List<TextEditingController> controllers = <TextEditingController>[];
+    Widget attachments = const Text("initialize attachments");
+    Widget aap = const Text("initialize aap");
 
     final Map<String, dynamic> jsonUser = currentUser.toJson();
 
@@ -360,6 +415,157 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
         );
       }
+      // select supporting files
+      else if (field == 'Attachments'){
+        attachments = Container(
+          width: 420,
+          child: Expanded(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        "Select supporting documents (use CTRL to select more files)",
+                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      style: ButtonStyle(
+                          shape: MaterialStatePropertyAll(
+                              RoundedRectangleBorder(
+                                  side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                              )
+                          )
+                      ),
+                      onPressed: () async {
+                        _selectedFiles = await selectFile();
+                        _setDisplayFileName(_selectedFiles!.names.join("\n"));
+                        _setShowClearButton(true);
+                      },
+                      child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
+                      ),
+                    ),
+                    // display selected file names
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.all(17.0),
+                          child: Text(
+                            _displayFileNames,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // clear selection button
+                    Visibility(
+                      visible: _showClearButton,
+                      child: TextButton(
+                        onPressed: (){
+                          _clearFileVariables();
+                          _setShowClearButton(false);
+                        }, //downloadAttachment,
+                        style: TextButton.styleFrom(
+                          alignment: Alignment.centerLeft,
+                        ),
+                        child: Text(
+                          'Clear',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.onPrimary),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      // select supporting files
+      else if (field == 'AAP'){
+        aap = Container(
+          width: 420,
+          child: Expanded(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        "If you have an AAP or want to update the existed one\nplease provide it down below",
+                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      style: ButtonStyle(
+                          shape: MaterialStatePropertyAll(
+                              RoundedRectangleBorder(
+                                  side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                              )
+                          )
+                      ),
+                      onPressed: () async {
+                        // AAP document should only be one
+                        _selectedAap = await selectSingleFile();
+                        _setDisplayAapName(_selectedAap!.names.join());
+                        _setAapUpdated(true);
+                      },
+                      child: Text('Select AAP', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
+                      ),
+                    ),
+                    // display selected file names
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.all(17.0),
+                          child: Text(
+                            _displayAapName,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: _aapUpdated,
+                      child: TextButton(
+                        onPressed: (){
+                          _undoAapSelection();
+                          _setShowClearButton(false);
+                        }, //downloadAttachment,
+                        style: TextButton.styleFrom(
+                          alignment: Alignment.centerLeft,
+                        ),
+                        child: Text(
+                          'Undo',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.onPrimary),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
 
       // To be filled fields
       else {
@@ -410,7 +616,7 @@ class _SpeconFormState extends State<SpeconForm> {
         textFormFields.add(const SizedBox(height: 15));
       }
     }
-    return {'Form': textFormFields, 'Controllers': controllers};
+    return {'Form': textFormFields, 'Controllers': controllers, 'Attachments': attachments, 'AAP': aap};
   }
 
   @override
@@ -429,6 +635,8 @@ class _SpeconFormState extends State<SpeconForm> {
     final Map<String, dynamic> form = buildForm(widget.currentUser);
     final List<TextEditingController> controllers = form['Controllers'];
     final List<Widget> textFields = form['Form'];
+    final Widget attachments = form['Attachments'];
+    final Widget aap = form['AAP'];
 
     return Scrollbar(
       thumbVisibility: true,
@@ -466,6 +674,8 @@ class _SpeconFormState extends State<SpeconForm> {
               ],
             ),
             const SizedBox(height: 20.0),
+
+
             // Information part
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,6 +692,23 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ],
             ),
+
+            // attachment part
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                attachments,
+              ],
+            ),
+            const SizedBox(height: 20),
+            // AAP part
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                aap,
+              ],
+            ),
+
             const SizedBox(height: 20),
             // Submit button
             ElevatedButton(
@@ -502,7 +729,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   state: 'Open',
                   databasePath: ''
                 );
-                await dataBase.submitRequest(
+                DocumentReference docref = await dataBase.submitRequest(
                     widget.currentUser,
                     selectedSubject == null
                         ? widget.currentSubject
@@ -513,6 +740,17 @@ class _SpeconFormState extends State<SpeconForm> {
                     ? widget.currentSubject
                     : selectedSubject!);
                 // TODO: selected the submitted request
+
+                // upload selected files
+                if(_selectedFiles != null){
+                  _uploadTask = uploadFile(docref.id, _selectedFiles!);
+                }
+                if(_aapUpdated){
+                  // right now hard coded to user jerrya 12345678
+                  uploadFile("aRTMyP7HK7HV7RgOkMw6", _selectedAap!);
+                }
+                // clear all variables\
+                _clearFileVariables();
               },
               child: const Text('Submit'),
             ),

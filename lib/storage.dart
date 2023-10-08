@@ -26,7 +26,19 @@ Future<FilePickerResult?> selectFile() async{
   if(result == null){
     return null;
   }
-  print(result.names);
+  return result;
+}
+
+/// Make user's computer pop up a file window to select one single file
+Future<FilePickerResult?> selectSingleFile() async{
+  final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'txt'],
+      allowMultiple: false
+  );
+  if(result == null){
+    return null;
+  }
   return result;
 }
 
@@ -70,27 +82,6 @@ void downloadFilesToDisc (String dataPath) async{
         throw Exception('Could not launch $url');
       }
 
-
-      // final downloadTask = item.writeToFile(downloadPath);
-      // downloadTask.snapshotEvents.listen((taskSnapshot) {
-      //   switch (taskSnapshot.state) {
-      //     case TaskState.running:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.paused:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.success:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.canceled:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.error:
-      //     // TODO: Handle this case.
-      //       break;
-      //   }
-      // });
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
     }
