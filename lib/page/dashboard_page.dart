@@ -131,6 +131,7 @@ class _DashboardState extends State<Dashboard>
         child: Discussion(
           currentRequest: currentRequest,
           currentUser: currentUser,
+          refreshFn: setState,
         ),
       );
     }

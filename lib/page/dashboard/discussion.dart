@@ -21,9 +21,12 @@ import 'package:specon/storage.dart';
 class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
-
+  final Function refreshFn;
   const Discussion(
-      {Key? key, required this.currentRequest, required this.currentUser})
+      {Key? key,
+      required this.currentRequest,
+      required this.currentUser,
+      required this.refreshFn})
       : super(key: key);
 
   @override
@@ -179,6 +182,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               acceptRequest(widget.currentRequest);
                               updateLocalRequestState("Approved");
+                              widget.refreshFn(() {});
                             },
                             child: const Text('Accept'),
                           ),
@@ -186,6 +190,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               declineRequest(widget.currentRequest);
                               updateLocalRequestState("Declined");
+                              widget.refreshFn(() {});
                             },
                             child: const Text('Decline'),
                           ),
@@ -193,6 +198,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               flagRequest(widget.currentRequest);
                               updateLocalRequestState("Flagged");
+                              widget.refreshFn(() {});
                             },
                             child: const Text('Flag'),
                           ),
