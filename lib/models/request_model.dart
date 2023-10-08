@@ -4,18 +4,19 @@ class RequestModel {
   final String additionalInfo;
   final String assessedBy;
   final String assessment;
-  final String state;
+  String state;
   final String requestedByStudentID;
+  final String databasePath;
 
-  const RequestModel({
-    required this.requestedBy,
-    required this.reason,
-    required this.additionalInfo,
-    required this.assessedBy,
-    required this.assessment,
-    required this.state,
-    required this.requestedByStudentID
-  });
+  RequestModel(
+      {required this.requestedBy,
+      required this.reason,
+      required this.additionalInfo,
+      required this.assessedBy,
+      required this.assessment,
+      required this.state,
+      required this.requestedByStudentID,
+      required this.databasePath});
 
   Map<String, String> toJson() {
     return {

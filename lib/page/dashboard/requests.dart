@@ -4,25 +4,24 @@
 /// and received requests for tutors and subject coordinators.
 /// Authors: Kuo Wei WU, Zhi Xiang Chan
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
-import 'package:specon/specon_form.dart';
 
 class Requests extends StatefulWidget {
   final SubjectModel Function() getCurrentSubject;
-  final void Function(Map<String, dynamic>) openSubmittedRequest;
+  final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
-
+  final String selectedAssessment;
   const Requests(
       {Key? key,
       required this.getCurrentSubject,
       required this.openSubmittedRequest,
-      required this.currentUser})
+      required this.currentUser,
+      required this.selectedAssessment})
       : super(key: key);
 
   @override
@@ -50,6 +49,8 @@ class _RequestsState extends State<Requests> {
   bool fetchingRequests = true;
   List<RequestModel> _allRequests = [];
   List<RequestModel> _foundRequests = []; // result showing on screen
+  bool assFilterClicked = false;
+  bool statusFilterClicked = false;
 
   static final dataBase = DataBase();
 
@@ -57,9 +58,9 @@ class _RequestsState extends State<Requests> {
   void _applyDropdownFilters() {
     final List<RequestModel> filteredByAssignment;
 
-    if (_dropdownValueAssess != 'All assessment') {
+    if (widget.selectedAssessment != 'All') {
       filteredByAssignment = _allRequests.where((request) {
-        return request.assessment == _dropdownValueAssess;
+        return request.assessment == widget.selectedAssessment;
       }).toList();
     } else {
       filteredByAssignment = _allRequests;
@@ -77,7 +78,6 @@ class _RequestsState extends State<Requests> {
     }
     _foundRequests = filteredByState;
   }
-
 
   // TODO: Make it search for keywords in request as well, not just name search
   /// filter selection from the value entered in the search bar
@@ -141,10 +141,11 @@ class _RequestsState extends State<Requests> {
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: SizedBox(
-                height: 45.0,
+                height: 25.0,
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
                   onChanged: (value) {
                     setState(() {
@@ -155,7 +156,9 @@ class _RequestsState extends State<Requests> {
                       TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
-                    labelText: 'Name Search',
+                    border: InputBorder.none,
+                    labelText: 'Name',
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
                     labelStyle:
                         TextStyle(color: Theme.of(context).colorScheme.surface),
                     suffixIcon: Icon(Icons.search,
@@ -166,11 +169,6 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -178,7 +176,7 @@ class _RequestsState extends State<Requests> {
             // end of search bar
             Divider(
               color: Theme.of(context).colorScheme.surface,
-              thickness: 3,
+              thickness: 0.5,
               height: 1,
             ),
             // Filter Button
@@ -187,179 +185,191 @@ class _RequestsState extends State<Requests> {
               // filter drop down button
               children: <Widget>[
                 // state filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueState,
-                  items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
-                    setState(() {
-                      _dropdownValueState = state!;
-                    });
-                  },
+                //TODO: change this to DropdownMenu
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    //itemHeight: 20,
+                    //TODO: add kMinInteractiveDimension somewhere
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color
+                            // : statusFilterClicked
+                            //     ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      statusFilterClicked = true;
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(
                   width: 5,
                 ),
+
                 // assessment filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueAssess,
-                  items: filterSelectionsAssess
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _dropdownValueAssess = value!;
-                    });
-                  },
-                ),
+                // DropdownButtonHideUnderline(
+                //   child: DropdownButton<String>(
+                //     isDense: true,
+                //     iconDisabledColor: Theme.of(context).colorScheme.background,
+                //     focusColor: Theme.of(context).colorScheme.background,
+                //     style: TextStyle(
+                //         color: assFilterClicked == true
+                //             ? Theme.of(context).colorScheme.secondary
+                //             : Theme.of(context).colorScheme.onBackground,
+                //         fontSize: 12),
+                //     padding: const EdgeInsets.all(1),
+                //     value: _dropdownValueAssess,
+                //     items: filterSelectionsAssess
+                //         .map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         child: Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (value) {
+                //       assFilterClicked = true;
+                //       setState(() {
+                //         _dropdownValueAssess = value!;
+                //       });
+                //     },
+                //   ),
+                // ),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Divider(
                 color: Theme.of(context).colorScheme.surface,
-                thickness: 3,
+                thickness: 0.5,
                 height: 1,
               ),
             ),
-            // Display requests
-
-            // Listen for database changes
-            // StreamBuilder(
-            //     stream: FirebaseFirestore.instance
-            //         .doc(_currentSubject.databasePath)
-            //         .snapshots(),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.active) {
-            //         fetchRequestsFromDB();
-            //       }
-            //       return Container();
-            //     }),
 
             Expanded(
               child: RawScrollbar(
                 controller: _scrollController,
                 thumbColor: Colors.white38,
                 thumbVisibility: true,
-                radius: const Radius.circular(20),
-                thickness: 5,
+                radius: const Radius.circular(5),
+                thickness: 0,
                 child: ListView.builder(
-                    itemCount: _foundRequests.length,
-                    controller: _scrollController,
-                    itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.only(right: 6.0),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                                // widget.openSubmittedRequest(
-                                //     _foundRequests[index]); // TODO
-                              });
-                            },
-                            child: Card(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    // request first row
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        const SizedBox(width: 4),
-                                        const Icon(Icons.album, size: 20.0),
-                                        const SizedBox(width: 12),
-                                        Text(_foundRequests[index].requestedBy),
-                                        // green tick icon
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.only(
-                                                right: 7.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                  itemCount: _foundRequests.length,
+                  controller: _scrollController,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(right: 6.0),
+                    child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            // TODO: Retrieve request from database and display, pass in some sort of submission ID
+                            // widget.openSubmittedRequest(
+                            //     _foundRequests[index]); // TODO
+// <<<<<<< assessmentManager
+//                               });
+//                             },
+//                             child: Card(
+// =======
+                            widget.openSubmittedRequest(_foundRequests[index]);
+                          });
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          color: Colors.white,
+//>>>>>>> main
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                // request first row
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.album, size: 20.0),
+                                    const SizedBox(width: 12),
+                                    Text(_foundRequests[index].requestedBy),
+                                    // green tick icon
+                                    Expanded(
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.only(right: 7.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Approved'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(
-                                                      Icons.gpp_good_sharp,
-                                                      color: Colors.green),
-                                                ),
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                                              child: const Icon(
+                                                  Icons.gpp_good_sharp,
+                                                  color: Colors.green),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Flagged'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(Icons.flag,
-                                                      color: Colors.orange),
-                                                ),
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                                              child: const Icon(Icons.flag,
+                                                  color: Colors.orange),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Declined'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(
-                                                      Icons.not_interested,
-                                                      color: Colors.red),
-                                                ),
-                                              ],
+                                              child: const Icon(
+                                                  Icons.not_interested,
+                                                  color: Colors.red),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 10, bottom: 10),
-                                    // bottom row
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(width: 8),
-                                        Text(_foundRequests[index].assessment),
-                                        const SizedBox(width: 8),
-                                        const Text('4h'),
-                                        const SizedBox(width: 8),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
+                              Container(
+                                margin:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
+                                // bottom row
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index].assessment),
+                                    const SizedBox(width: 8),
+                                    const Text('4h'),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         )),
+                  ),
+                ),
               ),
-            ),
+            )
           ],
         ),
       ));
@@ -373,7 +383,11 @@ class _RequestsState extends State<Requests> {
     }
     // Fetching requests from database
     else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }

@@ -1,18 +1,28 @@
+/// A stateless singular widget for representing a request type item.
+///
+/// This widget displays information about a [RequestType] and provides options
+/// to edit or delete it.
+///
+/// Author: Drey Nguyen
 import 'package:flutter/material.dart';
-
 import '../models/request_type.dart';
 
 class RequestTypeItem extends StatelessWidget {
   final RequestType requestType;
   final Function onDeleteItem;
-  final Function(String, String) onUpdateName; // Add this line in your class
+  final Function(String, String) onUpdateName; // real time update name
 
-  const RequestTypeItem(
-      {Key? key,
-      required this.requestType,
-      required this.onDeleteItem,
-      required this.onUpdateName})
-      : super(key: key);
+  /// Constructor for [RequestTypeItem].
+  ///
+  /// [requestType] is the type of request being displayed.
+  /// [onDeleteItem] is the function called when deleting this item.
+  /// [onUpdateName] is the function for real-time name updates.
+  const RequestTypeItem({
+    Key? key,
+    required this.requestType,
+    required this.onDeleteItem,
+    required this.onUpdateName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +90,7 @@ class RequestTypeItem extends StatelessWidget {
     );
   }
 
+  /// Displays a dialog to edit the item's name.
   Future<void> _editItem(BuildContext context) async {
     String newName = requestType.name;
     bool showError = false;
@@ -144,6 +155,7 @@ class RequestTypeItem extends StatelessWidget {
     );
   }
 
+  /// Displays a confirmation dialog for item deletion.
   Future<void> _confirmDelete(BuildContext context) async {
     String typedName = '';
     bool showError = false;

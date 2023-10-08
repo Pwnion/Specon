@@ -8,12 +8,11 @@ class SubjectModel {
   final String year;
   final String databasePath;
 
-  SubjectModel({
-    required this.name,
-    required this.code,
-    required this.assessments,
-    required this.semester,
-    required this.year,
-    required this.databasePath
-  });
+  SubjectModel(
+      {required this.name,
+      required this.code,
+      required this.assessments,
+      required this.semester,
+      required this.year,
+      required this.databasePath});
 }
