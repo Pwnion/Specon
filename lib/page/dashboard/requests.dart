@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/models/userModel.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
 
 class Requests extends StatefulWidget {
   final SubjectModel Function() getCurrentSubject;
-  final void Function(Map<String, dynamic>) openSubmittedRequest;
+  final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
   final String selectedAssessment;
   const Requests(
@@ -50,6 +50,8 @@ class _RequestsState extends State<Requests> {
   bool fetchingRequests = true;
   List<RequestModel> _allRequests = [];
   List<RequestModel> _foundRequests = []; // result showing on screen
+  bool assFilterClicked = false;
+  bool statusFilterClicked = false;
 
   static final dataBase = DataBase();
 
@@ -134,16 +136,17 @@ class _RequestsState extends State<Requests> {
       _filterBySearch();
 
       return Scaffold(
-          body: Padding(
+        body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: SizedBox(
-                height: 45.0,
+                height: 25.0,
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
                   onChanged: (value) {
                     setState(() {
@@ -154,7 +157,9 @@ class _RequestsState extends State<Requests> {
                       TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
-                    labelText: 'Name Search',
+                    border: InputBorder.none,
+                    labelText: 'Name',
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
                     labelStyle:
                         TextStyle(color: Theme.of(context).colorScheme.surface),
                     suffixIcon: Icon(Icons.search,
@@ -165,51 +170,51 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // end of search bar
-            Divider(
-              color: Theme.of(context).colorScheme.surface,
-              thickness: 3,
-              height: 1,
-            ),
-            // Filter Button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              // filter drop down button
-              children: <Widget>[
-                // state filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueState,
-                  items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
-                    setState(() {
-                      _dropdownValueState = state!;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
+//                     focusedBorder: OutlineInputBorder(
+//                       borderSide: BorderSide(
+//                         color: Theme.of(context).colorScheme.onPrimary,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             // end of search bar
+//             Divider(
+//               color: Theme.of(context).colorScheme.surface,
+//               thickness: 3,
+//               height: 1,
+//             ),
+//             // Filter Button
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               // filter drop down button
+//               children: <Widget>[
+//                 // state filter
+//                 DropdownButton<String>(
+//                   iconDisabledColor: Theme.of(context).colorScheme.background,
+//                   focusColor: Theme.of(context).colorScheme.background,
+//                   style: TextStyle(
+//                       color: Theme.of(context).colorScheme.onPrimary,
+//                       fontSize: 12),
+//                   padding: const EdgeInsets.all(1),
+//                   value: _dropdownValueState,
+//                   items: filterSelectionsState
+//                       .map<DropdownMenuItem<String>>((String state) {
+//                     return DropdownMenuItem<String>(
+//                       value: state,
+//                       child: Text(state),
+//                     );
+//                   }).toList(),
+//                   onChanged: (state) {
+//                     setState(() {
+//                       _dropdownValueState = state!;
+//                     });
+//                   },
+//                 ),
+//                 const SizedBox(
+//                   width: 5,
+//                 ),
                 // assessment filter
                 // DropdownButton<String>(
                 //   iconDisabledColor: Theme.of(context).colorScheme.background,
@@ -232,37 +237,202 @@ class _RequestsState extends State<Requests> {
                 //     });
                 //   },
                 // ),
+                  ),
+                ),
+              ),
+            ),
+            // end of search bar
+            Divider(
+              color: Theme.of(context).colorScheme.surface,
+              thickness: 0.5,
+              height: 1,
+            ),
+            // Filter Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              // filter drop down button
+              children: <Widget>[
+                // state filter
+                //TODO: change this to DropdownMenu
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    //itemHeight: 20,
+                    //TODO: add kMinInteractiveDimension somewhere
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: statusFilterClicked
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      statusFilterClicked = true;
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+
+                // assessment filter
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: assFilterClicked == true
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      assFilterClicked = true;
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Divider(
                 color: Theme.of(context).colorScheme.surface,
-                thickness: 3,
+                thickness: 0.5,
                 height: 1,
               ),
             ),
-            // Display requests
+              // Filter Button
+            Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                // filter drop down button
+                children: <Widget>[
+                  // state filter
+                  DropdownButton<String>(
+                    iconDisabledColor:
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    focusColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    style: TextStyle(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onPrimary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  // assessment filter
+                  DropdownButton<String>(
+                    iconDisabledColor:
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    focusColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    style: TextStyle(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .secondary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Divider(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .surface,
+                  thickness: 3,
+                  height: 1,
+                ),
+              ),
+              // Display requests
 
-            // // Listen for database changes
-            // StreamBuilder(
-            //     stream: FirebaseFirestore.instance
-            //         .doc(_currentSubject.databasePath)
-            //         .snapshots(),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.active) {
-            //         fetchRequestsFromDB();
-            //       }
-            //       return Container();
-            //     }),
+              // Listen for database changes
+              // StreamBuilder(
+              //   stream: FirebaseFirestore.instance
+              //       .doc(_currentSubject.databasePath)
+              //       .snapshots(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.active) {
+              //       fetchRequestsFromDB();
+              //     }
+              //     return Container();
+              //   }
+              // ),
+
 
             Expanded(
               child: RawScrollbar(
                 controller: _scrollController,
                 thumbColor: Colors.white38,
                 thumbVisibility: true,
-                radius: const Radius.circular(20),
-                thickness: 5,
+                radius: const Radius.circular(5),
+                thickness: 0,
                 child: ListView.builder(
                     itemCount: _foundRequests.length,
                     controller: _scrollController,
@@ -274,9 +444,19 @@ class _RequestsState extends State<Requests> {
                                 // TODO: Retrieve request from database and display, pass in some sort of submission ID
                                 // widget.openSubmittedRequest(
                                 //     _foundRequests[index]); // TODO
+// <<<<<<< assessmentManager
+//                               });
+//                             },
+//                             child: Card(
+// =======
+                                widget.openSubmittedRequest(_foundRequests[index]);
                               });
                             },
                             child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                              color: Colors.white,
+//>>>>>>> main
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -335,26 +515,22 @@ class _RequestsState extends State<Requests> {
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 10, bottom: 10),
-                                    // bottom row
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(width: 8),
-                                        Text(_foundRequests[index].assessment),
-                                        const SizedBox(width: 8),
-                                        const Text('4h'),
-                                        const SizedBox(width: 8),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                   ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                // bottom row
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index].assessment),
+                                    const SizedBox(width: 8),
+                                    const Text('4h'),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
                               ),
-                            ),
+                           ],
                           ),
                         )),
               ),
@@ -372,7 +548,11 @@ class _RequestsState extends State<Requests> {
     }
     // Fetching requests from database
     else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }
