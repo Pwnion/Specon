@@ -31,6 +31,7 @@ class _DashboardState extends State<Dashboard>
   @override
   bool get wantKeepAlive => true;
 
+
   SubjectModel currentSubject = SubjectModel(
       name: '',
       code: '',
@@ -43,11 +44,13 @@ class _DashboardState extends State<Dashboard>
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
+  String selectedAssessment = '';
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
   final Future<UserModel> _userFromDB =
       _database.getUserFromEmail(_auth.currentUser!.email!);
+
 
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(RequestModel request) {
@@ -55,6 +58,13 @@ class _DashboardState extends State<Dashboard>
       showSubmittedRequest = true;
       newRequest = false;
       currentRequest = request;
+    });
+  }
+
+
+  void getSelectedAssessment(String assessment) {
+    setState(() {
+      selectedAssessment = assessment;
     });
   }
 
@@ -257,6 +267,7 @@ class _DashboardState extends State<Dashboard>
                         setSubjectList: setSubjectList,
                         currentUser: currentUser,
                         currentSubject: currentSubject,
+                        getSelectedAssessment: getSelectedAssessment,
                       ),
                     ),
                     // Divider
@@ -269,9 +280,11 @@ class _DashboardState extends State<Dashboard>
                     SizedBox(
                       width: 300.0,
                       child: requestWidget = Requests(
-                          getCurrentSubject: getCurrentSubject,
-                          openSubmittedRequest: openSubmittedRequest,
-                          currentUser: currentUser),
+                        getCurrentSubject: getCurrentSubject,
+                        openSubmittedRequest: openSubmittedRequest,
+                        currentUser: currentUser,
+                        selectedAssessment: selectedAssessment,
+                      ),
                     ),
                     // Divider
                     VerticalDivider(
