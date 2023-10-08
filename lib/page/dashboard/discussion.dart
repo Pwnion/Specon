@@ -41,9 +41,17 @@ class _DiscussionState extends State<Discussion> {
   List discussionThread = [];
   bool fetchingFromDB = true;
   bool _openResponse = false;
+  String selectedFileName = "";
+  String _displayFileName = "";
 
   /// download documents from the cloud storage related to the selected request
   //void _downloadAttachment() {}
+
+  void _setDisplayFileName(String name){
+    setState(() {
+      _displayFileName = name;
+    });
+  }
 
   /// display upload documents status, should be in submit request form later
   void _displayUploadState(){
@@ -282,20 +290,27 @@ class _DiscussionState extends State<Discussion> {
                             Container(
                               margin: const EdgeInsets.only(
                                   top: 10, bottom: 10),
-                              child: TextButton(
-                                onPressed: selectFile, //downloadAttachment,
-                                style: TextButton.styleFrom(
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                child: Text(
-                                  'select file',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Theme
-                                          .of(context)
-                                          .colorScheme
-                                          .secondary),
-                                ),
+                              child: Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: ()async{
+                                      selectedFileName = await selectFile();
+                                      _setDisplayFileName(selectedFileName);
+                                    }, //downloadAttachment,
+                                    style: TextButton.styleFrom(
+                                      alignment: Alignment.centerLeft,
+                                    ),
+                                    child: Text(
+                                      'select file',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Theme
+                                              .of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

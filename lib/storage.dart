@@ -17,14 +17,14 @@ final _documentsRef = _storageRef.child("documents");
 PlatformFile? pickedFile;
 
 /// Make user's computer pop up a file window to select file
-Future<bool> selectFile() async{
+Future<String> selectFile() async{
   final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
   if(result == null){
-    return false;
+    return "file not selected";
   }
   pickedFile = result.files.first;
   print(pickedFile!.name);
-  return true;
+  return pickedFile!.name;
 }
 
 /// upload the selected file to cloud storage in the path 'documents/{requestID}'
