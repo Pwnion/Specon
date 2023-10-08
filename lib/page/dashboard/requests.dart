@@ -50,6 +50,8 @@ class _RequestsState extends State<Requests> {
   bool fetchingRequests = true;
   List<RequestModel> _allRequests = [];
   List<RequestModel> _foundRequests = []; // result showing on screen
+  bool assFilterClicked = false;
+  bool statusFilterClicked = false;
 
   static final dataBase = DataBase();
 
@@ -138,10 +140,11 @@ class _RequestsState extends State<Requests> {
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: SizedBox(
-                height: 45.0,
+                height: 25.0,
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: _nameSearchController,
                   onChanged: (value) {
                     setState(() {
@@ -152,7 +155,9 @@ class _RequestsState extends State<Requests> {
                       TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
-                    labelText: 'Name Search',
+                    border: InputBorder.none,
+                    labelText: 'Name',
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
                     labelStyle:
                         TextStyle(color: Theme.of(context).colorScheme.surface),
                     suffixIcon: Icon(Icons.search,
@@ -163,11 +168,6 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -175,7 +175,7 @@ class _RequestsState extends State<Requests> {
             // end of search bar
             Divider(
               color: Theme.of(context).colorScheme.surface,
-              thickness: 3,
+              thickness: 0.5,
               height: 1,
             ),
             // Filter Button
@@ -184,51 +184,67 @@ class _RequestsState extends State<Requests> {
               // filter drop down button
               children: <Widget>[
                 // state filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueState,
-                  items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
-                    setState(() {
-                      _dropdownValueState = state!;
-                    });
-                  },
+                //TODO: change this to DropdownMenu
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    //itemHeight: 20,
+                    //TODO: add kMinInteractiveDimension somewhere
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: statusFilterClicked
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      statusFilterClicked = true;
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(
                   width: 5,
                 ),
+
                 // assessment filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueAssess,
-                  items: filterSelectionsAssess
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _dropdownValueAssess = value!;
-                    });
-                  },
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: assFilterClicked == true
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      assFilterClicked = true;
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
@@ -236,7 +252,7 @@ class _RequestsState extends State<Requests> {
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Divider(
                 color: Theme.of(context).colorScheme.surface,
-                thickness: 3,
+                thickness: 0.5,
                 height: 1,
               ),
             ),
@@ -259,8 +275,8 @@ class _RequestsState extends State<Requests> {
                 controller: _scrollController,
                 thumbColor: Colors.white38,
                 thumbVisibility: true,
-                radius: const Radius.circular(20),
-                thickness: 5,
+                radius: const Radius.circular(5),
+                thickness: 0,
                 child: ListView.builder(
                     itemCount: _foundRequests.length,
                     controller: _scrollController,
@@ -275,6 +291,9 @@ class _RequestsState extends State<Requests> {
                               });
                             },
                             child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                              color: Colors.white,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -370,7 +389,11 @@ class _RequestsState extends State<Requests> {
     }
     // Fetching requests from database
     else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }

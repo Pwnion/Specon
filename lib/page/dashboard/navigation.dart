@@ -5,7 +5,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/page/dashboard/request_filter.dart';
 import 'package:specon/page/db.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/page/asm_mana.dart';
@@ -18,22 +17,21 @@ class Navigation extends StatefulWidget {
   final UserModel currentUser;
   final SubjectModel currentSubject;
 
-  const Navigation(
-    {Key? key,
+  const Navigation({
+    Key? key,
     required this.openNewRequestForm,
     required this.setCurrentSubject,
     required this.setSubjectList,
     required this.currentUser,
     required this.currentSubject,
-    }
-  ) : super(key: key);
+  }) : super(key: key);
 
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
-
+  bool isPressed = false;
   SubjectModel? selectedSubject;
   static final _db = DataBase();
   List<SubjectModel> subjectList = [];
@@ -55,12 +53,21 @@ class _NavigationState extends State<Navigation> {
           padding: const EdgeInsets.only(top: 10.0),
           child: MaterialButton(
             elevation: 0.0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             color: subject == selectedSubject
-                ? Theme.of(context).colorScheme.onBackground
+                ? Theme.of(context).colorScheme.surface
                 : Theme.of(context).colorScheme.background,
+            //color: const Color(0x000000)
+            textColor: subject == selectedSubject
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.onBackground,
+
             onPressed: () {
               setState(() {
-                if (subject.assessments.isEmpty && widget.currentUser.role == UserType.subjectCoordinator) {
+                isPressed = !isPressed;
+                if (subject.assessments.isEmpty &&
+                    widget.currentUser.role == UserType.subjectCoordinator) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -96,10 +103,8 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!fetchingFromDB) {
-
-      if(widget.currentSubject != selectedSubject){
+      if (widget.currentSubject != selectedSubject) {
         selectedSubject = widget.currentSubject;
       }
 
@@ -110,11 +115,20 @@ class _NavigationState extends State<Navigation> {
           if (widget.currentUser.role == UserType.student)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-              child: ElevatedButton(
+              child: OutlinedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.secondary)
-                ),
+                    side: MaterialStateProperty.all(BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.0,
+                        style: BorderStyle.solid)),
+                    //backgroundColor: MaterialStateProperty.all(
+                    //    Theme.of(context).colorScheme.secondary),
+                    foregroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    )),
                 onPressed: () {
                   setState(() {
                     widget.openNewRequestForm();
@@ -122,16 +136,21 @@ class _NavigationState extends State<Navigation> {
                 },
                 child: Text(
                   'New Request',
-                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontSize: 14),
                 ),
               ),
             ),
           ..._buildSubjectsColumn(subjectList),
         ],
       );
-    }
-    else {
-      return const CircularProgressIndicator();
+    } else {
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }
