@@ -431,4 +431,4 @@ packages:
     version: "5.0.8"
 sdks:
   dart: ">=3.0.6 <4.0.0"
-  flutter: ">=3.10.0"
+  flutter: ">=3.7.0"

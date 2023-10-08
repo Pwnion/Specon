@@ -56,13 +56,12 @@ class _SpeconFormState extends State<SpeconForm> {
   String requestType = '';
   late Future<Map<String, dynamic>> basicForm;
 
-  final _dueDateSelectorController =
-      TextEditingController(text: 'Use slider below');
+  final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
+  final _additionalInformationController = TextEditingController();
+  final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
-  final _mockAssessmentDueDate = DateTime(
-      2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
-  final _mockMaxExtendDays =
-      10; // TODO: Set by subject coordinator, + 2 days maybe?
+  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
   final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
@@ -74,8 +73,7 @@ class _SpeconFormState extends State<SpeconForm> {
   };
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
-  final Future<UserModel> currentUser =
-      dataBase.getUserFromEmail(auth.currentUser!.email!);
+  final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
   String selectedAssessment = '';
   List<SubjectModel> subjectList = [];
@@ -264,10 +262,8 @@ class _SpeconFormState extends State<SpeconForm> {
             width: 420.0,
             child: TextField(
               readOnly: true,
-              // enabled: false,
               controller: newController,
-              style:
-                  const TextStyle(color: Colors.white54), // TODO: Color theme
+              style: const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -367,8 +363,13 @@ class _SpeconFormState extends State<SpeconForm> {
 
       // To be filled fields
       else {
-        final TextEditingController newController = TextEditingController();
-        controllers.add(newController);
+        TextEditingController controller;
+        if (field == 'Additional Information') {
+          controller = _additionalInformationController;
+        } else {
+          controller = _reasonController;
+        }
+        controllers.add(controller);
 
         textFormFields.add(
           SizedBox(
@@ -376,9 +377,8 @@ class _SpeconFormState extends State<SpeconForm> {
             child: TextFormField(
               enabled: true,
               maxLines: null,
-              controller: newController,
-              style:
-                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              controller: controller,
+              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -389,11 +389,13 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18
+                ),
                 floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 22),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 22
+                ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -527,7 +529,6 @@ class _SpeconFormState extends State<SpeconForm> {
     for (String key in requestMap.keys) {
       TextField info = TextField(
         readOnly: true,
-        // enabled: false,
         controller: TextEditingController(text: requestMap[key]),
         style: const TextStyle(color: Colors.white54), // TODO: Color theme
         cursorColor: Theme.of(context).colorScheme.onSecondary,
@@ -540,9 +541,13 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
           labelText: key,
           labelStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
+            color: Theme.of(context).colorScheme.onSecondary,
+            fontSize: 18
+          ),
           floatingLabelStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSecondary, fontSize: 18),
+            color: Theme.of(context).colorScheme.onSecondary,
+            fontSize: 18
+          ),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(
