@@ -11,18 +11,19 @@ import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
-import 'package:specon/specon_form.dart';
 
 class Requests extends StatefulWidget {
+
   final SubjectModel Function() getCurrentSubject;
-  final void Function(Map<String, dynamic>) openSubmittedRequest;
+  final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
 
   const Requests(
-      {Key? key,
-      required this.getCurrentSubject,
-      required this.openSubmittedRequest,
-      required this.currentUser})
+    {Key? key,
+    required this.getCurrentSubject,
+    required this.openSubmittedRequest,
+    required this.currentUser
+    })
       : super(key: key);
 
   @override
@@ -37,13 +38,8 @@ class _RequestsState extends State<Requests> {
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 
-  SubjectModel _currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '');
+  SubjectModel _currentSubject =
+    SubjectModel(name: '', code: '', assessments: [], semester: '', year: '', databasePath: '');
   String _dropdownValueAssess = '';
   String _dropdownValueState = '';
   String _searchString = '';
@@ -57,6 +53,7 @@ class _RequestsState extends State<Requests> {
 
   /// filter request via the filter buttons, listens to any selection changes
   void _applyDropdownFilters() {
+
     final List<RequestModel> filteredByAssignment;
 
     if (_dropdownValueAssess != 'All assessment') {
@@ -100,7 +97,7 @@ class _RequestsState extends State<Requests> {
   /// get all requests from the database
   void fetchRequestsFromDB() {
     dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
-      if (requests != _allRequests) {
+      if (requests != _allRequests){
         setState(() {
           _allRequests = requests;
         });
@@ -134,7 +131,7 @@ class _RequestsState extends State<Requests> {
       _filterBySearch();
 
       return Scaffold(
-          body: Padding(
+        body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
@@ -256,19 +253,106 @@ class _RequestsState extends State<Requests> {
                 height: 1,
               ),
             ),
-            // Display requests
+              // Filter Button
+            Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                // filter drop down button
+                children: <Widget>[
+                  // state filter
+                  DropdownButton<String>(
+                    iconDisabledColor:
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    focusColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    style: TextStyle(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onPrimary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueState,
+                    items: filterSelectionsState
+                        .map<DropdownMenuItem<String>>((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (state) {
+                      setState(() {
+                        _dropdownValueState = state!;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  // assessment filter
+                  DropdownButton<String>(
+                    iconDisabledColor:
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    focusColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .background,
+                    style: TextStyle(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .secondary,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Divider(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .surface,
+                  thickness: 3,
+                  height: 1,
+                ),
+              ),
+              // Display requests
 
-            // Listen for database changes
-            // StreamBuilder(
-            //     stream: FirebaseFirestore.instance
-            //         .doc(_currentSubject.databasePath)
-            //         .snapshots(),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.active) {
-            //         fetchRequestsFromDB();
-            //       }
-            //       return Container();
-            //     }),
+              // Listen for database changes
+              // StreamBuilder(
+              //   stream: FirebaseFirestore.instance
+              //       .doc(_currentSubject.databasePath)
+              //       .snapshots(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.active) {
+              //       fetchRequestsFromDB();
+              //     }
+              //     return Container();
+              //   }
+              // ),
+
 
             Expanded(
               child: RawScrollbar(
@@ -288,6 +372,7 @@ class _RequestsState extends State<Requests> {
                                 // TODO: Retrieve request from database and display, pass in some sort of submission ID
                                 // widget.openSubmittedRequest(
                                 //     _foundRequests[index]); // TODO
+                                widget.openSubmittedRequest(_foundRequests[index]);
                               });
                             },
                             child: Card(
@@ -352,40 +437,44 @@ class _RequestsState extends State<Requests> {
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 10, bottom: 10),
-                                    // bottom row
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(width: 8),
-                                        Text(_foundRequests[index].assessment),
-                                        const SizedBox(width: 8),
-                                        const Text('4h'),
-                                        const SizedBox(width: 8),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                   ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                // bottom row
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index].assessment),
+                                    const SizedBox(width: 8),
+                                    const Text('4h'),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
                               ),
-                            ),
+                           ],
                           ),
-                        )),
+                        ),
+                      ),
+                    )
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-      ));
+            ],
+          ),
+        )
+      );
     }
     // No subject is selected
-    else if (_currentSubject.code.isEmpty) {
+    else if (_currentSubject.code.isEmpty){
       return Center(
-          child: Text('Select a subject',
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface, fontSize: 25)));
+        child: Text('Select a subject',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface,
+            fontSize: 25
+          )
+        )
+      );
     }
     // Fetching requests from database
     else {

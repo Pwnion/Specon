@@ -5,6 +5,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/asm_mana.dart';
@@ -38,7 +39,7 @@ class _DashboardState extends State<Dashboard>
       year: '',
       databasePath: '');
   List<SubjectModel> subjectList = [];
-  Map<String, dynamic> currentRequest = {};
+  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
@@ -49,11 +50,11 @@ class _DashboardState extends State<Dashboard>
       _database.getUserFromEmail(_auth.currentUser!.email!);
 
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
-  void openSubmittedRequest(Map<String, dynamic> currentRequest) {
+  void openSubmittedRequest(RequestModel request) {
     setState(() {
       showSubmittedRequest = true;
       newRequest = false;
-      this.currentRequest = currentRequest;
+      currentRequest = request;
     });
   }
 
@@ -65,8 +66,8 @@ class _DashboardState extends State<Dashboard>
     });
   }
 
-  /// Getter for current selected request in column 2, TODO: will need to change return type to RequestModel
-  Map<String, dynamic> getCurrentRequest() => currentRequest;
+  /// Getter for current selected request in column 2,
+  RequestModel getCurrentRequest() => currentRequest;
 
   /// Getter for current selected subject in column 1
   SubjectModel getCurrentSubject() => currentSubject;
@@ -93,7 +94,7 @@ class _DashboardState extends State<Dashboard>
   /// Getter for user's enrolled subjects
   void setSubjectList(List<SubjectModel> subjects) {
     setState(() {
-      subjectList = subjects;
+      subjectList = subjects; // TODO: setstate called after dispose error
     });
   }
 
@@ -113,7 +114,7 @@ class _DashboardState extends State<Dashboard>
     else if (showSubmittedRequest) {
       return Center(
         child: Discussion(
-          getCurrentRequest: getCurrentRequest,
+          currentRequest: currentRequest,
           currentUser: currentUser,
         ),
       );

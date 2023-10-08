@@ -61,6 +61,7 @@ class DataBase {
             assessedBy: request['assessed_by'],
             assessment: request['assessment'],
             state: request['state'],
+            databasePath: request.reference.path
           )
         );
       }
@@ -85,31 +86,11 @@ class DataBase {
             assessedBy: request['assessed_by'],
             assessment: request['assessment'],
             state: request['state'],
-            requestedByStudentID: request['requested_by_student_id']
+            requestedByStudentID: request['requested_by_student_id'],
+            databasePath: request.reference.path
           )
         );
       }
-
-      // TODO: doesn't work, need to ask Aden
-      // final usersRef = _db.collection("users");
-      // final query =
-      // await usersRef.where('email', isEqualTo: user.emailAddress).get();
-      //
-      // final fetchedUser = query.docs[0];
-      // final requestsFromUser = fetchedUser['requests']; // TODO: some students may not have requests yet, which will cause error, possible solution: initialise empty request array
-      //
-      // for (final request in requestsFromUser){
-      //
-      //   // Get requests from selected subject
-      //   if(request.toString().contains(subject.databasePath)){
-      //     final DocumentReference requestRef = _db.doc(request.toString());
-      //     try{
-      //       await requestRef.get();
-      //     } on Exception catch (e) {
-      //       print(e);
-      //     }
-      //   }
-      // }
     }
 
     // TODO: for permission (Tutor, etc)
@@ -151,14 +132,64 @@ class DataBase {
     // Add request to subject's collection
     final DocumentReference requestRef = await subjectRef.collection('requests').add(request.toJson());
 
-    // Query for user
-    final usersRef = _db.collection("users");
-    final query = await usersRef.where('email', isEqualTo: user.emailAddress).get();
-
-    // Add reference to user's requests array
-    await query
-      .docs[0]
-      .reference
-      .update({'requests': FieldValue.arrayUnion([requestRef])});
+    // Add first discussion to the database
+    await requestRef.collection('discussions').add(
+      {'subject': subject.code,
+      'reason': request.reason,
+      'assessment': request.assessment,
+      'submittedBy': user.firstName,
+      'submittedByUserID': user.id,
+      'type': 'request'}
+    );
   }
+
+  Future<List<Map<String, String>>> getDiscussionThreads(RequestModel request) async {
+
+    DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+    List<Map<String, String>> allDiscussions = [];
+
+    final discussions = await docRef.collection('discussions').get();
+
+    for (final discussion in discussions.docs) {
+      allDiscussions.add(
+        {'assessment': discussion['assessment'],
+          'reason': discussion['reason'],
+          'subject': discussion['subject'],
+          'submittedBy': discussion['submittedBy'],
+          'submittedByUserID': discussion['submittedByUserID'],
+          'type': discussion['type']
+        }
+      );
+    }
+    return allDiscussions;
+  }
+
+  Future<void> addNewDiscussion(RequestModel request, Map<String, String> newDiscussion) async {
+
+    DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+    await docRef.collection('discussions').add(newDiscussion);
+  }
+
+}
+
+Future<void> acceptRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Approved'});
+}
+
+Future<void> declineRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Declined'});
+}
+
+Future<void> flagRequest(RequestModel request) async {
+
+  DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
+
+  await docRef.update({'state': 'Flagged'});
 }
