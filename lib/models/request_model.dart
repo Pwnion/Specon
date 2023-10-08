@@ -8,16 +8,15 @@ class RequestModel {
   final String requestedByStudentID;
   final String databasePath;
 
-  RequestModel({
-    required this.requestedBy,
-    required this.reason,
-    required this.additionalInfo,
-    required this.assessedBy,
-    required this.assessment,
-    required this.state,
-    required this.requestedByStudentID,
-    required this.databasePath
-  });
+  RequestModel(
+      {required this.requestedBy,
+      required this.reason,
+      required this.additionalInfo,
+      required this.assessedBy,
+      required this.assessment,
+      required this.state,
+      required this.requestedByStudentID,
+      required this.databasePath});
 
   Map<String, String> toJson() {
     return {

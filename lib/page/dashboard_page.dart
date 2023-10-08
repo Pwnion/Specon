@@ -31,7 +31,6 @@ class _DashboardState extends State<Dashboard>
   @override
   bool get wantKeepAlive => true;
 
-
   SubjectModel currentSubject = SubjectModel(
       name: '',
       code: '',
@@ -40,7 +39,15 @@ class _DashboardState extends State<Dashboard>
       year: '',
       databasePath: '');
   List<SubjectModel> subjectList = [];
-  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
+  RequestModel currentRequest = RequestModel(
+      requestedBy: '',
+      reason: '',
+      additionalInfo: '',
+      assessedBy: '',
+      assessment: '',
+      state: '',
+      requestedByStudentID: '',
+      databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
@@ -51,7 +58,6 @@ class _DashboardState extends State<Dashboard>
   final Future<UserModel> _userFromDB =
       _database.getUserFromEmail(_auth.currentUser!.email!);
 
-
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(RequestModel request) {
     setState(() {
@@ -60,7 +66,6 @@ class _DashboardState extends State<Dashboard>
       currentRequest = request;
     });
   }
-
 
   void getSelectedAssessment(String assessment) {
     setState(() {
