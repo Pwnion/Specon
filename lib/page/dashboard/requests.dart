@@ -4,7 +4,6 @@
 /// and received requests for tutors and subject coordinators.
 /// Authors: Kuo Wei WU, Zhi Xiang Chan
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
@@ -170,73 +169,6 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
-//                     focusedBorder: OutlineInputBorder(
-//                       borderSide: BorderSide(
-//                         color: Theme.of(context).colorScheme.onPrimary,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//             // end of search bar
-//             Divider(
-//               color: Theme.of(context).colorScheme.surface,
-//               thickness: 3,
-//               height: 1,
-//             ),
-//             // Filter Button
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               // filter drop down button
-//               children: <Widget>[
-//                 // state filter
-//                 DropdownButton<String>(
-//                   iconDisabledColor: Theme.of(context).colorScheme.background,
-//                   focusColor: Theme.of(context).colorScheme.background,
-//                   style: TextStyle(
-//                       color: Theme.of(context).colorScheme.onPrimary,
-//                       fontSize: 12),
-//                   padding: const EdgeInsets.all(1),
-//                   value: _dropdownValueState,
-//                   items: filterSelectionsState
-//                       .map<DropdownMenuItem<String>>((String state) {
-//                     return DropdownMenuItem<String>(
-//                       value: state,
-//                       child: Text(state),
-//                     );
-//                   }).toList(),
-//                   onChanged: (state) {
-//                     setState(() {
-//                       _dropdownValueState = state!;
-//                     });
-//                   },
-//                 ),
-//                 const SizedBox(
-//                   width: 5,
-//                 ),
-                    // assessment filter
-                    // DropdownButton<String>(
-                    //   iconDisabledColor: Theme.of(context).colorScheme.background,
-                    //   focusColor: Theme.of(context).colorScheme.background,
-                    //   style: TextStyle(
-                    //       color: Theme.of(context).colorScheme.secondary,
-                    //       fontSize: 12),
-                    //   padding: const EdgeInsets.all(1),
-                    //   value: _dropdownValueAssess,
-                    //   items: filterSelectionsAssess
-                    //       .map<DropdownMenuItem<String>>((String value) {
-                    //     return DropdownMenuItem<String>(
-                    //       value: value,
-                    //       child: Text(value),
-                    //     );
-                    //   }).toList(),
-                    //   onChanged: (value) {
-                    //     setState(() {
-                    //       _dropdownValueAssess = value!;
-                    //     });
-                    //   },
-                    // ),
                   ),
                 ),
               ),
@@ -325,82 +257,6 @@ class _RequestsState extends State<Requests> {
                 height: 1,
               ),
             ),
-            // Filter Button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              // filter drop down button
-              children: <Widget>[
-                // state filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueState,
-                  items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (state) {
-                    setState(() {
-                      _dropdownValueState = state!;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                // assessment filter
-                DropdownButton<String>(
-                  iconDisabledColor: Theme.of(context).colorScheme.background,
-                  focusColor: Theme.of(context).colorScheme.background,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 12),
-                  padding: const EdgeInsets.all(1),
-                  value: _dropdownValueAssess,
-                  items: filterSelectionsAssess
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _dropdownValueAssess = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5.0),
-              child: Divider(
-                color: Theme.of(context).colorScheme.surface,
-                thickness: 3,
-                height: 1,
-              ),
-            ),
-            // Display requests
-
-            // Listen for database changes
-            // StreamBuilder(
-            //   stream: FirebaseFirestore.instance
-            //       .doc(_currentSubject.databasePath)
-            //       .snapshots(),
-            //   builder: (context, snapshot) {
-            //     if (snapshot.connectionState == ConnectionState.active) {
-            //       fetchRequestsFromDB();
-            //     }
-            //     return Container();
-            //   }
-            // ),
 
             Expanded(
               child: RawScrollbar(
