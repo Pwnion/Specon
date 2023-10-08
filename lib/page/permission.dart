@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../mock_data.dart';
 
 class Permission extends StatefulWidget {
   const Permission({super.key});
@@ -61,6 +60,7 @@ class _PermissionState extends State<Permission> {
       }
     }
   ];
+  List<String> temporaryUserList = [];
 
   ///
   List<Widget> buildUserColumn(final List users) {
@@ -215,6 +215,77 @@ class _PermissionState extends State<Permission> {
     }
   }
 
+  Future<void> buildUserManagementDialog(int currentGroupIndex) {
+
+    if(temporaryUserList.isEmpty){
+      setState(() {
+        temporaryUserList = List.from(permissionGroups[currentGroupIndex]['users']);
+      });
+    }
+
+    return showDialog<void>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text("Edit ${permissionGroups[currentGroupIndex]['name']}'s users [COMP10001]"), // TODO: Get current subject from dashboard
+          content: SizedBox(
+            width: 500,
+            height: 500,
+            child: SingleChildScrollView(
+              controller: _addUserScrollController,
+              child: ListView.builder(
+                  controller: _addUserScrollController,
+                  itemCount: canvasUser.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => ListTile(
+                      title: Text(canvasUser[index]),
+                      trailing: temporaryUserList.contains(canvasUser[index])
+                          ? IconButton(
+                          icon: Icon(Icons.check_circle, color: Colors.green[700]),
+                          onPressed: () {
+                            setState(() {
+                              temporaryUserList.remove(canvasUser[index]);
+                            });
+                          }
+                      )
+                          : IconButton(
+                          icon: const Icon(Icons.check_circle_outline, color: Colors.grey),
+                          onPressed: () {
+                            setState(() {
+                              temporaryUserList.add(canvasUser[index]);
+                            });
+                          }
+                      )
+                  )
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  temporaryUserList = [];
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  permissionGroups[currentGroupIndex]['users'] = List.from(temporaryUserList);
+                  temporaryUserList = [];
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   ///
   Widget buildPermissionRows() {
     return Flexible(
@@ -288,56 +359,13 @@ class _PermissionState extends State<Permission> {
                             color: Theme.of(context).colorScheme.surface,
                             height: 1.0,
                             minWidth: 1.0,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (context) => StatefulBuilder(
-                                builder: (context, setState) => AlertDialog(
-                                  title: const Text('Edit user for (subject code)'),
-                                  content: SizedBox(
-                                    width: 500,
-                                    height: 500,
-                                    child: SingleChildScrollView(
-                                      controller: _addUserScrollController,
-                                      child: ListView.builder(
-                                        controller: _addUserScrollController,
-                                        itemCount: canvasUser.length,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index2) => ListTile(
-                                          title: Text(canvasUser[index2]),
-                                          trailing: permissionGroups[index]['users'].contains(canvasUser[index2])
-                                            ? IconButton(
-                                            icon: Icon(Icons.check_circle, color: Colors.green[700]),
-                                            onPressed: () {
-                                              setState(() {
-                                                permissionGroups[index]['users'].remove(canvasUser[index2]);
-                                              });
-                                            }
-                                          )
-                                            : IconButton(
-                                            icon: const Icon(Icons.check_circle_outline, color: Colors.grey),
-                                            onPressed: () {
-                                              setState(() {
-                                                permissionGroups[index]['users'].add(canvasUser[index2]);
-                                              });
-                                            }
-                                          )
-                                        )
-                                      ),
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, 'OK'),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            onPressed: () {
+                              buildUserManagementDialog(index).then((value) {
+                                setState((){
+                                  permissionGroups;
+                                });
+                              });
+                            },
                             shape: const CircleBorder(),
                             child: const Text('+'),
                           )
@@ -391,7 +419,7 @@ class _PermissionState extends State<Permission> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      permissionGroups.add(permGroup);
+                      // permissionGroups.add();
                     });
                   },
                   child: const Text('Add new group')
