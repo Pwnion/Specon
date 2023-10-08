@@ -14,25 +14,33 @@ import 'package:url_launcher/url_launcher.dart';
 final _storage = FirebaseStorage.instance;
 final _storageRef = _storage.ref();
 final _documentsRef = _storageRef.child("documents");
-PlatformFile? pickedFile;
+//PlatformFile? pickedFile;
 
 /// Make user's computer pop up a file window to select file
-Future<String> selectFile() async{
-  final result = await FilePicker.platform.pickFiles(type: FileType.any, allowMultiple: false);
+Future<FilePickerResult?> selectFile() async{
+  final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'txt'],
+      allowMultiple: true
+  );
   if(result == null){
-    return "file not selected";
+    return null;
   }
-  pickedFile = result.files.first;
-  print(pickedFile!.name);
-  return pickedFile!.name;
+  print(result.names);
+  return result;
 }
 
 /// upload the selected file to cloud storage in the path 'documents/{requestID}'
-UploadTask uploadFile(String dataPath) {
-  print(dataPath);
-  final ref = _documentsRef.child("$dataPath/${pickedFile!.name}");
-  final fileBytes = pickedFile!.bytes; // on web app this is necessary
-  return ref.putData(fileBytes!);
+UploadTask? uploadFile(String dataPath, FilePickerResult filePickerResult) {
+  Reference? ref;
+  Uint8List? fileBytes;
+  UploadTask? uploadTask;
+  for(PlatformFile file in filePickerResult.files){
+    ref = _documentsRef.child("$dataPath/${file!.name}");
+    fileBytes = file!.bytes; // on web app this is necessary
+    uploadTask = ref.putData(fileBytes!);
+  }
+  return uploadTask;
 }
 
 /// download all file that is in 'documents/{requestID}'

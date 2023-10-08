@@ -148,6 +148,8 @@ class DataBase {
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
     List<Map<String, String>> allDiscussions = [];
 
+    // use it after deleting all past discussion
+    //final discussions = await docRef.collection('discussions').orderBy("timestamp").get();
     final discussions = await docRef.collection('discussions').get();
 
     for (final discussion in discussions.docs) {
@@ -157,7 +159,7 @@ class DataBase {
           'subject': discussion['subject'],
           'submittedBy': discussion['submittedBy'],
           'submittedByUserID': discussion['submittedByUserID'],
-          'type': discussion['type']
+          'type': discussion['type'],
         }
       );
     }
@@ -167,7 +169,7 @@ class DataBase {
   Future<void> addNewDiscussion(RequestModel request, Map<String, String> newDiscussion) async {
 
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
-
+    newDiscussion['timestamp'] = DateTime.now().toString();
     await docRef.collection('discussions').add(newDiscussion);
   }
 
