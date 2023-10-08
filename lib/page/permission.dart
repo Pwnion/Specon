@@ -85,10 +85,10 @@ class _PermissionState extends State<Permission> {
       // Not in Edit Mode
       if (!inEditMode) {
         if (requestTypePermissions[requestType]!) {
-          row.add(const SizedBox(width: 70.0, child: greenTick));
+          row.add(const SizedBox(width: 70.0, height: 35.0, child: greenTick));
         }
         else {
-          row.add(const SizedBox(width: 70.0, child: redCross));
+          row.add(const SizedBox(width: 70.0, height: 35.0, child: redCross));
         }
       }
       // In edit mode
@@ -96,6 +96,7 @@ class _PermissionState extends State<Permission> {
         row.add(
           SizedBox(
             width: 70.0,
+            height: 35.0,
             child: Checkbox(
               value: requestTypePermissions[requestType],
               checkColor: Theme.of(context).colorScheme.surface,
@@ -117,7 +118,11 @@ class _PermissionState extends State<Permission> {
     final List<Widget> requestTypeHeaders = [];
     final List<Widget> rows = [];
 
-    requestTypeHeaders.add(const SizedBox(width:150.0));
+    if (!inEditMode) {
+      requestTypeHeaders.add(const SizedBox(width: 150.0));
+    } else {
+      requestTypeHeaders.add(const SizedBox(width: 150.0));
+    }
 
     for (final requestType in requestTypes){
       requestTypeHeaders.add(
@@ -142,12 +147,7 @@ class _PermissionState extends State<Permission> {
       )
     );
 
-    if(!inEditMode){
-      rows.add(const SizedBox(height: 4.2));
-    }
-
     for(final assessment in assessments.keys.toList()){
-
       rows.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -166,11 +166,6 @@ class _PermissionState extends State<Permission> {
           ],
         )
       );
-
-      if(!inEditMode){
-        rows.add(const SizedBox(height: 7.9));
-      }
-
     }
 
     return Column(
@@ -221,7 +216,8 @@ class _PermissionState extends State<Permission> {
     }
   }
 
-  Future<void> buildUserManagementDialog(int currentGroupIndex) {
+  ///
+  Future<List<String>?> buildUserManagementDialog(int currentGroupIndex) {
 
     if(temporaryUserList.isEmpty){
       setState(() {
@@ -229,11 +225,14 @@ class _PermissionState extends State<Permission> {
       });
     }
 
-    return showDialog<void>(
+    return showDialog<List<String>>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text("Edit ${permissionGroups[currentGroupIndex]['name']}'s users [COMP10001]"), // TODO: Get current subject from dashboard
+      builder: (_) => StatefulBuilder(
+        builder: (_, setState) => AlertDialog(
+          title: Text(
+            "Edit ${permissionGroups[currentGroupIndex]['name']}'s users [${widget.currentSubject.code}]",
+            style: TextStyle(color: Theme.of(context).colorScheme.surface)
+          ),
           content: SizedBox(
             width: 500,
             height: 500,
@@ -243,8 +242,8 @@ class _PermissionState extends State<Permission> {
                   controller: _addUserScrollController,
                   itemCount: canvasUser.length,
                   shrinkWrap: true,
-                  itemBuilder: (context, index) => ListTile(
-                      title: Text(canvasUser[index]),
+                  itemBuilder: (_, index) => ListTile(
+                      title: Text(canvasUser[index], style: TextStyle(color: Theme.of(context).colorScheme.surface)),
                       trailing: temporaryUserList.contains(canvasUser[index])
                           ? IconButton(
                           icon: Icon(Icons.check_circle, color: Colors.green[700]),
@@ -269,20 +268,13 @@ class _PermissionState extends State<Permission> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  temporaryUserList = [];
-                });
-                Navigator.pop(context);
+                Navigator.pop(context, permissionGroups[currentGroupIndex]['users']);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  permissionGroups[currentGroupIndex]['users'] = List.from(temporaryUserList);
-                  temporaryUserList = [];
-                });
-                Navigator.pop(context);
+                Navigator.pop(context, temporaryUserList);
               },
               child: const Text('OK'),
             ),
@@ -368,7 +360,8 @@ class _PermissionState extends State<Permission> {
                             onPressed: () {
                               buildUserManagementDialog(index).then((value) {
                                 setState((){
-                                  permissionGroups;
+                                  permissionGroups[index]['users'] = value;
+                                  temporaryUserList = [];
                                 });
                               });
                             },
