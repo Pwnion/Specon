@@ -219,13 +219,6 @@ class _DashboardState extends State<Dashboard>
                             size: 30.0,
                           ),
                         ),
-                        onTap: () {
-                          if(widget.canvasEmail != null) {
-                            Navigator.pop(context);
-                          } else {
-                            _auth.signOut();
-                          }
-                        },
                       ),
                     // Permission Settings Button
                     if (currentUser.role == UserType.subjectCoordinator)
@@ -267,7 +260,13 @@ class _DashboardState extends State<Dashboard>
                         itemBuilder: (BuildContext context) => [
                           PopupMenuItem(
                             child: const Text('Logout'),
-                            onTap: () => _auth.signOut(),
+                            onTap: () {
+                              if(widget.canvasEmail != null) {
+                                Navigator.pop(context);
+                              } else {
+                                _auth.signOut();
+                              }
+                            },
                           ),
                         ],
                         tooltip: 'User Options',
