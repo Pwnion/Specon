@@ -7,6 +7,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
@@ -41,15 +42,22 @@ class _DiscussionState extends State<Discussion> {
   List discussionThread = [];
   bool fetchingFromDB = true;
   bool _openResponse = false;
-  String selectedFileName = "";
-  String _displayFileName = "";
+  bool _showClearButton = false;
+  FilePickerResult? _selectedFiles;
+  String _displayFileNames = "";
 
   /// download documents from the cloud storage related to the selected request
   //void _downloadAttachment() {}
 
   void _setDisplayFileName(String name){
     setState(() {
-      _displayFileName = name;
+      _displayFileNames = name;
+    });
+  }
+
+  void _setShowClearButton(bool value){
+    setState(() {
+      _showClearButton = value;
     });
   }
 
@@ -103,11 +111,18 @@ class _DiscussionState extends State<Discussion> {
       widget.currentRequest.state = state;
     });
   }
+  
+  void _clearFileVariables(){
+    setState(() {
+      _selectedFiles = null;
+      _displayFileNames = "";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
 
-    DocumentReference docRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
+    DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
 
     // Fetch discussions from the database
     _db.getDiscussionThreads(widget.currentRequest).then((discussionThread) {
@@ -214,8 +229,7 @@ class _DiscussionState extends State<Discussion> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.account_circle_outlined,
-                                      size: 40.0),
+                                  const Icon(Icons.account_circle_outlined, size: 40.0),
                                   const SizedBox(width: 12),
                                   // 2nd line should have student num (now temporary submit by), but it is necessary to store in discussion list?
                                   Text(
@@ -255,7 +269,7 @@ class _DiscussionState extends State<Discussion> {
                                 margin: const EdgeInsets.only(
                                     top: 10, bottom: 10),
                                 child: TextButton(
-                                  onPressed: ()=> downloadFilesToDisc(docRef.id),  //downloadAttachment, TODO
+                                  onPressed: ()=> downloadFilesToDisc(requestRef.id),  //downloadAttachment, TODO
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                   ),
@@ -268,51 +282,6 @@ class _DiscussionState extends State<Discussion> {
                                   ),
                                 ),
                               ),
-                            // temporary upload button, upload button should be on application form
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 10, bottom: 10),
-                              child: TextButton(
-                                onPressed: () {
-                                  _uploadTask = uploadFile(docRef.id);
-                                  _displayUploadState();
-                                }, //downloadAttachment,
-                                style: TextButton.styleFrom(
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                child: Text(
-                                  'upload',
-                                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
-                                ),
-                              ),
-                            ),
-                            // temporary select file button
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 10, bottom: 10),
-                              child: Row(
-                                children: [
-                                  TextButton(
-                                    onPressed: ()async{
-                                      selectedFileName = await selectFile();
-                                      _setDisplayFileName(selectedFileName);
-                                    }, //downloadAttachment,
-                                    style: TextButton.styleFrom(
-                                      alignment: Alignment.centerLeft,
-                                    ),
-                                    child: Text(
-                                      'select file',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: Theme
-                                              .of(context)
-                                              .colorScheme
-                                              .secondary),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -330,12 +299,12 @@ class _DiscussionState extends State<Discussion> {
                  ),
               ),
             ),
+
             // response box and a submit button that updates the discussion thread data
-            
             Visibility(
               visible: _openResponse,
               child: Expanded(
-                flex: 4,
+                flex: 5,
                 child: Container(
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -345,7 +314,7 @@ class _DiscussionState extends State<Discussion> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(
-                        flex: 6,
+                        flex: 7,
                         child: Column(
                           children: [
                             Container(
@@ -370,9 +339,69 @@ class _DiscussionState extends State<Discussion> {
                                 ),
                               ),
                             ),
+                            Expanded(
+                              child: Row(
+                                children: [
+
+                                  // select file button
+                                  TextButton(
+                                    onPressed: ()async{
+                                      _selectedFiles = await selectFile();
+                                      _setDisplayFileName(_selectedFiles!.names.join("\n"));
+                                      _setShowClearButton(true);
+                                    }, //downloadAttachment,
+                                    style: TextButton.styleFrom(
+                                      alignment: Alignment.centerLeft,
+                                    ),
+                                    child: Text(
+                                      'select file',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Theme.of(context).colorScheme.secondary),
+                                    ),
+                                  ),
+
+                                  // display selected file names
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Text(
+                                          _displayFileNames,
+                                          style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onPrimary),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // clear file selection button
+                                  Visibility(
+                                    visible: _showClearButton,
+                                    child: TextButton(
+                                      onPressed: (){
+                                        _clearFileVariables();
+                                        _setShowClearButton(false);
+                                      }, //downloadAttachment,
+                                      style: TextButton.styleFrom(
+                                        alignment: Alignment.centerLeft,
+                                      ),
+                                      child: Text(
+                                        'Clear',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: Theme.of(context).colorScheme.onPrimary),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
+                      // close window button and submit button
                       Expanded(
                         flex: 1,
                         child: Column(
@@ -382,7 +411,7 @@ class _DiscussionState extends State<Discussion> {
                                 child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
                                 onPressed: ()=> setOpenResponse(false)
                             ),
-                            // button that submit the response
+                            // button that submit the response, also submit selected files
                             Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -405,15 +434,22 @@ class _DiscussionState extends State<Discussion> {
                                           if(_textController.value.text != ""){
                                               await _db.addNewDiscussion(widget.currentRequest,
                                                 {
-                                                  'assessment': discussionThread[0]['assessment'],
-                                                  'reason': _textController.value.text,
-                                                  'subject': discussionThread[0]['subject'],
+                                                  'assessment': widget.currentRequest.assessment,
+                                                  'reason': "${_textController.value.text}\nSubmitted file:\n$_displayFileNames",
+                                                  'subject': discussionThread[1]['subject'],
                                                   'submittedBy': widget.currentUser.firstName,
                                                   'submittedByUserID': widget.currentUser.id,
                                                   'type': widget.currentUser.role == UserType.student? 'request': 'respond',
                                               });
                                           }
+                                          // upload document if has selected file
+                                          if(_selectedFiles != null){
+                                            _uploadTask = uploadFile(requestRef.id, _selectedFiles!);
+                                            _displayUploadState();
+                                          }
+                                          // clear all variables
                                           _textController.clear();
+                                          _clearFileVariables();
                                         },
                                         child: Text('Submit', style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.secondary)
                                         ),
