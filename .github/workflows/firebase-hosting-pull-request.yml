@@ -15,7 +15,7 @@ jobs:
       - run: npm install --prefix ./functions
       - run: flutter build web
       - run: mkdir functions/public
-      - run: mv -f build/web/.[!.]* functions/public/
+      - run: mv -f build/web/{.[!.],}* functions/public/
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
