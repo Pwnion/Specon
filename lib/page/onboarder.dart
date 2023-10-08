@@ -13,21 +13,9 @@ class Onboarder extends StatefulWidget {
 }
 
 class _OnboarderState extends State<Onboarder> {
-  int state = 0; // welcome, assman, perman, done
-
-  void printHi() {
-    print('hi');
-  }
+  int state = 1; // welcome, assman, perman, done
 
   bool getStateBool() {
-    if (state >= 2) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  bool assManUnlocked() {
     if (state >= 1) {
       return false;
     } else {
@@ -35,11 +23,19 @@ class _OnboarderState extends State<Onboarder> {
     }
   }
 
-  bool perManUnlocked() {
-    if (state >= 2) {
-      return false;
-    } else {
+  bool assManUnlocked() {
+    if (state < 1) {
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool perManUnlocked() {
+    if (state < 2) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -55,21 +51,21 @@ class _OnboarderState extends State<Onboarder> {
           children: <Widget>[
             Text('Current State: $state'),
             SizedBox(height: 20),
-            MaterialButton(
-              onPressed: () {
-                setState(() {
-                  state += 1;
-                });
-              },
-              child: Text('Increment State'),
-            ),
+            // MaterialButton(
+            //   onPressed: () {
+            //     setState(() {
+            //       state += 1;
+            //     });
+            //   },
+            //   child: Text('Increment State'),
+            // ),
             // Assessment Manager Button
             MaterialButton(
               onPressed: assManUnlocked()
                   ? null
                   : () => setState(() {
                         state += 1;
-                        if (state == 1) {
+                        if (state >= 1) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -77,7 +73,23 @@ class _OnboarderState extends State<Onboarder> {
                                   subject: widget.subject, refreshFn: setState),
                             ),
                           );
-                        } else if (state == 2) {
+                        } // else if (state == 2) {
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (_) => Permission(),
+                        //     ),
+                        //   );
+                        // }
+                      }),
+              child: Text('Ass Manager'),
+            ),
+            MaterialButton(
+              onPressed: perManUnlocked()
+                  ? null
+                  : () => setState(() {
+                        state += 1;
+                        if (state >= 2) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -86,19 +98,13 @@ class _OnboarderState extends State<Onboarder> {
                           );
                         }
                       }),
-              child: Text('Ass Manager'),
-            ),
-            MaterialButton(
-              onPressed: () {},
               child: Text('Permission Manager'),
             ),
             MaterialButton(
               onPressed: getStateBool() ? null : () => state += 1,
-              //onPressed: state >= 1 ? printHi() : null,
               child: Text('Finish'),
             ),
             OutlinedButton(
-                //onPressed: calculateWhetherDisabledReturnsBool() ? null : () => whatToDoOnPressed,
                 onPressed: getStateBool() ? null : () => state += 1,
                 child: Text('Other'))
           ],
