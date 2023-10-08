@@ -114,20 +114,87 @@ class _PermissionState extends State<Permission> {
   }
 
   ///
+  void selectOrDeselectAll(Map<String, dynamic> assessments, bool changeTo){
+
+    for(final assessment in assessments.keys.toList()){
+      for(final requestType in requestTypes){
+        setState(() {
+          assessments[assessment][requestType] = changeTo;
+        });
+      }
+    }
+  }
+
+  ///
   Widget buildPermissionColumn(Map<String, dynamic> assessments){
     final List<Widget> requestTypeHeaders = [];
     final List<Widget> rows = [];
 
     if (!inEditMode) {
-      requestTypeHeaders.add(const SizedBox(width: 150.0));
+      requestTypeHeaders.add(const SizedBox(width: 220.0, height: 30.0));
     } else {
-      requestTypeHeaders.add(const SizedBox(width: 150.0));
+      requestTypeHeaders.add(
+        SizedBox(
+          width: 220.0,
+          height: 30.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: 90.0,
+                height: 30.0,
+                child: FractionallySizedBox(
+                  heightFactor: 0.7,
+                  widthFactor: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.secondary
+                    ),
+                    onPressed: () {
+                      selectOrDeselectAll(assessments, true);
+                    },
+                    child: Text(
+                      'Select All',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface
+                      )
+                    )
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 110.0,
+                height: 30.0,
+                child: FractionallySizedBox(
+                  heightFactor: 0.7,
+                  widthFactor: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.secondary
+                    ),
+                    onPressed: () {
+                      selectOrDeselectAll(assessments, false);
+                    },
+                    child: Text(
+                      'Deselect All',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface
+                      )
+                    )
+                  ),
+                ),
+              )
+            ]
+          )
+        )
+      );
     }
 
     for (final requestType in requestTypes){
       requestTypeHeaders.add(
         SizedBox(
           width: 70.0,
+          height: 30.0,
           child: Center(
             child: Text(
               requestType,
@@ -153,7 +220,7 @@ class _PermissionState extends State<Permission> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             SizedBox(
-              width:150.0,
+              width: 220.0,
               child: Center(
                 child: Text(
                   assessment,
