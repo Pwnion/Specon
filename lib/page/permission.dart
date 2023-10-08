@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:specon/models/subject_model.dart';
 
 class Permission extends StatefulWidget {
-  const Permission({super.key});
+
+  final SubjectModel currentSubject;
+
+  const Permission(
+    {Key? key, required this.currentSubject}
+  ) : super(key: key);
 
   @override
   State<Permission> createState() => _PermissionState();

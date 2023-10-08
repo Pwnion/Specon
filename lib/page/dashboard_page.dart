@@ -109,7 +109,7 @@ class _DashboardState extends State<Dashboard>
   /// Getter for user's enrolled subjects
   void setSubjectList(List<SubjectModel> subjects) {
     setState(() {
-      subjectList = subjects; // TODO: setstate called after dispose error
+      subjectList = subjects; // TODO: setState called after dispose error
     });
   }
 
@@ -159,13 +159,17 @@ class _DashboardState extends State<Dashboard>
                   elevation: 0.0,
                   // Logo
                   leading: InkWell(
-                      onTap: () {},
-                      child: const Center(
-                          child: Text(
+                    onTap: () {},
+                    child: const Center(
+                      child: Text(
                         'Specon',
                         style: TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold),
-                      ))),
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    )
+                  ),
                   leadingWidth: 110.0,
                   // Subject code and name title
                   title: Text('${currentSubject.code} - ${currentSubject.name}',
@@ -192,12 +196,14 @@ class _DashboardState extends State<Dashboard>
                         child: InkWell(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => AsmManager(
-                                          subject: currentSubject,
-                                          refreshFn: setState,
-                                        )));
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AsmManager(
+                                  subject: currentSubject,
+                                  refreshFn: setState,
+                                )
+                              )
+                            );
                           },
                           child: const Icon(
                             Icons.document_scanner,
@@ -206,7 +212,7 @@ class _DashboardState extends State<Dashboard>
                         ),
                       ),
                     // Permission Settings Button
-                    if (currentUser.role == UserType.subjectCoordinator)
+                    if (currentUser.role == UserType.subjectCoordinator && currentSubject.code.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(right: 15.0),
                         child: Tooltip(
@@ -215,9 +221,11 @@ class _DashboardState extends State<Dashboard>
                             onTap: () {
                               setState(() {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const Permission()));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => Permission(currentSubject: currentSubject)
+                                  )
+                                );
                               });
                             },
                             child: const Icon(
