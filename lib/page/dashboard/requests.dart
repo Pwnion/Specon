@@ -136,7 +136,7 @@ class _RequestsState extends State<Requests> {
       _filterBySearch();
 
       return Scaffold(
-        body: Padding(
+          body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
@@ -215,28 +215,28 @@ class _RequestsState extends State<Requests> {
 //                 const SizedBox(
 //                   width: 5,
 //                 ),
-                // assessment filter
-                // DropdownButton<String>(
-                //   iconDisabledColor: Theme.of(context).colorScheme.background,
-                //   focusColor: Theme.of(context).colorScheme.background,
-                //   style: TextStyle(
-                //       color: Theme.of(context).colorScheme.secondary,
-                //       fontSize: 12),
-                //   padding: const EdgeInsets.all(1),
-                //   value: _dropdownValueAssess,
-                //   items: filterSelectionsAssess
-                //       .map<DropdownMenuItem<String>>((String value) {
-                //     return DropdownMenuItem<String>(
-                //       value: value,
-                //       child: Text(value),
-                //     );
-                //   }).toList(),
-                //   onChanged: (value) {
-                //     setState(() {
-                //       _dropdownValueAssess = value!;
-                //     });
-                //   },
-                // ),
+                    // assessment filter
+                    // DropdownButton<String>(
+                    //   iconDisabledColor: Theme.of(context).colorScheme.background,
+                    //   focusColor: Theme.of(context).colorScheme.background,
+                    //   style: TextStyle(
+                    //       color: Theme.of(context).colorScheme.secondary,
+                    //       fontSize: 12),
+                    //   padding: const EdgeInsets.all(1),
+                    //   value: _dropdownValueAssess,
+                    //   items: filterSelectionsAssess
+                    //       .map<DropdownMenuItem<String>>((String value) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: value,
+                    //       child: Text(value),
+                    //     );
+                    //   }).toList(),
+                    //   onChanged: (value) {
+                    //     setState(() {
+                    //       _dropdownValueAssess = value!;
+                    //     });
+                    //   },
+                    // ),
                   ),
                 ),
               ),
@@ -325,106 +325,82 @@ class _RequestsState extends State<Requests> {
                 height: 1,
               ),
             ),
-              // Filter Button
+            // Filter Button
             Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                // filter drop down button
-                children: <Widget>[
-                  // state filter
-                  DropdownButton<String>(
-                    iconDisabledColor:
-                    Theme
-                        .of(context)
-                        .colorScheme
-                        .background,
-                    focusColor: Theme
-                        .of(context)
-                        .colorScheme
-                        .background,
-                    style: TextStyle(
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .onPrimary,
-                        fontSize: 12),
-                    padding: const EdgeInsets.all(1),
-                    value: _dropdownValueState,
-                    items: filterSelectionsState
-                        .map<DropdownMenuItem<String>>((String state) {
-                      return DropdownMenuItem<String>(
-                        value: state,
-                        child: Text(state),
-                      );
-                    }).toList(),
-                    onChanged: (state) {
-                      setState(() {
-                        _dropdownValueState = state!;
-                      });
-                    },
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  // assessment filter
-                  DropdownButton<String>(
-                    iconDisabledColor:
-                    Theme
-                        .of(context)
-                        .colorScheme
-                        .background,
-                    focusColor: Theme
-                        .of(context)
-                        .colorScheme
-                        .background,
-                    style: TextStyle(
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .secondary,
-                        fontSize: 12),
-                    padding: const EdgeInsets.all(1),
-                    value: _dropdownValueAssess,
-                    items: filterSelectionsAssess
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _dropdownValueAssess = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Divider(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .surface,
-                  thickness: 3,
-                  height: 1,
+              mainAxisAlignment: MainAxisAlignment.end,
+              // filter drop down button
+              children: <Widget>[
+                // state filter
+                DropdownButton<String>(
+                  iconDisabledColor: Theme.of(context).colorScheme.background,
+                  focusColor: Theme.of(context).colorScheme.background,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 12),
+                  padding: const EdgeInsets.all(1),
+                  value: _dropdownValueState,
+                  items: filterSelectionsState
+                      .map<DropdownMenuItem<String>>((String state) {
+                    return DropdownMenuItem<String>(
+                      value: state,
+                      child: Text(state),
+                    );
+                  }).toList(),
+                  onChanged: (state) {
+                    setState(() {
+                      _dropdownValueState = state!;
+                    });
+                  },
                 ),
+                const SizedBox(
+                  width: 5,
+                ),
+                // assessment filter
+                DropdownButton<String>(
+                  iconDisabledColor: Theme.of(context).colorScheme.background,
+                  focusColor: Theme.of(context).colorScheme.background,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 12),
+                  padding: const EdgeInsets.all(1),
+                  value: _dropdownValueAssess,
+                  items: filterSelectionsAssess
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _dropdownValueAssess = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: Divider(
+                color: Theme.of(context).colorScheme.surface,
+                thickness: 3,
+                height: 1,
               ),
-              // Display requests
+            ),
+            // Display requests
 
-              // Listen for database changes
-              // StreamBuilder(
-              //   stream: FirebaseFirestore.instance
-              //       .doc(_currentSubject.databasePath)
-              //       .snapshots(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.active) {
-              //       fetchRequestsFromDB();
-              //     }
-              //     return Container();
-              //   }
-              // ),
-
+            // Listen for database changes
+            // StreamBuilder(
+            //   stream: FirebaseFirestore.instance
+            //       .doc(_currentSubject.databasePath)
+            //       .snapshots(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.active) {
+            //       fetchRequestsFromDB();
+            //     }
+            //     return Container();
+            //   }
+            // ),
 
             Expanded(
               child: RawScrollbar(
@@ -434,90 +410,90 @@ class _RequestsState extends State<Requests> {
                 radius: const Radius.circular(5),
                 thickness: 0,
                 child: ListView.builder(
-                    itemCount: _foundRequests.length,
-                    controller: _scrollController,
-                    itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.only(right: 6.0),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                                // widget.openSubmittedRequest(
-                                //     _foundRequests[index]); // TODO
+                  itemCount: _foundRequests.length,
+                  controller: _scrollController,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(right: 6.0),
+                    child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            // TODO: Retrieve request from database and display, pass in some sort of submission ID
+                            // widget.openSubmittedRequest(
+                            //     _foundRequests[index]); // TODO
 // <<<<<<< assessmentManager
 //                               });
 //                             },
 //                             child: Card(
 // =======
-                                widget.openSubmittedRequest(_foundRequests[index]);
-                              });
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                              color: Colors.white,
+                            widget.openSubmittedRequest(_foundRequests[index]);
+                          });
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          color: Colors.white,
 //>>>>>>> main
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    // request first row
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        const SizedBox(width: 4),
-                                        const Icon(Icons.album, size: 20.0),
-                                        const SizedBox(width: 12),
-                                        Text(_foundRequests[index].requestedBy),
-                                        // green tick icon
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.only(
-                                                right: 7.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                // request first row
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.album, size: 20.0),
+                                    const SizedBox(width: 12),
+                                    Text(_foundRequests[index].requestedBy),
+                                    // green tick icon
+                                    Expanded(
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.only(right: 7.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Approved'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(
-                                                      Icons.gpp_good_sharp,
-                                                      color: Colors.green),
-                                                ),
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                                              child: const Icon(
+                                                  Icons.gpp_good_sharp,
+                                                  color: Colors.green),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Flagged'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(Icons.flag,
-                                                      color: Colors.orange),
-                                                ),
-                                                Visibility(
-                                                  visible: _foundRequests[index]
-                                                              .state ==
+                                              child: const Icon(Icons.flag,
+                                                  color: Colors.orange),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
                                                           'Declined'
                                                       ? true
                                                       : false,
-                                                  child: const Icon(
-                                                      Icons.not_interested,
-                                                      color: Colors.red),
-                                                ),
-                                              ],
+                                              child: const Icon(
+                                                  Icons.not_interested,
+                                                  color: Colors.red),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                   ),
+                                  ],
+                                ),
+                              ),
                               Container(
-                                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                                margin:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
                                 // bottom row
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -530,11 +506,13 @@ class _RequestsState extends State<Requests> {
                                   ],
                                 ),
                               ),
-                           ],
+                            ],
                           ),
                         )),
+                  ),
+                ),
               ),
-            ),
+            )
           ],
         ),
       ));
