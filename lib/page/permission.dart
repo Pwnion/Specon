@@ -306,29 +306,30 @@ class _PermissionState extends State<Permission> {
             child: SingleChildScrollView(
               controller: _addUserScrollController,
               child: ListView.builder(
-                  controller: _addUserScrollController,
-                  itemCount: canvasUser.length,
-                  shrinkWrap: true,
-                  itemBuilder: (_, index) => ListTile(
-                      title: Text(canvasUser[index], style: TextStyle(color: Theme.of(context).colorScheme.surface)),
-                      trailing: temporaryUserList.contains(canvasUser[index])
-                          ? IconButton(
-                          icon: Icon(Icons.check_circle, color: Colors.green[700]),
-                          onPressed: () {
-                            setState(() {
-                              temporaryUserList.remove(canvasUser[index]);
-                            });
-                          }
-                      )
-                          : IconButton(
-                          icon: const Icon(Icons.check_circle_outline, color: Colors.grey),
-                          onPressed: () {
-                            setState(() {
-                              temporaryUserList.add(canvasUser[index]);
-                            });
-                          }
-                      )
+                controller: _addUserScrollController,
+                itemCount: canvasUser.length,
+                shrinkWrap: true,
+                itemBuilder: (_, index) => ListTile(
+                  title: Text(canvasUser[index], style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                  subtitle: Text('Role on canvas : ???', style: TextStyle(color: Theme.of(context).colorScheme.surface)), // TODO:
+                  trailing: temporaryUserList.contains(canvasUser[index])
+                    ? IconButton(
+                      icon: Icon(Icons.check_circle, color: Colors.green[700]),
+                      onPressed: () {
+                        setState(() {
+                          temporaryUserList.remove(canvasUser[index]);
+                        });
+                      }
+                    )
+                  : IconButton(
+                    icon: const Icon(Icons.check_circle_outline, color: Colors.grey),
+                    onPressed: () {
+                      setState(() {
+                        temporaryUserList.add(canvasUser[index]);
+                      });
+                    }
                   )
+                )
               ),
             ),
           ),
