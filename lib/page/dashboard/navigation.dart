@@ -58,10 +58,12 @@ class _NavigationState extends State<Navigation> {
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: ClipRRect(
-              borderRadius: isSelected
-                  ? BorderRadius.circular(12)
-                  : BorderRadius.zero, // Set radius only if selected
+              borderRadius: BorderRadius.circular(5),
+// Set radius only if selected
               child: MaterialButton(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).colorScheme.background,
                 elevation: 0.0,
                 onPressed: () {
                   setState(() {
@@ -83,18 +85,15 @@ class _NavigationState extends State<Navigation> {
                     }
                   });
                 },
-                child: Container(
-                  width: double.infinity, // Added this line
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.onBackground
-                      : Theme.of(context).colorScheme.background,
-                  child: Text(
-                    subject.code,
-                    style: TextStyle(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.background
-                          : Theme.of(context).colorScheme.onBackground,
-                    ),
+                //child: Container(
+                //width: double.infinity, // Added this line
+
+                child: Text(
+                  subject.code,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.background
+                        : Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ),
@@ -177,10 +176,20 @@ class _NavigationState extends State<Navigation> {
           if (widget.currentUser.role == UserType.student)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-              child: ElevatedButton(
+              child: OutlinedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.secondary)),
+                    side: MaterialStateProperty.all(BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.0,
+                        style: BorderStyle.solid)),
+                    //backgroundColor: MaterialStateProperty.all(
+                    //    Theme.of(context).colorScheme.secondary),
+                    foregroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    )),
                 onPressed: () {
                   setState(() {
                     widget.openNewRequestForm();
@@ -197,7 +206,11 @@ class _NavigationState extends State<Navigation> {
         ],
       );
     } else {
-      return const CircularProgressIndicator();
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
   }
 }
