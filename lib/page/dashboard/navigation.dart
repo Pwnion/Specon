@@ -58,10 +58,12 @@ class _NavigationState extends State<Navigation> {
           child: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: ClipRRect(
-              borderRadius: isSelected
-                  ? BorderRadius.circular(12)
-                  : BorderRadius.zero, // Set radius only if selected
+              borderRadius: BorderRadius.circular(5),
+// Set radius only if selected
               child: MaterialButton(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).colorScheme.background,
                 elevation: 0.0,
                 onPressed: () {
                   setState(() {
@@ -83,18 +85,15 @@ class _NavigationState extends State<Navigation> {
                     }
                   });
                 },
-                child: Container(
-                  width: double.infinity, // Added this line
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.onBackground
-                      : Theme.of(context).colorScheme.background,
-                  child: Text(
-                    subject.code,
-                    style: TextStyle(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.background
-                          : Theme.of(context).colorScheme.onBackground,
-                    ),
+                //child: Container(
+                //width: double.infinity, // Added this line
+
+                child: Text(
+                  subject.code,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.background
+                        : Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ),
