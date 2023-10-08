@@ -73,10 +73,8 @@ class _NavigationState extends State<Navigation> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AsmManager(
-                            subject: subject,
-                            refreshFn: setState,
-                          ),
+                          builder: (_) =>
+                              AsmManager(subject: subject, refreshFn: setState),
                         ),
                       );
                     } else {
