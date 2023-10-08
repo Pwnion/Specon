@@ -3,6 +3,8 @@
 /// Author: Aden McCusker
 
 import 'package:flutter/material.dart';
+import 'package:specon/models/subject_model.dart';
+import 'package:specon/page/onboarder.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -56,6 +58,14 @@ class _AppState extends State<App> {
 
   /// Determine which page to display based on the state of the initialisation.
   Widget _getPage() {
+    return Onboarder(
+        subject: SubjectModel(
+            name: 'compyamum',
+            code: '123',
+            assessments: [],
+            semester: '2',
+            year: '2023',
+            databasePath: ''));
     if (_error) {
       return const Error();
     }
