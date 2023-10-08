@@ -176,10 +176,20 @@ class _NavigationState extends State<Navigation> {
           if (widget.currentUser.role == UserType.student)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-              child: ElevatedButton(
+              child: OutlinedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.secondary)),
+                    side: MaterialStateProperty.all(BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.0,
+                        style: BorderStyle.solid)),
+                    //backgroundColor: MaterialStateProperty.all(
+                    //    Theme.of(context).colorScheme.secondary),
+                    foregroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.secondary),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    )),
                 onPressed: () {
                   setState(() {
                     widget.openNewRequestForm();
