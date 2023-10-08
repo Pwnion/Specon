@@ -252,8 +252,9 @@ class _RequestsState extends State<Requests> {
                 thickness: 0.5,
                 height: 1,
               ),
+            ),
               // Filter Button
-              Row(
+            Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 // filter drop down button
                 children: <Widget>[
@@ -432,23 +433,16 @@ class _RequestsState extends State<Requests> {
                                                 ),
                                               ],
                                             ),
-                                            Visibility(
-                                              visible: _foundRequests[index].state == 'Declined' ? true : false,
-                                              child: const Icon(Icons.not_interested, color: Colors.red),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
+                                   ),
                               Container(
                                 margin: const EdgeInsets.only(top: 10, bottom: 10),
                                 // bottom row
                                 child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     const SizedBox(width: 8),
                                     Text(_foundRequests[index].assessment),
@@ -458,7 +452,7 @@ class _RequestsState extends State<Requests> {
                                   ],
                                 ),
                               ),
-                            ],
+                           ],
                           ),
                         ),
                       ),
