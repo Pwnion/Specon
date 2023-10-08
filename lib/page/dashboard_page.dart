@@ -18,9 +18,16 @@ import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 
 class Dashboard extends StatefulWidget {
+  final String? canvasEmail;
   final UserType userType;
 
-  const Dashboard({Key? key, required this.userType}) : super(key: key);
+  const Dashboard(
+    {
+      Key? key,
+      this.canvasEmail,
+      required this.userType
+    }
+  ) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -55,8 +62,16 @@ class _DashboardState extends State<Dashboard>
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
-  final Future<UserModel> _userFromDB =
-      _database.getUserFromEmail(_auth.currentUser!.email!);
+  
+  late final Future<UserModel> _userFromDB;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFromDB = _database.getUserFromEmail(
+      widget.canvasEmail ?? _auth.currentUser!.email!
+    );
+  }
 
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(RequestModel request) {
@@ -245,7 +260,13 @@ class _DashboardState extends State<Dashboard>
                         itemBuilder: (BuildContext context) => [
                           PopupMenuItem(
                             child: const Text('Logout'),
-                            onTap: () => _auth.signOut(),
+                            onTap: () {
+                              if(widget.canvasEmail != null) {
+                                Navigator.pop(context);
+                              } else {
+                                _auth.signOut();
+                              }
+                            },
                           ),
                         ],
                         tooltip: 'User Options',
