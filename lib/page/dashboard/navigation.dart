@@ -50,34 +50,48 @@ class _NavigationState extends State<Navigation> {
 
     // Create buttons for each subject
     for (final subject in subjectList) {
+      bool isSelected = subject == selectedSubject;
       subjectWidgets.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: MaterialButton(
-            elevation: 0.0,
-            color: subject == selectedSubject
-                ? Theme.of(context).colorScheme.onBackground
-                : Theme.of(context).colorScheme.background,
-            onPressed: () {
-              setState(() {
-                if (subject.assessments.isEmpty &&
-                    widget.currentUser.role == UserType.subjectCoordinator) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AsmManager(
-                        subject: subject,
-                        refreshFn: setState,
+        Container(
+          color: Theme.of(context).colorScheme.background,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: MaterialButton(
+              elevation: 0.0,
+              onPressed: () {
+                setState(() {
+                  if (subject.assessments.isEmpty &&
+                      widget.currentUser.role == UserType.subjectCoordinator) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AsmManager(
+                          subject: subject,
+                          refreshFn: setState,
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  selectSubject(subject);
-                  widget.setCurrentSubject(subject);
-                }
-              });
-            },
-            child: Text(subject.code),
+                    );
+                  } else {
+                    selectSubject(subject);
+                    widget.setCurrentSubject(subject);
+                  }
+                });
+              },
+              child: Container(
+                width: double.infinity, // Added this line
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onBackground
+                    : Theme.of(context).colorScheme.background,
+                child: Text(
+                  subject.code,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.background
+                        : Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       );
