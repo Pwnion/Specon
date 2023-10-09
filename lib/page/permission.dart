@@ -22,7 +22,7 @@ class _PermissionState extends State<Permission> {
 
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
   static final List<String> canvasUser = ['Tawfiq', 'Alex', 'Aden', 'Brian', 'Drey', 'Jeremy', 'Lucas', 'Geela'];
-  static List permissionGroups = [
+  static List<Map<String, dynamic>> permissionGroups = [
     {'name': 'Head Tutor',
      'priority': 1,
      'users': ['Alex'],
@@ -66,6 +66,7 @@ class _PermissionState extends State<Permission> {
       }
     }
   ];
+  static List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
 
   ///
@@ -267,7 +268,7 @@ class _PermissionState extends State<Permission> {
           },
           onTapOutside: (pointer) {
             setState(() {
-              for (final permissionGroup in permissionGroups) {
+              for (final permissionGroup in temporaryPermissionGroups) {
                 if (permissionGroup['name'] == userGroupName){
                   permissionGroup['name'] = newGroupName;
                 }
@@ -288,7 +289,7 @@ class _PermissionState extends State<Permission> {
 
     if(temporaryUserList.isEmpty){
       setState(() {
-        temporaryUserList = List.from(permissionGroups[currentGroupIndex]['users']);
+        temporaryUserList = List.from(temporaryPermissionGroups[currentGroupIndex]['users']);
       });
     }
 
@@ -297,7 +298,7 @@ class _PermissionState extends State<Permission> {
       builder: (_) => StatefulBuilder(
         builder: (_, setState) => AlertDialog(
           title: Text(
-            "Edit ${permissionGroups[currentGroupIndex]['name']}'s users [${widget.currentSubject.code}]",
+            "Edit ${temporaryPermissionGroups[currentGroupIndex]['name']}'s users [${widget.currentSubject.code}]",
             style: TextStyle(color: Theme.of(context).colorScheme.surface)
           ),
           content: SizedBox(
@@ -336,7 +337,7 @@ class _PermissionState extends State<Permission> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.pop(context, permissionGroups[currentGroupIndex]['users']);
+                Navigator.pop(context, temporaryPermissionGroups[currentGroupIndex]['users']);
               },
               child: const Text('Cancel'),
             ),
@@ -360,25 +361,25 @@ class _PermissionState extends State<Permission> {
         controller: _scrollController,
         child: ReorderableListView.builder(
           scrollController: _scrollController,
-          itemCount: permissionGroups.length,
+          itemCount: temporaryPermissionGroups.length,
           onReorder: (oldIndex, newIndex) {
 
-            final len = permissionGroups.length;
+            final len = temporaryPermissionGroups.length;
 
             if (newIndex > len) newIndex = len;
             if (oldIndex < newIndex) newIndex--;
 
-            final permissionGroup = permissionGroups[oldIndex];
+            final permissionGroup = temporaryPermissionGroups[oldIndex];
 
             setState(() {
-              permissionGroups.remove(permissionGroup);
-              permissionGroups.insert(newIndex, permissionGroup);
+              temporaryPermissionGroups.remove(permissionGroup);
+              temporaryPermissionGroups.insert(newIndex, permissionGroup);
             });
             // TODO: Create function to update new priorities for each item
             // TODO: Change priority on DB
           },
           itemBuilder: (context, index) => Container(
-            key: ValueKey(permissionGroups[index]['priority']),
+            key: ValueKey(temporaryPermissionGroups[index]['priority']),
             color: Theme.of(context).colorScheme.surface,
             child: IntrinsicHeight(
               child: Row(
@@ -393,7 +394,7 @@ class _PermissionState extends State<Permission> {
                       )
                     ),
                     child: Center(
-                        child: buildGroupColumn(permissionGroups[index]['name']),
+                        child: buildGroupColumn(temporaryPermissionGroups[index]['name']),
                     ),
                   ),
                   // Users
@@ -413,7 +414,7 @@ class _PermissionState extends State<Permission> {
                           Expanded(
                             child: Column(
                               children: [
-                                ...buildUserColumn(permissionGroups[index]['users'])
+                                ...buildUserColumn(temporaryPermissionGroups[index]['users'])
                               ]
                             )
                           ),
@@ -428,7 +429,7 @@ class _PermissionState extends State<Permission> {
                             onPressed: () {
                               buildUserManagementDialog(index).then((value) {
                                 setState((){
-                                  permissionGroups[index]['users'] = value;
+                                  temporaryPermissionGroups[index]['users'] = value;
                                   temporaryUserList = [];
                                 });
                               });
@@ -450,7 +451,7 @@ class _PermissionState extends State<Permission> {
                           right: BorderSide(color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
-                      child: Center(child: buildPermissionColumn(permissionGroups[index]['assessments'])),
+                      child: Center(child: buildPermissionColumn(temporaryPermissionGroups[index]['assessments'])),
                     ),
                   ),
                 ],
@@ -460,6 +461,35 @@ class _PermissionState extends State<Permission> {
         ),
       ),
     );
+  }
+
+  List<Map<String, dynamic>> deepCopy(List<Map<String, dynamic>> copyFrom){
+
+    List<Map<String, dynamic>> copyTo = [];
+
+    for(final group in copyFrom){
+
+      Map<String, Map<String, bool>> assessments = {};
+
+      for(final assessment in group['assessments'].keys.toList()){
+        assessments[assessment] = Map.of(group['assessments'][assessment]);
+      }
+
+      copyTo.add({
+        'name': group['name'],
+        'priority': group['priority'],
+        'users': List.from(group['users']),
+        'assessments': assessments
+      });
+    }
+
+    return copyTo;
+  }
+
+  @override
+  void initState() {
+    temporaryPermissionGroups = deepCopy(permissionGroups);
+    super.initState();
   }
 
   @override
@@ -483,23 +513,52 @@ class _PermissionState extends State<Permission> {
             // Buttons
             Row(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      // permissionGroups.add();
-                    });
-                  },
-                  child: const Text('Add new group')
-                ),
                 const SizedBox(width: 10),
+                // Edit/Save Button
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      editButtonText = inEditMode ? 'Edit' : 'Save';
+
+                      // If in edit mode, save the changes
+                      if(inEditMode){
+                        permissionGroups = deepCopy(temporaryPermissionGroups);
+
+                      // If not in edit mode, copy original list
+                      } else {
+                        temporaryPermissionGroups = deepCopy(permissionGroups);
+                      }
+
                       inEditMode = !inEditMode;
+                      editButtonText = inEditMode ? 'Save' : 'Edit';
                     });
                   },
                   child: Text(editButtonText),
+                ),
+                const SizedBox(width: 10.0),
+                // Cancel Button
+                if(inEditMode)
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      inEditMode = false;
+                      editButtonText = 'Edit';
+
+                      // Don't save the changes
+                      temporaryPermissionGroups = deepCopy(permissionGroups);
+                    });
+                  },
+                  child: const Text('Cancel')
+                ),
+                const SizedBox(width: 10.0),
+                // Add new group button
+                if(inEditMode)
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      // temporaryPermissionGroups.add();
+                    });
+                  },
+                  child: const Text('Add new group')
                 ),
               ],
             ),
