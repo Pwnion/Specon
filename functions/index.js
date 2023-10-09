@@ -36,7 +36,7 @@ lti.whitelist(lti.appRoute());
 
 lti.onConnect(async (token, req, res) => {
   if(!token) {
-    return res.redirect(`/app`);
+    return res.sendFile(path.join(__dirname, './public/index.html'));
   }
 
   const canvasUid = token.user;
