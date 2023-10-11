@@ -10,8 +10,9 @@ class UserModel {
   final String emailAddress;
   final UserType role;
   final List<dynamic> subjects;
+  String? aapPath;
 
-  const UserModel({
+  UserModel({
     required this.id,
     required this.studentID,
     required this.firstName,

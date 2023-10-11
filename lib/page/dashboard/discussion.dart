@@ -8,6 +8,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
@@ -45,9 +46,7 @@ class _DiscussionState extends State<Discussion> {
   bool _showClearButton = false;
   FilePickerResult? _selectedFiles;
   String _displayFileNames = "";
-
-  /// download documents from the cloud storage related to the selected request
-  //void _downloadAttachment() {}
+  String? aapPath;
 
   void _setDisplayFileName(String name){
     setState(() {
@@ -92,6 +91,7 @@ class _DiscussionState extends State<Discussion> {
     });
   }
 
+  /// creates a request summary message at the top of the thread
   void createFormInfoThread(){
     RequestModel cr = widget.currentRequest;
     Map<String, String>info = {"assessment": "", "type": "form", "subject": "", "submittedBy": "Request Summary",
@@ -106,12 +106,14 @@ class _DiscussionState extends State<Discussion> {
     discussionThread.insert(0, info);
   }
 
+  /// updates the state attribute of the discussion locally
   void updateLocalRequestState(String state){
     setState(() {
       widget.currentRequest.state = state;
     });
   }
-  
+
+  /// resets selected file and the displaying file name
   void _clearFileVariables(){
     setState(() {
       _selectedFiles = null;
@@ -119,10 +121,27 @@ class _DiscussionState extends State<Discussion> {
     });
   }
 
+  /// determine whether the reply button can be show
+  bool _showReplyButtonCheck(){
+    if(widget.currentUser.role == UserType.student){
+      // check if there's any respond in thread, if there is then can show button
+      for (var thread in discussionThread){
+        if (thread['type'] == "respond"){
+          return !_openResponse;
+        }
+      }
+      // not valid to show reply button
+      return false;
+    }
+    return !_openResponse;
+  }
+
   @override
   Widget build(BuildContext context) {
 
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
+    aapPath = widget.currentUser.aapPath;
+    print(widget.currentRequest.databasePath);
 
     // Fetch discussions from the database
     _db.getDiscussionThreads(widget.currentRequest).then((discussionThread) {
@@ -269,7 +288,7 @@ class _DiscussionState extends State<Discussion> {
                                 margin: const EdgeInsets.only(
                                     top: 10, bottom: 10),
                                 child: TextButton(
-                                  onPressed: ()=> downloadFilesToDisc(requestRef.id),  //downloadAttachment, TODO
+                                  onPressed: ()=> downloadFilesToDisc(requestRef.id, aapPath),  //downloadAttachment, TODO
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                   ),
@@ -290,7 +309,7 @@ class _DiscussionState extends State<Discussion> {
             ),
 
             Visibility(
-              visible: !_openResponse,
+              visible: _showReplyButtonCheck(),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(

@@ -115,17 +115,18 @@ class _SpeconFormState extends State<SpeconForm> {
       _displayAapName = name;
     });
   }
-
   void _setAapUpdated(bool value){
     setState(() {
       _aapUpdated = value;
     });
   }
-
   void _setShowClearButton(bool value){
     setState(() {
       _showClearButton = value;
     });
+  }
+  void _updateUserAapPath(String aapPath){
+    // TODO: u know
   }
 
   /// clear all file selections and related variables
@@ -135,7 +136,7 @@ class _SpeconFormState extends State<SpeconForm> {
       _displayFileNames = "no file selected";
     });
   }
-
+  /// reset selected aap file and show original aap file name
   void _undoAapSelection(){
     _selectedAap = null;
     setState(() {
@@ -491,78 +492,77 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
         );
       }
-      // select supporting files
+      // select aap file
       else if (field == 'AAP'){
         aap = Container(
           width: 420,
-          child: Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                        "If you have an AAP or want to update the existed one\nplease provide it down below",
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+          // used to have expanded widget
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                      "If you have an AAP or want to update the existed one\nplease provide it down below",
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    style: ButtonStyle(
+                        shape: MaterialStatePropertyAll(
+                            RoundedRectangleBorder(
+                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                            )
+                        )
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(
-                              RoundedRectangleBorder(
-                                  side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                              )
-                          )
-                      ),
-                      onPressed: () async {
-                        // AAP document should only be one
-                        _selectedAap = await selectSingleFile();
-                        _setDisplayAapName(_selectedAap!.names.join());
-                        _setAapUpdated(true);
-                      },
-                      child: Text('Select AAP', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
-                      ),
+                    onPressed: () async {
+                      // AAP document should only be one
+                      _selectedAap = await selectSingleFile();
+                      _setDisplayAapName(_selectedAap!.names.join());
+                      _setAapUpdated(true);
+                    },
+                    child: Text('Select AAP', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
                     ),
-                    // display selected file names
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.all(17.0),
-                          child: Text(
-                            _displayAapName,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: _aapUpdated,
-                      child: TextButton(
-                        onPressed: (){
-                          _undoAapSelection();
-                          _setShowClearButton(false);
-                        }, //downloadAttachment,
-                        style: TextButton.styleFrom(
-                          alignment: Alignment.centerLeft,
-                        ),
+                  ),
+                  // display selected file names
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(17.0),
                         child: Text(
-                          'Undo',
+                          _displayAapName,
                           style: TextStyle(
-                              fontSize: 14,
                               color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  Visibility(
+                    visible: _aapUpdated,
+                    child: TextButton(
+                      onPressed: (){
+                        _undoAapSelection();
+                        _setShowClearButton(false);
+                      }, //downloadAttachment,
+                      style: TextButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        'Undo',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       }
@@ -748,6 +748,9 @@ class _SpeconFormState extends State<SpeconForm> {
                 if(_aapUpdated){
                   // right now hard coded to user jerrya 12345678
                   uploadFile("aRTMyP7HK7HV7RgOkMw6", _selectedAap!);
+
+                  // TODO: update aapPath for user after uploading aap
+                  _updateUserAapPath("aRTMyP7HK7HV7RgOkMw6");
                 }
                 // clear all variables\
                 _clearFileVariables();
