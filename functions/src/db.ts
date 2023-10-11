@@ -1,11 +1,17 @@
-import {initializeApp} from "firebase-admin/app";
-import {getFirestore, DocumentSnapshot} from "firebase-admin/firestore";
+import {initializeApp, App} from "firebase-admin/app";
+import {
+  getFirestore,
+  Firestore,
+  CollectionReference,
+  DocumentSnapshot,
+} from "firebase-admin/firestore";
 import {User} from "./user";
 
-const app = initializeApp();
-const db = getFirestore(app);
 
-const usersRef = db.collection("users");
+const app: App = initializeApp();
+const db: Firestore = getFirestore(app);
+
+const usersRef: CollectionReference = db.collection("users");
 
 async function doesUserExist(uid: string): Promise<boolean> {
   const userSnapshot: DocumentSnapshot = await usersRef.doc(uid).get();
