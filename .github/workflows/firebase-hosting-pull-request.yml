@@ -14,10 +14,3 @@ jobs:
       #       - run: flutter test
       - run: npm install --prefix ./functions
       - run: flutter build web
-      - run: mkdir functions/public
-      - run: mv -f build/web/{.[!.],}* functions/public/
-      - uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting,functions
-        env:
-          GCP_SA_KEY: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
