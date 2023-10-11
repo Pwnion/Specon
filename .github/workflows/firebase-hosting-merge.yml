@@ -18,9 +18,8 @@ jobs:
       - run: flutter build web
       - run: mkdir functions/public
       - run: mv -f build/web/{.[!.],}* functions/public/
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: w9jds/firebase-action@master
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
-          channelId: live
-          projectId: special-consideration
+          args: deploy --only functions
+        env:
+          GCP_SA_KEY: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
