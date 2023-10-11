@@ -79,7 +79,6 @@ class DataBase {
 
 
       for(final request in requestListFromDB.docs){
-        print(request['requested_by_student_id']+"asdfadf");
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -158,9 +157,9 @@ class DataBase {
 
     for (final discussion in discussions.docs) {
       allDiscussions.add(
-        {'assessment': discussion['assessment'],
-          'reason': discussion['reason'],
-          'subject': discussion['subject'],
+        {//'assessment': discussion['assessment'],
+          'text': discussion['text'],
+          //'subject': discussion['subject'],
           'submittedBy': discussion['submittedBy'],
           'submittedByUserID': discussion['submittedByUserID'],
           'type': discussion['type'],
