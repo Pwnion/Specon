@@ -16,8 +16,9 @@ jobs:
       - run: flutter build web
       - run: mkdir functions/public
       - run: mv -f build/web/{.[!.],}* functions/public/
+      - run: ls -la functions/public/
       - uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting,functions
         env:
-          FIREBASE_TOKEN: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
+          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
