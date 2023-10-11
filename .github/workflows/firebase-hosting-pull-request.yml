@@ -21,4 +21,4 @@ jobs:
         with:
           args: deploy --only hosting,functions
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
+          GCP_SA_KEY: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
