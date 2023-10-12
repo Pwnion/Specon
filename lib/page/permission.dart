@@ -1,3 +1,7 @@
+///
+///
+/// Author: Zhi Xiang Chan (Lucas)
+
 import 'package:flutter/material.dart';
 import 'package:specon/models/subject_model.dart';
 
@@ -21,7 +25,7 @@ class _PermissionState extends State<Permission> {
   var editButtonText = 'Edit';
 
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
-  static final List<String> canvasUser = ['Tawfiq', 'Alex', 'Aden', 'Brian', 'Drey', 'Jeremy', 'Lucas', 'Geela'];
+  static final List<String> canvasUser = ['Tawfiq', 'Alex', 'Aden', 'Brian', 'Drey', 'Jeremy', 'Lucas', 'Geela']; // TODO: Should get from API
   static List<Map<String, dynamic>> permissionGroups = [
     {'name': 'Head Tutor',
      'priority': 1,
@@ -65,7 +69,7 @@ class _PermissionState extends State<Permission> {
         'Others': {'Extension': true, 'Regrade': true, 'Waiver': true, 'Others': true}
       }
     }
-  ];
+  ]; // TODO: Should get from db
   static List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
 
@@ -114,7 +118,7 @@ class _PermissionState extends State<Permission> {
     return row;
   }
 
-  ///
+  /// Function that either selects all or deselect all checkboxes of a group
   void selectOrDeselectAll(Map<String, dynamic> assessments, bool changeTo){
 
     for(final assessment in assessments.keys.toList()){
@@ -463,6 +467,7 @@ class _PermissionState extends State<Permission> {
     );
   }
 
+  /// Function that deep copies a list of permission groups to another list
   List<Map<String, dynamic>> deepCopy(List<Map<String, dynamic>> copyFrom){
 
     List<Map<String, dynamic>> copyTo = [];
@@ -472,7 +477,7 @@ class _PermissionState extends State<Permission> {
       Map<String, Map<String, bool>> assessments = {};
 
       for(final assessment in group['assessments'].keys.toList()){
-        assessments[assessment] = Map.of(group['assessments'][assessment]);
+        assessments[assessment] = {...group['assessments'][assessment]};
       }
 
       copyTo.add({
@@ -513,7 +518,7 @@ class _PermissionState extends State<Permission> {
             // Buttons
             Row(
               children: [
-                const SizedBox(width: 10),
+                const SizedBox(width: 10.0),
                 // Edit/Save Button
                 ElevatedButton(
                   onPressed: () {
@@ -522,9 +527,10 @@ class _PermissionState extends State<Permission> {
                       // If in edit mode, save the changes
                       if(inEditMode){
                         permissionGroups = deepCopy(temporaryPermissionGroups);
-
+                        // TODO: Update changes on DB
+                      }
                       // If not in edit mode, copy original list
-                      } else {
+                      else {
                         temporaryPermissionGroups = deepCopy(permissionGroups);
                       }
 
@@ -574,19 +580,41 @@ class _PermissionState extends State<Permission> {
                     width: 200.0,
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-                        left: BorderSide(color: Theme.of(context).colorScheme.primary),
-                        top: BorderSide(color: Theme.of(context).colorScheme.primary),
+                        bottom: BorderSide(
+                          color: Theme.of(context).colorScheme.primary
+                        ),
+                        left: BorderSide(
+                          color: Theme.of(context).colorScheme.primary
+                        ),
+                        top: BorderSide(
+                          color: Theme.of(context).colorScheme.primary
+                        )
                       )
                     ),
-                    child: const Center(child: Text('Groups', style: TextStyle(fontWeight: FontWeight.bold))),
+                    child: const Center(
+                      child: Text(
+                        'Groups',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      )
+                    )
                   ),
                   // Users
                   Expanded(
                     flex: 1,
                     child: Container(
-                        decoration: BoxDecoration(border: Border.all(width: 1)),
-                        child: const Center(child: Text('Users', style: TextStyle(fontWeight: FontWeight.bold)))
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1)
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Users',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      )
                     ),
                   ),
                   // Permissions
@@ -595,12 +623,25 @@ class _PermissionState extends State<Permission> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-                          right: BorderSide(color: Theme.of(context).colorScheme.primary),
-                          top: BorderSide(color: Theme.of(context).colorScheme.primary),
+                          bottom: BorderSide(
+                            color: Theme.of(context).colorScheme.primary
+                          ),
+                          right: BorderSide(
+                            color: Theme.of(context).colorScheme.primary
+                          ),
+                          top: BorderSide(
+                            color: Theme.of(context).colorScheme.primary
+                          )
                         ),
                       ),
-                      child: const Center(child: Text('Permissions', style: TextStyle(fontWeight: FontWeight.bold)))
+                      child: const Center(
+                        child: Text(
+                          'Permissions',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      )
                     ),
                   ),
                 ],
