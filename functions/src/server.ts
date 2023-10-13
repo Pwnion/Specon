@@ -3,8 +3,8 @@ import express = require("express");
 import {DocumentReference} from "firebase-admin/firestore";
 import {SPECON_APP_INDEX_FILE_PATH} from "./constants";
 import {User} from "./models/user";
-import {requestAccessToken, getProfile} from "./api";
-import {initUser} from "./db";
+import {requestAccessToken, getProfile, getCourses} from "./api";
+import {initUser, putUserInfoForLaunch} from "./db";
 
 const SERVER = express();
 
@@ -25,6 +25,7 @@ SERVER.get("/code", async (req, res) => {
     new Array<DocumentReference>()
   );
   await initUser(canvasUid, user);
+  await putUserInfoForLaunch(canvasUid, await getCourses(accessToken));
   return res.redirect(`/app?email=${email}`);
 });
 
