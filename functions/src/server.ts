@@ -2,7 +2,7 @@ import express = require("express");
 
 import {DocumentReference} from "firebase-admin/firestore";
 import {SPECON_APP_INDEX_FILE_PATH} from "./constants";
-import {User} from "./user";
+import {User} from "./models/user";
 import {requestAccessToken, getProfile} from "./api";
 import {initUser} from "./db";
 

@@ -1,7 +1,7 @@
 import {DocumentReference, DocumentData} from "firebase-admin/firestore";
 
 class User {
-  accountId: string;
+  id: string;
   name: string;
   email: string;
   accessToken: string;
@@ -9,14 +9,14 @@ class User {
   subjects: Array<DocumentReference>;
 
   constructor(
-    accountId: string,
+    id: string,
     name: string,
     email: string,
     accessToken: string,
     refreshToken: string,
     subjects: Array<DocumentReference>
   ) {
-    this.accountId = accountId;
+    this.id = id;
     this.name = name;
     this.email = email;
     this.accessToken = accessToken;
@@ -37,7 +37,7 @@ class User {
 
   data(): object {
     return {
-      account_id: this.accountId,
+      id: this.id,
       name: this.name,
       email: this.email,
       access_token: this.accessToken,

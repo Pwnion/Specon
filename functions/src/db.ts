@@ -3,9 +3,11 @@ import {
   getFirestore,
   Firestore,
   CollectionReference,
+  DocumentReference,
   DocumentSnapshot,
 } from "firebase-admin/firestore";
-import {User} from "./user";
+import {User} from "./models/user";
+import {Courses} from "./models/course";
 
 
 const app: App = initializeApp();
@@ -34,4 +36,22 @@ async function updateAccessToken(
   await usersRef.doc(uid).update({access_token: newAccessToken});
 }
 
-export {doesUserExist, initUser, getUser, updateAccessToken};
+async function putUserInfoForLaunch(
+  uid: string,
+  courses: Courses
+): Promise<void> {
+  const infoRef: DocumentReference = usersRef
+    .doc(uid)
+    .collection("launch")
+    .doc("data");
+
+  await infoRef.set(courses.data());
+}
+
+export {
+  doesUserExist,
+  initUser,
+  getUser,
+  updateAccessToken,
+  putUserInfoForLaunch,
+};

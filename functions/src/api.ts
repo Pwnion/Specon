@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   CANVAS_URL,
   API_REDIRECT_URL,
   ACCESS_TOKEN_ENDPOINT,
   API_CLIENT_ID,
 } from "./constants";
+import {Courses} from "./models/course";
+import {Role, roleFromString} from "./models/role";
 
 const JSON_HEADERS = {"Content-Type": "application/json"};
 
@@ -53,21 +57,80 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
   return data["access_token"];
 }
 
-async function getProfile(
-  accountId: string,
+async function getEndpoint(
+  endpointUrl: string,
   accessToken: string
-): Promise<Map<string, string>> {
+): Promise<any> {
   const response: Response = await fetch(
-    `${CANVAS_URL}/api/v1/users/${accountId}/profile`, {
+    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
       headers: {Authorization: `Bearer ${accessToken}`},
     }
   );
 
-  const data = await response.json();
+  return await response.json();
+}
+
+async function getProfile(
+  userId: string,
+  accessToken: string
+): Promise<Map<string, string>> {
+  const data = await getEndpoint(`users/${userId}/profile`, accessToken);
   return new Map<string, string>(Object.entries({
     email: data["login_id"],
     name: data["name"],
   }));
 }
 
-export {getCodeUrl, requestAccessToken, getProfile, refreshAccessToken};
+async function getUserIdsInCourse(
+  courseId: number,
+  accessToken: string
+): Promise<Array<number>> {
+  const userIds: Array<number> = [];
+  const data = await getEndpoint(`courses/${courseId}/users`, accessToken);
+  for (let i = 0; i < data.length; i++) {
+    userIds.push(data[i]["id"]);
+  }
+  return userIds;
+}
+
+async function getUserRoleInCourse(
+  userId: number,
+  courseId: number,
+  accessToken: string
+): Promise<Role> {
+  const data = await getEndpoint(`users/${userId}/courses`, accessToken);
+  for (let i = 0; i < data.length; i++) {
+    const courseData: any = data[i]["id"];
+    if (courseData["id"] == courseId) {
+      return roleFromString(courseData["enrollments"]["type"]);
+    }
+  }
+  return Role.UNKNOWN;
+}
+
+async function getCourses(accessToken: string): Promise<Courses> {
+  const data = await getEndpoint("courses", accessToken);
+  for (const courseData of data) {
+    const courseUsers: Map<string, string> = new Map<string, string>();
+    const courseId = courseData["id"];
+    const courseUserIds = await getUserIdsInCourse(courseId, accessToken);
+    for (const userId of courseUserIds) {
+      courseUsers.set(
+        userId.toString(),
+        await getUserRoleInCourse(userId, courseId, accessToken)
+      );
+    }
+    courseData.users = courseUsers;
+  }
+  return Courses.fromAPI(data);
+}
+
+export {
+  getCodeUrl,
+  requestAccessToken,
+  refreshAccessToken,
+  getProfile,
+  getCourses,
+  getUserIdsInCourse,
+  getUserRoleInCourse,
+};

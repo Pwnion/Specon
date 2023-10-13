@@ -5,9 +5,14 @@ import {
   SPECON_APP_FOLDER_PATH,
   SPECON_APP_INDEX_FILE_PATH,
 } from "./constants";
-import {User} from "./user";
-import {doesUserExist, getUser, updateAccessToken} from "./db";
-import {getCodeUrl, refreshAccessToken} from "./api";
+import {
+  doesUserExist,
+  getUser,
+  putUserInfoForLaunch,
+  updateAccessToken,
+} from "./db";
+import {User} from "./models/user";
+import {getCodeUrl, getCourses, refreshAccessToken} from "./api";
 import {Provider} from "ltijs";
 
 const LTI = Provider;
@@ -35,6 +40,7 @@ LTI.onConnect(async (token, _req, res) => {
     const user: User = await getUser(canvasUid);
     const newAccessToken: string = await refreshAccessToken(user.refreshToken);
     await updateAccessToken(canvasUid, newAccessToken);
+    await putUserInfoForLaunch(canvasUid, await getCourses(newAccessToken));
     return res.redirect(`/app?email=${user.email}`);
   } else {
     return res.redirect(getCodeUrl(canvasUid));
