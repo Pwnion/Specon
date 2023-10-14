@@ -2,35 +2,25 @@ import 'package:specon/user_type.dart';
 
 class UserModel {
   final String id;
-  final String studentID;
-  // TODO: Use better name because staff will have a staff number
-  final String firstName;
-  final String middleName;
-  final String lastName;
+  final String name;
   final String emailAddress;
-  final UserType role;
   final List<dynamic> subjects;
+  final String? aap;
 
   const UserModel({
     required this.id,
-    required this.studentID,
-    required this.firstName,
-    required this.middleName,
-    required this.lastName,
+    required this.name,
     required this.emailAddress,
-    required this.role,
     required this.subjects,
+    required this.aap,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'student_id': studentID,
-      'first_name': firstName,
-      'middle_name': middleName,
-      'last_name': lastName,
+      'first_name': name,
       'email': emailAddress,
-      'role': role,
-      'subjects': subjects,
+      'subjects': subjects.toString(),
+      'aap': aap,
     };
   }
 }
