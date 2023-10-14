@@ -37,12 +37,13 @@ class _RequestsState extends State<Requests> {
   final _nameSearchController = TextEditingController();
 
   SubjectModel _currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '');
+    roles: {},
+    name: '',
+    code: '',
+    assessments: [],
+    semester: '',
+    year: '',
+    databasePath: '');
   String _dropdownValueAssess = '';
   String _dropdownValueState = '';
   String _searchString = '';
@@ -194,9 +195,8 @@ class _RequestsState extends State<Requests> {
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
                     style: TextStyle(
-                        color
-                            // : statusFilterClicked
-                            //     ? Theme.of(context).colorScheme.secondary
+                        color: statusFilterClicked
+                            ? Theme.of(context).colorScheme.secondary
                             : Theme.of(context).colorScheme.onBackground,
                         fontSize: 12),
                     padding: const EdgeInsets.all(1),
@@ -221,33 +221,33 @@ class _RequestsState extends State<Requests> {
                 ),
 
                 // assessment filter
-                // DropdownButtonHideUnderline(
-                //   child: DropdownButton<String>(
-                //     isDense: true,
-                //     iconDisabledColor: Theme.of(context).colorScheme.background,
-                //     focusColor: Theme.of(context).colorScheme.background,
-                //     style: TextStyle(
-                //         color: assFilterClicked == true
-                //             ? Theme.of(context).colorScheme.secondary
-                //             : Theme.of(context).colorScheme.onBackground,
-                //         fontSize: 12),
-                //     padding: const EdgeInsets.all(1),
-                //     value: _dropdownValueAssess,
-                //     items: filterSelectionsAssess
-                //         .map<DropdownMenuItem<String>>((String value) {
-                //       return DropdownMenuItem<String>(
-                //         value: value,
-                //         child: Text(value),
-                //       );
-                //     }).toList(),
-                //     onChanged: (value) {
-                //       assFilterClicked = true;
-                //       setState(() {
-                //         _dropdownValueAssess = value!;
-                //       });
-                //     },
-                //   ),
-                // ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isDense: true,
+                    iconDisabledColor: Theme.of(context).colorScheme.background,
+                    focusColor: Theme.of(context).colorScheme.background,
+                    style: TextStyle(
+                        color: assFilterClicked == true
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
+                    padding: const EdgeInsets.all(1),
+                    value: _dropdownValueAssess,
+                    items: filterSelectionsAssess
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      assFilterClicked = true;
+                      setState(() {
+                        _dropdownValueAssess = value!;
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
             Padding(
