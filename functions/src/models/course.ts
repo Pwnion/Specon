@@ -1,32 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 class Course {
   uuid: string;
   id: number;
   name: string;
   code: string;
-  users: Map<string, string>;
+  roles: Map<string, string>;
+  assessments: Array<Map<string, string>>;
 
   constructor(
     uuid: string,
     id: number,
     name: string,
     code: string,
-    users: Map<string, string>
+    roles: Map<string, string>,
+    assessments: Array<Map<string, string>>
   ) {
     this.uuid = uuid;
     this.id = id;
     this.name = name;
     this.code = code;
-    this.users = users;
+    this.roles = roles;
+    this.assessments = assessments;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static fromAPI(data: any): Course {
     return new Course(
       data["uuid"] as string,
       data["id"] as number,
       data["name"] as string,
       data["course_code"] as string,
-      data["users"] as Map<string, string>
+      data["roles"] as Map<string, string>,
+      data["assessments"] as Array<Map<string, string>>
     );
   }
 
@@ -36,7 +41,8 @@ class Course {
       id: this.id,
       name: this.name,
       code: this.code,
-      users: this.users,
+      roles: this.roles,
+      assessments: this.assessments,
     };
   }
 }
@@ -48,21 +54,18 @@ class Courses {
     this.contents = contents;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static fromAPI(data: any): Courses {
     const courses: Array<Course> = [];
     for (let i = 0; i < data.length; i++) {
-      courses.push(Course.fromAPI(data));
+      courses.push(Course.fromAPI(data[i]));
     }
     return new Courses(courses);
   }
 
-  data(): object {
-    return {
-      courses: this.contents.map(
-        (course) => course.data()
-      ),
-    };
+  data(): object[] {
+    return this.contents.map(
+      (course) => course.data()
+    );
   }
 }
 

@@ -6,6 +6,7 @@ import {
   ACCESS_TOKEN_ENDPOINT,
   API_CLIENT_ID,
 } from "./constants";
+import {Assessments} from "./models/assessment";
 import {Courses} from "./models/course";
 import {Role, roleFromString} from "./models/role";
 
@@ -100,28 +101,56 @@ async function getUserRoleInCourse(
 ): Promise<Role> {
   const data = await getEndpoint(`users/${userId}/courses`, accessToken);
   for (let i = 0; i < data.length; i++) {
-    const courseData: any = data[i]["id"];
+    const courseData: any = data[i];
     if (courseData["id"] == courseId) {
-      return roleFromString(courseData["enrollments"]["type"]);
+      return roleFromString(courseData["enrollments"][0]["type"]);
     }
   }
   return Role.UNKNOWN;
 }
 
-async function getCourses(accessToken: string): Promise<Courses> {
-  const data = await getEndpoint("courses", accessToken);
-  for (const courseData of data) {
-    const courseUsers: Map<string, string> = new Map<string, string>();
-    const courseId = courseData["id"];
+async function getAssessmentsInCourse(
+  courseId: number,
+  accessToken: string
+): Promise<Assessments> {
+  const data = await getEndpoint(
+    `courses/${courseId}/assignments`,
+    accessToken
+  );
+  return Assessments.fromAPI(data);
+}
+
+async function injectDataIntoCourses(
+  courseData: any,
+  accessToken: string
+): Promise<void> {
+  for (const data of courseData) {
+    const roles: Map<string, string> = new Map<string, string>();
+    const courseId = data["id"];
     const courseUserIds = await getUserIdsInCourse(courseId, accessToken);
     for (const userId of courseUserIds) {
-      courseUsers.set(
+      const role: Role = await getUserRoleInCourse(
+        userId,
+        courseId,
+        accessToken
+      );
+      roles.set(
         userId.toString(),
-        await getUserRoleInCourse(userId, courseId, accessToken)
+        role.toString()
       );
     }
-    courseData.users = courseUsers;
+    const assessments: Assessments = await getAssessmentsInCourse(
+      courseId,
+      accessToken
+    );
+    data.assessments = assessments.data();
+    data.roles = Object.fromEntries(roles);
   }
+}
+
+async function getCourses(accessToken: string): Promise<Courses> {
+  const data = await getEndpoint("courses", accessToken);
+  await injectDataIntoCourses(data, accessToken);
   return Courses.fromAPI(data);
 }
 
@@ -130,7 +159,7 @@ export {
   requestAccessToken,
   refreshAccessToken,
   getProfile,
-  getCourses,
   getUserIdsInCourse,
   getUserRoleInCourse,
+  getCourses,
 };

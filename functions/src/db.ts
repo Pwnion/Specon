@@ -45,7 +45,7 @@ async function putUserInfoForLaunch(
     .collection("launch")
     .doc("data");
 
-  await infoRef.set(courses.data());
+  await infoRef.set({subjects: courses.data()});
 }
 
 export {

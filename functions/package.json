@@ -23,7 +23,7 @@
     "ltijs": "^5.9.3"
   },
   "devDependencies": {
-    "@types/ltijs": "^4.0.7",
+    "@types/ltijs": "file:types/ltijs",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "eslint": "^8.9.0",

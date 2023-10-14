@@ -6,7 +6,4 @@ lib/**/*.js.map
 typings/
 
 public
-node_modules/*
-!node_modules/@types
-node_modules/@types/*
-!node_modules/@types/ltijs
+node_modules
