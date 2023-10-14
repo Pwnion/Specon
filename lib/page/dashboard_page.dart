@@ -107,13 +107,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  /// Getter for user's enrolled subjects
-  void setSubjectList(List<SubjectModel> subjects) {
-    setState(() {
-      subjectList = subjects; // TODO: setstate called after dispose error
-    });
-  }
-
   /// Function that determines which widget should be display in column 3
   Widget displayThirdColumn(UserModel currentUser) {
     // Show new Request Form
