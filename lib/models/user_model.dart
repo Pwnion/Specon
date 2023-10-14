@@ -7,7 +7,7 @@ class UserModel {
   final List<dynamic> subjects;
   final String? aap_path;
 
-  const UserModel({
+  UserModel({
     required this.id,
     required this.name,
     required this.email,

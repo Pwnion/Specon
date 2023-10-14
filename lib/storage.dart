@@ -20,17 +20,35 @@ final _documentsRef = _storageRef.child("documents");
 Future<FilePickerResult?> selectFile() async{
   final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'txt'],
+      allowedExtensions: ['jpg', 'pdf', 'txt'], // need change later
       allowMultiple: true
   );
   if(result == null){
     return null;
   }
-  print(result.names);
   return result;
 }
 
-/// upload the selected file to cloud storage in the path 'documents/{requestID}'
+/// Make user's computer pop up a file window to select one single file
+Future<FilePickerResult?> selectSingleFile() async{
+  final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'txt'],
+      allowMultiple: false
+  );
+  if(result == null){
+    return null;
+  }
+  return result;
+}
+
+/// get aap file's name using folder name (folder should have only 1 file)
+Future<String> getAapFileName(String dataPath) async{
+  final list = await _documentsRef.child(dataPath).listAll();
+  return list.items.first.name;
+}
+
+/// upload the selected file to cloud storage in the path 'documents/{requestID/userID}'
 UploadTask? uploadFile(String dataPath, FilePickerResult filePickerResult) {
   Reference? ref;
   Uint8List? fileBytes;
@@ -43,7 +61,7 @@ UploadTask? uploadFile(String dataPath, FilePickerResult filePickerResult) {
   return uploadTask;
 }
 
-/// download all file that is in 'documents/{requestID}'
+/// download all file that is in 'documents/{requestID} to memory'
 void downloadFilesToMemory (String dataPath) async{
   final downloadList = await _documentsRef.child(dataPath).listAll();
 
@@ -57,10 +75,31 @@ void downloadFilesToMemory (String dataPath) async{
   }
 }
 
-void downloadFilesToDisc (String dataPath) async{
+/// download all file that is in 'documents/{requestID} to Disc using URL'
+void downloadFilesToDisc (String dataPath, String? aapPath) async{
   final downloadList = await _documentsRef.child(dataPath).listAll();
   //final dir = await FilePicker.platform.getDirectoryPath();
   //File file;
+
+  // if user has aap, download their aap as well
+  if(aapPath != null && aapPath != ""){
+    final aapList = await _documentsRef.child(aapPath!).listAll();
+    for (var item in aapList.items) {
+      try {
+        //File downloadPath = File("$dir/${item.name}");
+        Uri url = Uri.parse(await item.getDownloadURL());
+
+        if (!await launchUrl(url)) {
+          throw Exception('Could not launch $url');
+        }
+
+      } on FirebaseException catch (e) {
+        print("Failed with error '${e.code}': ${e.message}");
+      }
+    }
+  }
+
+  // download everything in the attachments folder (exclude aap)
   for (var item in downloadList.items) {
     try {
       //File downloadPath = File("$dir/${item.name}");
@@ -70,27 +109,6 @@ void downloadFilesToDisc (String dataPath) async{
         throw Exception('Could not launch $url');
       }
 
-
-      // final downloadTask = item.writeToFile(downloadPath);
-      // downloadTask.snapshotEvents.listen((taskSnapshot) {
-      //   switch (taskSnapshot.state) {
-      //     case TaskState.running:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.paused:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.success:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.canceled:
-      //     // TODO: Handle this case.
-      //       break;
-      //     case TaskState.error:
-      //     // TODO: Handle this case.
-      //       break;
-      //   }
-      // });
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
     }

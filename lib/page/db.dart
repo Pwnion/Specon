@@ -70,6 +70,7 @@ class DataBase {
           .where('requested_by_student_id', isEqualTo: user.id) // TODO:
           .get();
 
+
       for(final request in requestListFromDB.docs){
         requests.add(
           RequestModel(
@@ -118,7 +119,7 @@ class DataBase {
     return subjects;
   }
 
-  Future<void> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
+  Future<DocumentReference> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
 
     // Get subject's reference
     final DocumentReference subjectRef = _db.doc(subject.databasePath);
@@ -135,6 +136,8 @@ class DataBase {
       'submittedByUserID': user.id,
       'type': 'request'}
     );
+
+    return requestRef;
   }
 
   Future<List<Map<String, String>>> getDiscussionThreads(RequestModel request) async {
@@ -148,9 +151,9 @@ class DataBase {
 
     for (final discussion in discussions.docs) {
       allDiscussions.add(
-        {'assessment': discussion['assessment'],
-          'reason': discussion['reason'],
-          'subject': discussion['subject'],
+        {//'assessment': discussion['assessment'],
+          'text': discussion['text'],
+          //'subject': discussion['subject'],
           'submittedBy': discussion['submittedBy'],
           'submittedByUserID': discussion['submittedByUserID'],
           'type': discussion['type'],
