@@ -1,0 +1,12 @@
+# Compiled JavaScript files
+lib/**/*.js
+lib/**/*.js.map
+
+# TypeScript v1 declaration files
+typings/
+
+public
+node_modules/*
+!node_modules/@types
+node_modules/@types/*
+!node_modules/@types/ltijs

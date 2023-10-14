@@ -12,9 +12,5 @@ jobs:
       - run: flutter doctor -v
       - run: flutter pub get
       #       - run: flutter test
+      - run: npm install --prefix ./functions
       - run: flutter build web
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
-          projectId: special-consideration
