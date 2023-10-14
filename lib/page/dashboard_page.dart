@@ -18,9 +18,16 @@ import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 
 class Dashboard extends StatefulWidget {
+  final String? canvasEmail;
   final UserType userType;
 
-  const Dashboard({Key? key, required this.userType}) : super(key: key);
+  const Dashboard(
+    {
+      Key? key,
+      this.canvasEmail,
+      required this.userType
+    }
+  ) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -142,7 +149,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    _database.getUserFromEmail(_auth.currentUser!.email!).then((user) {
+    _database.getUserFromEmail(
+      _auth.currentUser != null ? _auth.currentUser!.email! : widget.canvasEmail!
+    ).then((user) {
       _database.getEnrolledSubjects().then((subjects) {
         if(!mounted) return;
         setState(() {
@@ -256,7 +265,13 @@ class _DashboardState extends State<Dashboard> {
                   itemBuilder: (BuildContext context) => [
                     PopupMenuItem(
                       child: const Text('Logout'),
-                      onTap: () => _auth.signOut(),
+                      onTap: () {
+                        if(widget.canvasEmail != null) {
+                          Navigator.pop(context);
+                        } else {
+                          _auth.signOut();
+                        }
+                      },
                     ),
                   ],
                   tooltip: 'User Options',
