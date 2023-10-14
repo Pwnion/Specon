@@ -1,30 +1,38 @@
+/// This returns the body of the email, both state change for students
+/// and summary email for subject coordinators
+/// Main author: Kuo Wei Wu
 import "package:cloud_firestore/cloud_firestore.dart";
 
-
-getSummary(final String test) {
-  String number_open = '3';
+getSummary(final String test) async{
+  String number_open = await _subjectRequestSummary(['COMP10001'], true);
+  String individualSubjectSummary = await _subjectRequestSummary(['COMP10001'], false);
   String summary = '''<body><h2>Summary provided by SPECON</h2>
                       <p>There are $number_open open requests remaining</p>
                       <hr>
                       <h4>open requests in each subject:</h4>
-                      <p></p>>
+                      
   </body>''';
   return summary;
 }
 
-_subjectRequestSummary(List<String> subcorSubjects) async {
+Future<String> _subjectRequestSummary(List<String> subcorSubjects, bool getTotalNumber) async {
   String text = "";
   List<String> subcorSubjects = ["COMP10001"];
+  num count = 0;
   final db = FirebaseFirestore.instance;
   final subjectsRef = db.collection("subjects");
 
   // loop through subjects
   for(String subject in subcorSubjects){
     var subjectRef = await subjectsRef.where('code', isEqualTo: subject ).get();
-    var query = subjectsRef.doc(subjectRef.docs[0].id).collection('requests').where('state', isEqualTo: "Open");
-    text += '<p>$subject: {$query.count()} open requests</p>';
+    var query = await subjectsRef.doc(subjectRef.docs[0].id).collection('requests').where('state', isEqualTo: "Open").get();
+    text += '<p>$subject: {$query.docs.length} open requests</p>';
+    count += query.docs.length;
   }
-  
+
+  if(getTotalNumber){
+    return count.toString();
+  }
   return text;
 }
 
