@@ -15,7 +15,8 @@ class DataBase {
 
   Future<UserModel> getUserFromEmail(String emailToMatch) async {
     final usersRef = _db.collection("users");
-    final query = await usersRef.where('email', isEqualTo: emailToMatch).get();
+    final query =
+        await usersRef.where('email', isEqualTo: emailToMatch).get();
 
     final fetchedUser = query.docs[0];
 

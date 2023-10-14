@@ -12,27 +12,13 @@ import 'login_page.dart';
 
 import '../user_type.dart';
 
-class Landing extends StatefulWidget {
-  final String? email;
+class Landing extends StatelessWidget {
+  const Landing({super.key});
 
-  const Landing({Key? key, this.email}) : super(key: key);
-
-  @override
-  State<Landing> createState() => _LandingState();
-}
-
-class _LandingState extends State<Landing> {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-    if(widget.email != null) {
-      return Dashboard(
-        canvasEmail: widget.email,
-        userType: UserType.student,
-      );
-    }
-
     return StreamBuilder<User?>(
       stream: _auth.userChanges(),
       builder: (context, snapshot) {

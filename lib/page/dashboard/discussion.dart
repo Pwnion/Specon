@@ -5,6 +5,7 @@
 /// coordinator.
 /// Author: Kuo Wei Wu
 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,13 +23,13 @@ import 'package:specon/storage.dart';
 class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
-  final Function refreshFn;
+
   const Discussion(
-      {Key? key,
-      required this.currentRequest,
-      required this.currentUser,
-      required this.refreshFn})
-      : super(key: key);
+    {Key? key,
+    required this.currentRequest,
+    required this.currentUser
+    }
+  ): super(key: key);
 
   @override
   State<Discussion> createState() => _DiscussionState();
@@ -47,20 +48,20 @@ class _DiscussionState extends State<Discussion> {
   String _displayFileNames = "";
   String? aapPath;
 
-  void _setDisplayFileName(String name) {
+  void _setDisplayFileName(String name){
     setState(() {
       _displayFileNames = name;
     });
   }
 
-  void _setShowClearButton(bool value) {
+  void _setShowClearButton(bool value){
     setState(() {
       _showClearButton = value;
     });
   }
 
   /// display upload documents status, should be in submit request form later
-  void _displayUploadState() {
+  void _displayUploadState(){
     _uploadTask!.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
       switch (taskSnapshot.state) {
         case TaskState.running:
@@ -75,17 +76,16 @@ class _DiscussionState extends State<Discussion> {
           print("Upload was canceled");
           break;
         case TaskState.error:
-          // Handle unsuccessful uploads
+        // Handle unsuccessful uploads
           break;
         case TaskState.success:
-          // Handle successful uploads on complete
-          // ...
+        // Handle successful uploads on complete
+        // ...
           break;
       }
     });
   }
-
-  void setOpenResponse(bool setTo) {
+  void setOpenResponse(bool setTo ){
     setState(() {
       _openResponse = setTo;
     });
@@ -138,6 +138,7 @@ class _DiscussionState extends State<Discussion> {
 
   @override
   Widget build(BuildContext context) {
+
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
     aapPath = widget.currentUser.aappath;
 
@@ -166,27 +167,28 @@ class _DiscussionState extends State<Discussion> {
                 "used to be subject - ${widget.currentRequest.assessment}",
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.surface,
-                    wordSpacing: 5,
-                    letterSpacing: 1),
+                  fontSize: 20,
+                  color: Theme.of(context).colorScheme.surface,
+                  wordSpacing: 5,
+                  letterSpacing: 1
+                ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // display name and ID
-                  Text(
-                    '   ${widget.currentRequest.requestedBy}  ${widget.currentRequest.requestedByStudentID}',
-                    style: TextStyle(
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // display name and ID
+                    Text(
+                      '   ${widget.currentRequest.requestedBy}  ${widget.currentRequest.requestedByStudentID}',
+                      style: TextStyle(
                         fontSize: 15,
                         letterSpacing: 3,
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  // accept decline flag button, only show to non student
-                  if (widget.currentUser.role != UserType.student)
+                          color:Theme.of(context).colorScheme.secondary),
+                    ),
+                    // accept decline flag button, only show to non student
+                    if(widget.currentUser.role != UserType.student)
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -195,7 +197,6 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               acceptRequest(widget.currentRequest);
                               updateLocalRequestState("Approved");
-                              widget.refreshFn(() {});
                             },
                             child: const Text('Accept'),
                           ),
@@ -203,7 +204,6 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               declineRequest(widget.currentRequest);
                               updateLocalRequestState("Declined");
-                              widget.refreshFn(() {});
                             },
                             child: const Text('Decline'),
                           ),
@@ -211,16 +211,15 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               flagRequest(widget.currentRequest);
                               updateLocalRequestState("Flagged");
-                              widget.refreshFn(() {});
                             },
                             child: const Text('Flag'),
                           ),
                         ],
                       ),
                     )
-                ],
+                  ],
+                ),
               ),
-            ),
 
             // All discussion text are put in a listView.builder as a card
             Expanded(
@@ -228,41 +227,14 @@ class _DiscussionState extends State<Discussion> {
               child: ListView.builder(
                 itemCount: discussionThread.length,
                 controller: _scrollController,
-                itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.only(right: 6.0),
-                  child: Card(
-                    shape: BeveledRectangleBorder(
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 1.0,
-                      ),
-                    ),
-                    surfaceTintColor: Theme.of(context).colorScheme.background,
-                    color: Theme.of(context).colorScheme.background,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // display icon, name, and student ID
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const SizedBox(width: 4),
-                              const Icon(Icons.account_circle_outlined,
-                                  size: 40.0),
-                              const SizedBox(width: 12),
-                              // 2nd line should have student num (now temporary submit by), but it is necessary to store in discussion list?
-                              Text(
-                                '${discussionThread[index]['submittedBy']}\n${discussionThread[index]['submittedByUserID']}',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                              ),
-                            ],
+                itemBuilder: (context, index) =>
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6.0),
+                      child: Card(
+                        shape: BeveledRectangleBorder(
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1.0,
                           ),
                         ),
                         surfaceTintColor: Theme.of(context).colorScheme.background,
@@ -331,33 +303,10 @@ class _DiscussionState extends State<Discussion> {
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                          ],
                         ),
-                        // display attach file download button
-                        if (discussionThread[index]['type'] == 'form')
-                          Container(
-                            margin: const EdgeInsets.only(top: 10, bottom: 10),
-                            child: TextButton(
-                              onPressed: () => downloadFilesToDisc(
-                                  requestRef.id), //downloadAttachment, TODO
-                              style: TextButton.styleFrom(
-                                alignment: Alignment.centerLeft,
-                              ),
-                              child: Text(
-                                'Attachments',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                              ),
-                            ),
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
               ),
             ),
 
@@ -367,10 +316,8 @@ class _DiscussionState extends State<Discussion> {
                 padding: const EdgeInsets.all(8.0),
                 child: OutlinedButton(
                   onPressed: () => setOpenResponse(true),
-                  child: Text('Reply',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface)),
-                ),
+                  child: Text('Reply', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                 ),
               ),
             ),
 
@@ -382,8 +329,8 @@ class _DiscussionState extends State<Discussion> {
                 child: Container(
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Theme.of(context).colorScheme.primary)),
+                      border: Border.all(color: Theme.of(context).colorScheme.primary)
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -398,23 +345,16 @@ class _DiscussionState extends State<Discussion> {
                                 minLines: 2,
                                 maxLines: 3,
                                 keyboardType: TextInputType.multiline,
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.surface),
-                                cursorColor:
-                                    Theme.of(context).colorScheme.surface,
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                cursorColor: Theme.of(context).colorScheme.surface,
                                 decoration: InputDecoration(
                                   hintText: 'Enter response',
                                   hintStyle: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.surface,
-                                      fontSize: 13,
-                                      letterSpacing: 2),
+                                    color: Theme.of(context).colorScheme.surface, fontSize: 13, letterSpacing: 2
+                                  ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                      color: Theme.of(context).colorScheme.secondary,
                                     ),
                                   ),
                                 ),
@@ -423,12 +363,12 @@ class _DiscussionState extends State<Discussion> {
                             Expanded(
                               child: Row(
                                 children: [
+
                                   // select file button
                                   TextButton(
-                                    onPressed: () async {
+                                    onPressed: ()async{
                                       _selectedFiles = await selectFile();
-                                      _setDisplayFileName(
-                                          _selectedFiles!.names.join("\n"));
+                                      _setDisplayFileName(_selectedFiles!.names.join("\n"));
                                       _setShowClearButton(true);
                                     }, //downloadAttachment,
                                     style: TextButton.styleFrom(
@@ -438,9 +378,7 @@ class _DiscussionState extends State<Discussion> {
                                       'select file',
                                       style: TextStyle(
                                           fontSize: 14,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary),
+                                          color: Theme.of(context).colorScheme.secondary),
                                     ),
                                   ),
 
@@ -453,9 +391,7 @@ class _DiscussionState extends State<Discussion> {
                                         child: Text(
                                           _displayFileNames,
                                           style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary),
+                                              color: Theme.of(context).colorScheme.onPrimary),
                                         ),
                                       ),
                                     ),
@@ -465,7 +401,7 @@ class _DiscussionState extends State<Discussion> {
                                   Visibility(
                                     visible: _showClearButton,
                                     child: TextButton(
-                                      onPressed: () {
+                                      onPressed: (){
                                         _clearFileVariables();
                                         _setShowClearButton(false);
                                       }, //downloadAttachment,
@@ -476,9 +412,7 @@ class _DiscussionState extends State<Discussion> {
                                         'Clear',
                                         style: TextStyle(
                                             fontSize: 14,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary),
+                                            color: Theme.of(context).colorScheme.onPrimary),
                                       ),
                                     ),
                                   ),
@@ -495,12 +429,9 @@ class _DiscussionState extends State<Discussion> {
                           children: [
                             // button that closes the response box
                             TextButton(
-                                child: Text('Close',
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surface)),
-                                onPressed: () => setOpenResponse(false)),
+                                child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                                onPressed: ()=> setOpenResponse(false)
+                            ),
                             // button that submit the response, also submit selected files
                             Expanded(
                               child: Column(
@@ -514,11 +445,11 @@ class _DiscussionState extends State<Discussion> {
                                       child: TextButton(
                                         style: ButtonStyle(
                                             shape: MaterialStatePropertyAll(
-                                                RoundedRectangleBorder(
-                                                    side: BorderSide(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary)))),
+                                              RoundedRectangleBorder(
+                                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                                              )
+                                            )
+                                        ),
                                         onPressed: () async {
                                           // only update database if field has any word
                                           if(_textController.value.text != ""){
@@ -533,21 +464,16 @@ class _DiscussionState extends State<Discussion> {
                                               });
                                           }
                                           // upload document if has selected file
-                                          if (_selectedFiles != null) {
-                                            _uploadTask = uploadFile(
-                                                requestRef.id, _selectedFiles!);
+                                          if(_selectedFiles != null){
+                                            _uploadTask = uploadFile(requestRef.id, _selectedFiles!);
                                             _displayUploadState();
                                           }
                                           // clear all variables
                                           _textController.clear();
                                           _clearFileVariables();
                                         },
-                                        child: Text('Submit',
-                                            style: TextStyle(
-                                                fontSize: 10,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary)),
+                                        child: Text('Submit', style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.secondary)
+                                        ),
                                       ),
                                     ),
                                   ),

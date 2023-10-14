@@ -2,8 +2,6 @@
 ///
 /// Author: Aden McCusker
 
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -16,16 +14,7 @@ import 'page/landing_page.dart';
 import 'page/loading_page.dart';
 import 'page/error_page.dart';
 
-late final String? email;
-
-String? getCanvasEmail() {
-  final Uri uri = Uri.dataFromString(window.location.href);
-  final Map<String, String> params = uri.queryParameters;
-  return params['email'];
-}
-
 Future<void> main() async {
-  email = getCanvasEmail();
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
   runApp(const App());
@@ -49,7 +38,7 @@ class _AppState extends State<App> {
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
 
-  /// Initialise all app-level things before the UI is built...
+  /// Initialise all app-level things before the UI is built.
   Future<void> _initialise() async {
     try {
       await initializeDateFormatting('en_AU');
@@ -75,7 +64,7 @@ class _AppState extends State<App> {
       return const Loading();
     }
 
-    return Landing(email: email);
+    return const Landing();
   }
 
   @override

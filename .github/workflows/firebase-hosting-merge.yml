@@ -14,12 +14,10 @@ jobs:
       - run: flutter doctor -v
       - run: flutter pub get
       #       - run: flutter test
-      - run: npm install --prefix ./functions
       - run: flutter build web
-      - run: mkdir functions/public
-      - run: mv -f build/web/{.[!.],}* functions/public/
-      - uses: w9jds/firebase-action@master
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          args: deploy --only functions
-        env:
-          GCP_SA_KEY: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPECIAL_CONSIDERATION }}'
+          channelId: live
+          projectId: special-consideration
