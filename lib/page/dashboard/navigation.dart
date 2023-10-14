@@ -70,13 +70,13 @@ class _NavigationState extends State<Navigation> {
                     if (subject.assessments.isEmpty &&
                         widget.currentUser.role ==
                             UserType.subjectCoordinator) {
-                      Navigator.push(
+                      /*Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
                               AsmManager(subject: subject, refreshFn: setState),
                         ),
-                      );
+                      );*/
                     } else {
                       selectSubject(subject);
                       widget.setCurrentSubject(subject);

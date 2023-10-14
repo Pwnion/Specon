@@ -32,6 +32,9 @@ class _AsmManagerState extends State<AsmManager> {
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
 
+  static final dataBase = DataBase();
+  late final String docRef;
+
   @override
   void initState() {
     super.initState();
@@ -174,6 +177,8 @@ class _AsmManagerState extends State<AsmManager> {
                   );
                 } else {
                   if (widget.subject.code != "") {
+                    dataBase.addAssessments(
+                        widget.subject.assessments, widget.subject);
                     setState(() {
                       widget.subject.assessments.clear();
                       widget.subject.assessments

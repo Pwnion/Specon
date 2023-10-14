@@ -31,13 +31,8 @@ class _DashboardState extends State<Dashboard>
   @override
   bool get wantKeepAlive => true;
 
-  SubjectModel currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '');
+  SubjectModel currentSubject =
+      SubjectModel(name: '', code: '', assessments: [], semester: '', year: '');
   List<SubjectModel> subjectList = [];
   RequestModel currentRequest = RequestModel(
       requestedBy: '',
@@ -189,14 +184,14 @@ class _DashboardState extends State<Dashboard>
                       Padding(
                         padding: const EdgeInsets.only(right: 15.0),
                         child: InkWell(
-                          onTap: () {
+                          /*onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => AsmManager(
+                                    //builder: (_) => AsmManager(
                                         subject: currentSubject,
                                         refreshFn: setState)));
-                          },
+                          },*/
                           child: const Icon(
                             Icons.document_scanner,
                             size: 30.0,

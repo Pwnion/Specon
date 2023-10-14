@@ -73,7 +73,7 @@ class _SpeconFormState extends State<SpeconForm> {
   };
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
-  final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  final Future currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
   String selectedAssessment = '';
   List<SubjectModel> subjectList = [];

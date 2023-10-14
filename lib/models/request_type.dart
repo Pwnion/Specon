@@ -16,6 +16,14 @@ class RequestType {
     required this.id,
   });
 
+  Map<String, String> toJson() {
+    return {
+      'name': name,
+      'type': type,
+      'id': id,
+    };
+  }
+
   // fake request types
   static List<RequestType> importTypes() {
     return [

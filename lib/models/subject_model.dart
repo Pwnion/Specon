@@ -6,13 +6,22 @@ class SubjectModel {
   final List<RequestType> assessments;
   final String semester;
   final String year;
-  final String databasePath;
+  final String? id;
 
-  SubjectModel(
-      {required this.name,
+  const SubjectModel(
+      {this.id,
+      required this.name,
       required this.code,
       required this.assessments,
       required this.semester,
-      required this.year,
-      required this.databasePath});
+      required this.year});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'code': code,
+      'semester': semester,
+      'year': year,
+    };
+  }
 }

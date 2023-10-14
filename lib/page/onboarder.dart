@@ -3,6 +3,7 @@ import 'package:specon/models/subject_model.dart';
 import 'asm_mana.dart';
 import 'permission.dart';
 import 'package:flutter/material.dart';
+import 'db.dart';
 
 class Onboarder extends StatefulWidget {
   final SubjectModel subject;
@@ -13,13 +14,16 @@ class Onboarder extends StatefulWidget {
 }
 
 class _OnboarderState extends State<Onboarder> {
-  int state = 1; // welcome, assman, perman, done
+  int state = 0; // welcome, assman, perman, done
 
-  bool getStateBool() {
-    if (state >= 1) {
-      return false;
-    } else {
+  static final dataBase = DataBase();
+  late final String docRef;
+
+  bool infoCorrectUnlocked() {
+    if (state > 0) {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -39,6 +43,14 @@ class _OnboarderState extends State<Onboarder> {
     }
   }
 
+  bool isFinishedUnlocked() {
+    if (state < 3) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,16 +61,20 @@ class _OnboarderState extends State<Onboarder> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Current State: $state'),
+            Text('subject name: ${widget.subject.name}'),
+            Text('subject code: ${widget.subject.code}'),
+            Text('subject semester: ${widget.subject.semester}'),
+            Text('subject year: ${widget.subject.year}'),
             SizedBox(height: 20),
-            // MaterialButton(
-            //   onPressed: () {
-            //     setState(() {
-            //       state += 1;
-            //     });
-            //   },
-            //   child: Text('Increment State'),
-            // ),
+            MaterialButton(
+              onPressed: infoCorrectUnlocked()
+                  ? null
+                  : () => setState(() {
+                        state += 1;
+                        dataBase.addSubject(widget.subject);
+                      }),
+              child: Text('Is this information correct?'),
+            ),
             // Assessment Manager Button
             MaterialButton(
               onPressed: assManUnlocked()
@@ -69,18 +85,12 @@ class _OnboarderState extends State<Onboarder> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => AsmManager(
-                                  subject: widget.subject, refreshFn: setState),
-                            ),
+                                builder: (_) => AsmManager(
+                                      subject: widget.subject,
+                                      refreshFn: setState,
+                                    )),
                           );
-                        } // else if (state == 2) {
-                        //   Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (_) => Permission(),
-                        //     ),
-                        //   );
-                        // }
+                        }
                       }),
               child: Text('Ass Manager'),
             ),
@@ -101,12 +111,9 @@ class _OnboarderState extends State<Onboarder> {
               child: Text('Permission Manager'),
             ),
             MaterialButton(
-              onPressed: getStateBool() ? null : () => state += 1,
+              onPressed: isFinishedUnlocked() ? null : () => state += 1,
               child: Text('Finish'),
             ),
-            OutlinedButton(
-                onPressed: getStateBool() ? null : () => state += 1,
-                child: Text('Other'))
           ],
         ),
       ),
