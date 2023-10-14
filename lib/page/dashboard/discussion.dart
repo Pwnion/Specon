@@ -8,7 +8,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
@@ -17,7 +16,6 @@ import 'package:specon/user_type.dart';
 import '../dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/backend.dart';
 import 'package:specon/storage.dart';
 
 class Discussion extends StatefulWidget {
@@ -125,7 +123,7 @@ class _DiscussionState extends State<Discussion> {
 
   /// determine whether the reply button can be show
   bool _showReplyButtonCheck(){
-    if(widget.currentUser.role == UserType.student){
+    if(UserTypeUtils.convertString(widget.role) == UserType.student){
       // check if there's any respond in thread, if there is then can show button
       for (var thread in discussionThread){
         if (thread['type'] == "respond"){
@@ -142,7 +140,7 @@ class _DiscussionState extends State<Discussion> {
   Widget build(BuildContext context) {
 
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
-    aapPath = widget.currentUser.aappath;
+    aapPath = widget.currentUser.aapPath;
 
     // Fetch discussions from the database
     //discussionThread = [];
@@ -464,7 +462,7 @@ class _DiscussionState extends State<Discussion> {
                                                   //'assessment': widget.currentRequest.assessment,
                                                   'text': "${_textController.value.text}\n\nSubmitted file:\n$_displayFileNames",
                                                   //'subject': discussionThread[1]['subject'],
-                                                  'submittedBy': widget.currentUser.firstName,
+                                                  'submittedBy': widget.currentUser.name,
                                                   'submittedByUserID': widget.currentUser.id,
                                                   'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
                                               });

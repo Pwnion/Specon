@@ -21,7 +21,7 @@ class DataBase {
       email: fetchedUser["email"],
       name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
-      aap_path: fetchedUser["aap_path"],
+      aapPath: fetchedUser["aap_path"],
     );
 
     user = userModel;
