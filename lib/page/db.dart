@@ -1,11 +1,7 @@
 import "package:cloud_firestore/cloud_firestore.dart";
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/user_type.dart';
-
-import '../firebase_options.dart';
-import '../models/request_model.dart';
+import 'package:specon/models/request_model.dart';
 
 class DataBase {
 
@@ -22,13 +18,10 @@ class DataBase {
 
     final userModel = UserModel(
       id: fetchedUser["id"],
-      studentID: fetchedUser["student_id"],
-      emailAddress: fetchedUser["email"],
-      firstName: fetchedUser["first_name"],
-      middleName: fetchedUser["middle_name"],
-      lastName: fetchedUser["last_name"],
-      role: UserTypeUtils.convertString(fetchedUser["role"]),
+      email: fetchedUser["email"],
+      name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
+      aap_path: fetchedUser["aap_path"],
     );
 
     user = userModel;
@@ -44,7 +37,7 @@ class DataBase {
     }
 
     // Subject Coordinator
-    if (user.role == UserType.subjectCoordinator) {
+    if (subject.roles[user.id] == 'subject_coordinator') {
 
       // Get subject's reference
       final requestsRef = await _db.doc(subject.databasePath).collection('requests').get();
@@ -68,13 +61,13 @@ class DataBase {
     }
 
     // Student
-    else if (user.role == UserType.student) {
+    else if (subject.roles[user.id] == 'student') {
 
       // Query for student's requests from the subject
       final requestListFromDB = await _db
           .doc(subject.databasePath)
           .collection('requests')
-          .where('requested_by_student_id', isEqualTo: user.studentID)
+          .where('requested_by_student_id', isEqualTo: user.id) // TODO:
           .get();
 
       for(final request in requestListFromDB.docs){
@@ -113,6 +106,7 @@ class DataBase {
           SubjectModel(
             name: documentSnapshot['name'],
             code: documentSnapshot['code'],
+            roles: documentSnapshot['roles'],
             assessments: [], // documentSnapshot['test_assessment'], // TODO:
             semester: documentSnapshot['semester'],
             year: documentSnapshot['year'],
@@ -137,7 +131,7 @@ class DataBase {
       {'subject': subject.code,
       'reason': request.reason,
       'assessment': request.assessment,
-      'submittedBy': user.firstName,
+      'submittedBy': user.name,
       'submittedByUserID': user.id,
       'type': 'request'}
     );

@@ -5,8 +5,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/models/user_model.dart';
-// import 'package:specon/page/dashboard/request_filter.dart';
-import 'package:specon/page/db.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/page/asm_mana.dart';
 import 'package:specon/models/subject_model.dart';
@@ -14,19 +12,23 @@ import 'package:specon/models/subject_model.dart';
 class Navigation extends StatefulWidget {
   final void Function() openNewRequestForm;
   final void Function(SubjectModel) setCurrentSubject;
-  final void Function(List<SubjectModel>) setSubjectList;
+  final List<SubjectModel> subjectList;
   final UserModel currentUser;
   final SubjectModel currentSubject;
   final void Function(String) getSelectedAssessment;
+  final String role;
+  final void Function(SubjectModel, UserModel) setRole;
 
   const Navigation(
       {Key? key,
       required this.openNewRequestForm,
       required this.setCurrentSubject,
-      required this.setSubjectList,
+      required this.subjectList,
       required this.currentUser,
       required this.currentSubject,
-      required this.getSelectedAssessment})
+      required this.getSelectedAssessment,
+      required this.role,
+      required this.setRole})
       : super(key: key);
 
   @override
@@ -35,9 +37,8 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   SubjectModel? selectedSubject;
-  static final _db = DataBase();
   List<SubjectModel> subjectList = [];
-  bool fetchingFromDB = true;
+  bool fetchingFromDB = false;
 
   void selectSubject(SubjectModel subject) {
     setState(() {
@@ -67,8 +68,9 @@ class _NavigationState extends State<Navigation> {
                 elevation: 0.0,
                 onPressed: () {
                   setState(() {
+
                     if (subject.assessments.isEmpty &&
-                        widget.currentUser.role ==
+                        UserTypeUtils.convertString(subject.roles[widget.currentUser.id]) ==
                             UserType.subjectCoordinator) {
                       Navigator.push(
                         context,
@@ -82,6 +84,7 @@ class _NavigationState extends State<Navigation> {
                     } else {
                       selectSubject(subject);
                       widget.setCurrentSubject(subject);
+                      widget.setRole(subject, widget.currentUser);
                     }
                   });
                 },
@@ -154,16 +157,13 @@ class _NavigationState extends State<Navigation> {
 
   @override
   void initState() {
-    _db.getEnrolledSubjects().then((subjects) {
-      subjectList = subjects;
-      fetchingFromDB = false;
-      widget.setSubjectList(subjects);
-    });
+    subjectList = widget.subjectList;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
     if (!fetchingFromDB) {
       if (widget.currentSubject != selectedSubject) {
         selectedSubject = widget.currentSubject;
@@ -173,7 +173,7 @@ class _NavigationState extends State<Navigation> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Display new request button only if user is a student
-          if (widget.currentUser.role == UserType.student)
+          if (UserTypeUtils.convertString(widget.role) == UserType.student)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
               child: OutlinedButton(

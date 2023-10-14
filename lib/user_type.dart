@@ -24,8 +24,10 @@ class UserTypeUtils {
         return UserType.subjectCoordinator;
       case 'tutor':
         return UserType.tutor;
-      default:
+      case 'student':
         return UserType.student;
+      default:
+        return UserType.collegeTutor;
     }
   }
 }

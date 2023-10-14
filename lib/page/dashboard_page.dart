@@ -26,11 +26,7 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _DashboardState extends State<Dashboard> {
 
   SubjectModel currentSubject = SubjectModel(
       name: '',
@@ -38,19 +34,22 @@ class _DashboardState extends State<Dashboard>
       assessments: [],
       semester: '',
       year: '',
-      databasePath: '');
-  List<SubjectModel> subjectList = [];
+      databasePath: '',
+      roles: {});
+
   RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
   String selectedAssessment = '';
+  String role = '';
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
-  final Future<UserModel> _userFromDB =
-      _database.getUserFromEmail(_auth.currentUser!.email!);
 
+  late final UserModel currentUser;
+  late final List<SubjectModel> subjectList;
+  bool fetchingFromDB = true;
 
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(RequestModel request) {
@@ -101,6 +100,13 @@ class _DashboardState extends State<Dashboard>
     });
   }
 
+  ///
+  void setRole(SubjectModel subject, UserModel user){
+    setState(() {
+      role = subject.roles[user.id]!;
+    });
+  }
+
   /// Getter for user's enrolled subjects
   void setSubjectList(List<SubjectModel> subjects) {
     setState(() {
@@ -126,6 +132,7 @@ class _DashboardState extends State<Dashboard>
         child: Discussion(
           currentRequest: currentRequest,
           currentUser: currentUser,
+          role: role,
         ),
       );
     }
@@ -139,173 +146,189 @@ class _DashboardState extends State<Dashboard>
     }
   }
 
+
+  @override
+  void initState() {
+    _database.getUserFromEmail(_auth.currentUser!.email!).then((user) {
+      _database.getEnrolledSubjects().then((subjects) {
+        if(!mounted) return;
+        setState(() {
+          subjectList = subjects;
+          currentUser = user;
+          fetchingFromDB = false;
+        });
+
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return FutureBuilder(
-        future: _userFromDB,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            final currentUser = snapshot.data!;
-            return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  elevation: 0.0,
-                  // Logo
-                  leading: InkWell(
-                      onTap: () {},
-                      child: const Center(
-                          child: Text(
-                        'Specon',
-                        style: TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold),
-                      ))),
-                  leadingWidth: 110.0,
-                  // Subject code and name title
-                  title: Text('${currentSubject.code} - ${currentSubject.name}',
+
+    if (!fetchingFromDB){
+      return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            elevation: 0.0,
+            // Logo
+            leading: InkWell(
+                onTap: () {},
+                child: const Center(
+                    child: Text(
+                      'Specon',
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface,
-                          fontSize: 20.0)),
-                  centerTitle: true,
-                  actions: [
-                    // Home Button
-                    Padding(
-                      padding: const EdgeInsets.only(right: 15.0),
-                      child: InkWell(
-                        onTap: () {},
-                        child: const Icon(
-                          Icons.home,
-                          size: 30.0,
-                        ),
+                          fontSize: 25.0, fontWeight: FontWeight.bold),
+                    ))),
+            leadingWidth: 110.0,
+            // Subject code and name title
+            title: Text('${currentSubject.code} - ${currentSubject.name}',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
+                    fontSize: 20.0)),
+            centerTitle: true,
+            actions: [
+              // Home Button
+              Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: InkWell(
+                  onTap: () {},
+                  child: const Icon(
+                    Icons.home,
+                    size: 30.0,
+                  ),
+                ),
+              ),
+              // Assessment Manager Button
+              if (role == 'subject_coordinator')
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => AsmManager(
+                                subject: currentSubject,
+                                refreshFn: setState,
+                              )));
+                    },
+                    child: const Icon(
+                      Icons.document_scanner,
+                      size: 30.0,
+                    ),
+                  ),
+                ),
+              // Permission Settings Button
+              if (role == 'subject_coordinator')
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: Tooltip(
+                    message: 'Permission Settings',
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const Permission()));
+                        });
+                      },
+                      child: const Icon(
+                        Icons.admin_panel_settings,
+                        size: 30.0,
                       ),
                     ),
-                    // Assessment Manager Button
-                    if (currentUser.role == UserType.subjectCoordinator)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => AsmManager(
-                                          subject: currentSubject,
-                                          refreshFn: setState,
-                                        )));
-                          },
-                          child: const Icon(
-                            Icons.document_scanner,
-                            size: 30.0,
-                          ),
-                        ),
-                      ),
-                    // Permission Settings Button
-                    if (currentUser.role == UserType.subjectCoordinator)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: Tooltip(
-                          message: 'Permission Settings',
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const Permission()));
-                              });
-                            },
-                            child: const Icon(
-                              Icons.admin_panel_settings,
-                              size: 30.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    // Notification Button
-                    Padding(
-                      padding: const EdgeInsets.only(right: 15.0),
-                      child: InkWell(
-                        onTap: () {},
-                        child: const Icon(
-                          Icons.notifications,
-                          size: 30.0,
-                        ),
-                      ),
-                    ),
-                    // Avatar Button
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: PopupMenuButton(
-                        itemBuilder: (BuildContext context) => [
-                          PopupMenuItem(
-                            child: const Text('Logout'),
-                            onTap: () => _auth.signOut(),
-                          ),
-                        ],
-                        tooltip: 'User Options',
-                        iconSize: 50,
-                        icon: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          child: Text(currentUser.firstName[0],
-                              style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.surface)),
-                        ),
-                      ),
+                  ),
+                ),
+              // Notification Button
+              Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: InkWell(
+                  onTap: () {},
+                  child: const Icon(
+                    Icons.notifications,
+                    size: 30.0,
+                  ),
+                ),
+              ),
+              // Avatar Button
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: PopupMenuButton(
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem(
+                      child: const Text('Logout'),
+                      onTap: () => _auth.signOut(),
                     ),
                   ],
+                  tooltip: 'User Options',
+                  iconSize: 50,
+                  icon: CircleAvatar(
+                    backgroundColor:
+                    Theme.of(context).colorScheme.secondary,
+                    child: Text(currentUser.name[0],
+                        style: TextStyle(
+                            color:
+                            Theme.of(context).colorScheme.surface)),
+                  ),
                 ),
-                body: Stack(children: [
-                  Row(children: [
-                    // Dashboard column 1
-                    SizedBox(
-                      width: 150.0,
-                      child: Navigation(
-                        openNewRequestForm: openNewRequestForm,
-                        setCurrentSubject: setCurrentSubject,
-                        setSubjectList: setSubjectList,
-                        currentUser: currentUser,
-                        currentSubject: currentSubject,
-                        getSelectedAssessment: getSelectedAssessment,
-                      ),
-                    ),
-                    // Divider
-                    VerticalDivider(
-                      color: Theme.of(context).colorScheme.surface,
-                      thickness: 1,
-                      width: 1,
-                    ),
-                    // Dashboard column 2
-                    SizedBox(
-                      width: 300.0,
-                      child: requestWidget = Requests(
-                        getCurrentSubject: getCurrentSubject,
-                        openSubmittedRequest: openSubmittedRequest,
-                        currentUser: currentUser,
-                        selectedAssessment: selectedAssessment,
-                      ),
-                    ),
-                    // Divider
-                    VerticalDivider(
-                      color: Theme.of(context).colorScheme.surface,
-                      thickness: 1,
-                      width: 1,
-                    ),
-                    // Dashboard column 3
-                    Expanded(
-                      child: displayThirdColumn(currentUser),
-                    ),
-                  ]),
-                ]));
-          } else {
-            return const SizedBox(
-              height: 100.0,
-              width: 100.0,
-              child: Center(child: CircularProgressIndicator()),
-            );
-            //return const CircularProgressIndicator();
-          }
-        });
+              ),
+            ],
+          ),
+          body: Stack(children: [
+            Row(children: [
+              // Dashboard column 1
+              SizedBox(
+                width: 150.0,
+                child: Navigation(
+                  openNewRequestForm: openNewRequestForm,
+                  setCurrentSubject: setCurrentSubject,
+                  subjectList: subjectList,
+                  currentUser: currentUser,
+                  currentSubject: currentSubject,
+                  getSelectedAssessment: getSelectedAssessment,
+                  role: role,
+                  setRole: setRole,
+                ),
+              ),
+              // Divider
+              VerticalDivider(
+                color: Theme.of(context).colorScheme.surface,
+                thickness: 1,
+                width: 1,
+              ),
+              // Dashboard column 2
+              SizedBox(
+                width: 300.0,
+                child: requestWidget = Requests(
+                  getCurrentSubject: getCurrentSubject,
+                  openSubmittedRequest: openSubmittedRequest,
+                  currentUser: currentUser,
+                  selectedAssessment: selectedAssessment,
+                ),
+              ),
+              // Divider
+              VerticalDivider(
+                color: Theme.of(context).colorScheme.surface,
+                thickness: 1,
+                width: 1,
+              ),
+              // Dashboard column 3
+              Expanded(
+                child: displayThirdColumn(currentUser),
+              ),
+            ]),
+          ]
+        )
+      );
+    }
+    else {
+      return const SizedBox(
+        height: 100.0,
+        width: 100.0,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
   }
 }

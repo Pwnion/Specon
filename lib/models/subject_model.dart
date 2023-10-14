@@ -7,7 +7,7 @@ class SubjectModel {
   final String semester;
   final String year;
   final String databasePath;
-  final String roles;
+  final Map<String, dynamic> roles;
 
   SubjectModel(
       {required this.name,
