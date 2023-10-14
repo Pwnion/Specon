@@ -222,9 +222,13 @@ class _DashboardState extends State<Dashboard> {
                       onTap: () {
                         setState(() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const Permission()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => Permission(
+                                currentSubject: currentSubject
+                              )
+                            )
+                          );
                         });
                       },
                       child: const Icon(
