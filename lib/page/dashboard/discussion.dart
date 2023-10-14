@@ -23,11 +23,13 @@ import 'package:specon/storage.dart';
 class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
+  final String role;
 
   const Discussion(
     {Key? key,
     required this.currentRequest,
-    required this.currentUser
+    required this.currentUser,
+    required this.role
     }
   ): super(key: key);
 
@@ -188,7 +190,7 @@ class _DiscussionState extends State<Discussion> {
                           color:Theme.of(context).colorScheme.secondary),
                     ),
                     // accept decline flag button, only show to non student
-                    if(widget.currentUser.role != UserType.student)
+                    if(UserTypeUtils.convertString(widget.role) != UserType.student)
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -455,12 +457,16 @@ class _DiscussionState extends State<Discussion> {
                                           if(_textController.value.text != ""){
                                               await _db.addNewDiscussion(widget.currentRequest,
                                                 {
+//                                                   'assessment': widget.currentRequest.assessment,
+//                                                   'reason': "${_textController.value.text}\nSubmitted file:\n$_displayFileNames",
+//                                                   'subject': discussionThread[1]['subject'],
+//                                                   'submittedBy': widget.currentUser.name,
                                                   //'assessment': widget.currentRequest.assessment,
                                                   'text': "${_textController.value.text}\n\nSubmitted file:\n$_displayFileNames",
                                                   //'subject': discussionThread[1]['subject'],
                                                   'submittedBy': widget.currentUser.firstName,
                                                   'submittedByUserID': widget.currentUser.id,
-                                                  'type': widget.currentUser.role == UserType.student? 'request': 'respond',
+                                                  'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
                                               });
                                           }
                                           // upload document if has selected file
