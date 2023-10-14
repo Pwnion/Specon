@@ -1,4 +1,5 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/models/request_model.dart';
@@ -102,13 +103,15 @@ class DataBase {
 
       DocumentReference docRef = FirebaseFirestore.instance.doc(subject.path);
 
+      final assessments = await getAssessments(subject.path);
+
       await docRef.get().then((DocumentSnapshot documentSnapshot) {
         subjects.add(
           SubjectModel(
             name: documentSnapshot['name'],
             code: documentSnapshot['code'],
             roles: documentSnapshot['roles'],
-            assessments: [], // documentSnapshot['test_assessment'], // TODO:
+            assessments: assessments,
             semester: documentSnapshot['semester'],
             year: documentSnapshot['year'],
             databasePath: subject.path
@@ -117,6 +120,31 @@ class DataBase {
       });
     }
     return subjects;
+  }
+
+  Future<List<RequestType>> getAssessments(String subjectPath) async {
+    List<RequestType> assessments = [];
+
+    CollectionReference assessmentsRef = FirebaseFirestore.instance.doc(
+        subjectPath).collection('assessments');
+
+    QuerySnapshot querySnapshot = await assessmentsRef.get();
+
+    final allAssessments = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    for (final assessment in allAssessments) {
+      var assessmentMap = assessment as Map;
+
+      assessments.add(
+        RequestType(
+            name: assessmentMap['name'],
+            type: '', // TODO:
+            id: '' // TODO:
+        )
+      );
+    }
+
+    return assessments;
   }
 
   Future<DocumentReference> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
