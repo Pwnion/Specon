@@ -10,7 +10,7 @@ class UserModel {
   final String emailAddress;
   final UserType role;
   final List<dynamic> subjects;
-  String? aapPath;
+  String? aappath;
 
   UserModel({
     required this.id,

@@ -140,7 +140,7 @@ class _DiscussionState extends State<Discussion> {
   Widget build(BuildContext context) {
 
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
-    aapPath = widget.currentUser.aapPath;
+    aapPath = widget.currentUser.aappath;
 
     // Fetch discussions from the database
     //discussionThread = [];
