@@ -29,9 +29,7 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-  // TODO: Get assignments from canvas and it should be customisable
-  final List<String> filterSelectionsAssess =
-      BackEnd().getAssessments('subjectID'); // TODO: where to call
+
   final List<String> filterSelectionsState = BackEnd().getRequestStates();
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
@@ -44,7 +42,6 @@ class _RequestsState extends State<Requests> {
     semester: '',
     year: '',
     databasePath: '');
-  String _dropdownValueAssess = '';
   String _dropdownValueState = '';
   String _searchString = '';
   bool fetchingRequests = true;
@@ -113,7 +110,6 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValueAssess = filterSelectionsAssess.first;
       _dropdownValueState = filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
