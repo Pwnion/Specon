@@ -51,6 +51,7 @@ class _DashboardState extends State<Dashboard> {
   Widget? requestWidget;
   String selectedAssessment = '';
   String role = '';
+  int counter = 0;
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
@@ -65,6 +66,7 @@ class _DashboardState extends State<Dashboard> {
       showSubmittedRequest = true;
       newRequest = false;
       currentRequest = request;
+      counter++;
     });
   }
 
@@ -338,6 +340,7 @@ class _DashboardState extends State<Dashboard> {
                   currentUser: currentUser,
                   selectedAssessment: selectedAssessment,
                   role: UserTypeUtils.convertString(role),
+                  counter: counter,
                 ),
               ),
               // Divider

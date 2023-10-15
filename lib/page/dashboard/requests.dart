@@ -18,13 +18,16 @@ class Requests extends StatefulWidget {
   final UserModel currentUser;
   final String selectedAssessment;
   final UserType role;
+  final int counter;
+
   const Requests(
       {Key? key,
       required this.getCurrentSubject,
       required this.openSubmittedRequest,
       required this.currentUser,
       required this.selectedAssessment,
-      required this.role})
+      required this.role,
+      required this.counter})
       : super(key: key);
 
   @override
@@ -52,6 +55,7 @@ class _RequestsState extends State<Requests> {
   List<RequestModel> _foundRequests = []; // result showing on screen
   bool assFilterClicked = false;
   bool statusFilterClicked = false;
+  int counter = 0;
 
   static final dataBase = DataBase();
 
@@ -119,12 +123,22 @@ class _RequestsState extends State<Requests> {
 
       // Fetch requests from database
       fetchingRequests = true;
-      dataBase
-          .getRequests(widget.currentUser, _currentSubject)
-          .then((requests) {
+      dataBase.getRequests(widget.currentUser, _currentSubject) .then((requests) {
         setState(() {
           fetchingRequests = false;
           _allRequests = requests;
+        });
+      });
+    }
+    // New Request has been added
+    else if (counter != widget.counter){
+      // Fetch requests from database
+      fetchingRequests = true;
+      dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
+        setState(() {
+          fetchingRequests = false;
+          _allRequests = requests;
+          counter ++;
         });
       });
     }
