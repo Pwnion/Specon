@@ -155,16 +155,6 @@ class DataBase {
     // Add request to subject's collection
     final DocumentReference requestRef = await subjectRef.collection('requests').add(request.toJson());
 
-    // Add first discussion to the database
-    await requestRef.collection('discussions').add(
-      {'subject': subject.code,
-      'reason': request.reason,
-      'assessment': request.assessment,
-      'submittedBy': user.name,
-      'submittedByUserID': user.id,
-      'type': 'request'}
-    );
-
     return requestRef;
   }
 
