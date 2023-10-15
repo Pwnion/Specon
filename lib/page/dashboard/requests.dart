@@ -10,18 +10,21 @@ import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
+import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
   final SubjectModel Function() getCurrentSubject;
   final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
   final String selectedAssessment;
+  final UserType role;
   const Requests(
       {Key? key,
       required this.getCurrentSubject,
       required this.openSubmittedRequest,
       required this.currentUser,
-      required this.selectedAssessment})
+      required this.selectedAssessment,
+      required this.role})
       : super(key: key);
 
   @override
@@ -29,9 +32,7 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-  // TODO: Get assignments from canvas and it should be customisable
-  final List<String> filterSelectionsAssess =
-      BackEnd().getAssessments('subjectID'); // TODO: where to call
+
   final List<String> filterSelectionsState = BackEnd().getRequestStates();
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
@@ -44,7 +45,6 @@ class _RequestsState extends State<Requests> {
     semester: '',
     year: '',
     databasePath: '');
-  String _dropdownValueAssess = '';
   String _dropdownValueState = '';
   String _searchString = '';
   bool fetchingRequests = true;
@@ -113,8 +113,7 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValueAssess = filterSelectionsAssess.first;
-      _dropdownValueState = filterSelectionsState.first;
+      _dropdownValueState = widget.role == UserType.student ? 'All state' : filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
 
@@ -212,38 +211,6 @@ class _RequestsState extends State<Requests> {
                       statusFilterClicked = true;
                       setState(() {
                         _dropdownValueState = state!;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-
-                // assessment filter
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isDense: true,
-                    iconDisabledColor: Theme.of(context).colorScheme.background,
-                    focusColor: Theme.of(context).colorScheme.background,
-                    style: TextStyle(
-                        color: assFilterClicked == true
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(context).colorScheme.onBackground,
-                        fontSize: 12),
-                    padding: const EdgeInsets.all(1),
-                    value: _dropdownValueAssess,
-                    items: filterSelectionsAssess
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      assFilterClicked = true;
-                      setState(() {
-                        _dropdownValueAssess = value!;
                       });
                     },
                   ),

@@ -69,8 +69,8 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-
-  void getSelectedAssessment(String assessment) {
+  ///
+  void setSelectedAssessment(String assessment) {
     setState(() {
       selectedAssessment = assessment;
     });
@@ -89,6 +89,9 @@ class _DashboardState extends State<Dashboard> {
 
   /// Getter for current selected subject in column 1
   SubjectModel getCurrentSubject() => currentSubject;
+
+  ///
+  String getSelectedAssessment() => selectedAssessment;
 
   /// Getter for user's enrolled subjects
   List<SubjectModel> getSubjectList() => subjectList;
@@ -265,6 +268,19 @@ class _DashboardState extends State<Dashboard> {
                 padding: const EdgeInsets.only(right: 10),
                 child: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
+
+                    PopupMenuItem(
+                      enabled: false,
+                      onTap: () {},
+                      child: Text(
+                        currentUser.email,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ),
+
                     PopupMenuItem(
                       child: const Text('Logout'),
                       onTap: () {
@@ -301,6 +317,7 @@ class _DashboardState extends State<Dashboard> {
                   subjectList: subjectList,
                   currentUser: currentUser,
                   currentSubject: currentSubject,
+                  setSelectedAssessment: setSelectedAssessment,
                   getSelectedAssessment: getSelectedAssessment,
                   role: role,
                   setRole: setRole,
@@ -320,6 +337,7 @@ class _DashboardState extends State<Dashboard> {
                   openSubmittedRequest: openSubmittedRequest,
                   currentUser: currentUser,
                   selectedAssessment: selectedAssessment,
+                  role: UserTypeUtils.convertString(role),
                 ),
               ),
               // Divider
