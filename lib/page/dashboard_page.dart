@@ -143,6 +143,7 @@ class _DashboardState extends State<Dashboard> {
           currentRequest: currentRequest,
           currentUser: currentUser,
           role: role,
+          subjectCode: currentSubject.code,
         ),
       );
     }

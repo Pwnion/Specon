@@ -22,12 +22,14 @@ class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
   final String role;
+  final String subjectCode;
 
   const Discussion(
     {Key? key,
     required this.currentRequest,
     required this.currentUser,
-    required this.role
+    required this.role,
+    required this.subjectCode
     }
   ): super(key: key);
 
@@ -164,7 +166,7 @@ class _DiscussionState extends State<Discussion> {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 0.0, left: 20),
               child: Text(
-                "used to be subject - ${widget.currentRequest.assessment}",
+                "${widget.subjectCode} - ${widget.currentRequest.assessment}",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 20,
