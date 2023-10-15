@@ -85,7 +85,6 @@ class _SpeconFormState extends State<SpeconForm> {
   double _currentSliderValue = 0;
   final List<String> subjectNamesList = [];
   List<String> assessmentList = [];
-  final _subjectFormKey = GlobalKey<FormState>();
   final _assessmentFormKey = GlobalKey<FormState>();
 
   // File related variable
@@ -186,15 +185,8 @@ class _SpeconFormState extends State<SpeconForm> {
       return SizedBox(
         width: 420.0,
         child: Form(
-          key: _subjectFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-            validator: (value) {
-              if (value == null) {
-                return 'Please selected a subject';
-              }
-              return null;
-            },
             value: widget.currentSubject.code,
             items: subjectNamesList
                 .map<DropdownMenuItem<String>>((String value) {
@@ -712,8 +704,7 @@ class _SpeconFormState extends State<SpeconForm> {
             ElevatedButton(
               onPressed: () async {
                 // Check validity of dropdowns
-                if (!_subjectFormKey.currentState!.validate() ||
-                    !_assessmentFormKey.currentState!.validate()) {
+                if (!_assessmentFormKey.currentState!.validate()) {
                   return;
                 }
 
