@@ -184,8 +184,8 @@ class DataBase {
     List<Map<String, String>> allDiscussions = [];
 
     // use it after deleting all past discussion
-    //final discussions = await docRef.collection('discussions').orderBy("timestamp").get();
-    final discussions = await docRef.collection('discussions').get();
+    final discussions = await docRef.collection('discussions').orderBy("timestamp").get();
+    //final discussions = await docRef.collection('discussions').get();
 
     for (final discussion in discussions.docs) {
       allDiscussions.add(

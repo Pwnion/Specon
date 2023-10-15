@@ -6,6 +6,8 @@
 /// Author: Kuo Wei Wu
 
 
+import 'dart:js_interop';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -108,6 +110,14 @@ class _DiscussionState extends State<Discussion> {
     discussionThread.insert(0, info);
   }
 
+  /// string creation for submitted file for discussion response
+  String _selectedFileToString(){
+    if(_displayFileNames == ""){
+      return "";
+    }
+    return "\n\nSubmitted file:\n$_displayFileNames";
+  }
+
   /// updates the state attribute of the discussion locally
   void updateLocalRequestState(String state){
     setState(() {
@@ -138,6 +148,19 @@ class _DiscussionState extends State<Discussion> {
     return !_openResponse;
   }
 
+  void _initializeThread(){
+    _db.getDiscussionThreads(widget.currentRequest).then((discussionThread) {
+      if (mounted) {
+        setState(() {
+          this.discussionThread = discussionThread;
+          fetchingFromDB = false;
+        });
+      }
+      // add form info to first thread, put it here to solve UI glitch
+      createFormInfoThread();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -146,18 +169,9 @@ class _DiscussionState extends State<Discussion> {
 
     // Fetch discussions from the database
     //discussionThread = [];
-    _db.getDiscussionThreads(widget.currentRequest).then((discussionThread) {
-      setState(() {
-        this.discussionThread = discussionThread;
-        fetchingFromDB = false;
-      });
-      // add form info to first thread, put it here to solve UI glitch
-      createFormInfoThread();
-    });
-
+    _initializeThread();
 
     if (!fetchingFromDB) {
-
       return Scaffold(
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,6 +376,9 @@ class _DiscussionState extends State<Discussion> {
                                 ),
                               ),
                             ),
+
+                            // select file, show file name and clear button for student
+                            if(UserTypeUtils.convertString(widget.role) == UserType.student)
                             Expanded(
                               child: Row(
                                 children: [
@@ -462,7 +479,7 @@ class _DiscussionState extends State<Discussion> {
 //                                                   'subject': discussionThread[1]['subject'],
 //                                                   'submittedBy': widget.currentUser.name,
                                                   //'assessment': widget.currentRequest.assessment,
-                                                  'text': "${_textController.value.text}\n\nSubmitted file:\n$_displayFileNames",
+                                                  'text': "${_textController.value.text}${_selectedFileToString()}",
                                                   //'subject': discussionThread[1]['subject'],
                                                   'submittedBy': widget.currentUser.name,
                                                   'submittedByUserID': widget.currentUser.id,
