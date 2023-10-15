@@ -46,6 +46,18 @@ class DataBase {
       final requestsFromDB = requestsRef.docs;
 
       for(final request in requestsFromDB) {
+
+        final assessmentRef = _db.doc(request['assessment'].path);
+        late final RequestType assessmentFromDB;
+
+        await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
+          assessmentFromDB = RequestType(
+            name: documentSnapshot['assessment'],
+            type: '',
+            id: request['assessment'].path
+          );
+        });
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -53,7 +65,7 @@ class DataBase {
             reason: request['reason'],
             additionalInfo: request['additional_info'],
             assessedBy: request['assessed_by'],
-            assessment: request['assessment'],
+            assessment: assessmentFromDB,
             state: request['state'],
             databasePath: request.reference.path
           )
@@ -73,13 +85,25 @@ class DataBase {
 
 
       for(final request in requestListFromDB.docs){
+
+        final assessmentRef = _db.doc(request['assessment'].path);
+        late final RequestType assessmentFromDB;
+
+        await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
+          assessmentFromDB = RequestType(
+            name: documentSnapshot['name'],
+            type: '',
+            id: request['assessment'].path
+          );
+        });
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
             reason: request['reason'],
             additionalInfo: request['additional_info'],
             assessedBy: request['assessed_by'],
-            assessment: request['assessment'],
+            assessment: assessmentFromDB,
             state: request['state'],
             requestedByStudentID: request['requested_by_student_id'],
             databasePath: request.reference.path
@@ -130,16 +154,12 @@ class DataBase {
 
     QuerySnapshot querySnapshot = await assessmentsRef.get();
 
-    final allAssessments = querySnapshot.docs.map((doc) => doc.data()).toList();
-
-    for (final assessment in allAssessments) {
-      var assessmentMap = assessment as Map;
-
+    for (final assessment in querySnapshot.docs){
       assessments.add(
         RequestType(
-            name: assessmentMap['name'],
-            type: '', // TODO:
-            id: '' // TODO:
+          name: assessment['name'],
+          type: '', // TODO:
+          id: assessment.reference.path
         )
       );
     }

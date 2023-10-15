@@ -85,12 +85,13 @@ class _SpeconFormState extends State<SpeconForm> {
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
-  String selectedAssessment = '';
+  RequestType? selectedAssessment;
   String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
   final List<String> subjectCodeList = [];
-  List<String> assessmentList = [];
+  List<RequestType> assessmentList = [];
+  List<String> assessmentNameList = [];
   final _assessmentFormKey = GlobalKey<FormState>();
   final _requestTypeFormKey = GlobalKey<FormState>();
 
@@ -230,7 +231,8 @@ class _SpeconFormState extends State<SpeconForm> {
             onChanged: (value) {
               setState(() {
                 selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
-                assessmentList = RequestType.getAssessmentNames(selectedSubject!.assessments);
+                assessmentList = selectedSubject!.assessments;
+                assessmentNameList = RequestType.getAssessmentNames(assessmentList);
               });
             }
           ),
@@ -254,7 +256,7 @@ class _SpeconFormState extends State<SpeconForm> {
               },
               value: null, // TODO: need to change to match selected subject
               items:
-                  assessmentList.map<DropdownMenuItem<String>>((String value) {
+                  assessmentNameList.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child:
@@ -284,7 +286,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ),
               onChanged: (value) {
-                selectedAssessment = value!;
+                selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
               }),
         ),
       );
@@ -673,7 +675,8 @@ class _SpeconFormState extends State<SpeconForm> {
     }
 
     selectedSubject = widget.currentSubject;
-    assessmentList = RequestType.getAssessmentNames(selectedSubject!.assessments);
+    assessmentList = widget.currentSubject.assessments;
+    assessmentNameList = RequestType.getAssessmentNames(assessmentList);
 
     super.initState();
   }
@@ -771,7 +774,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   requestedBy: controllers[0].text,
                   requestedByStudentID: widget.currentUser.id,
                   assessedBy: '',
-                  assessment: selectedAssessment,
+                  assessment: selectedAssessment!,
                   reason: _reasonController.text,
                   additionalInfo: _additionalInformationController.text,
                   state: 'Open',
@@ -808,7 +811,7 @@ class _SpeconFormState extends State<SpeconForm> {
                     requestedBy: controllers[0].text,
                     requestedByStudentID: widget.currentUser.id,
                     assessedBy: '',
-                    assessment: selectedAssessment,
+                    assessment: selectedAssessment!,
                     reason: _reasonController.text,
                     additionalInfo: _additionalInformationController.text,
                     state: 'Open',
@@ -828,7 +831,7 @@ class _SpeconFormState extends State<SpeconForm> {
   List<TextField> displayRequest(RequestModel request) {
     List<TextField> form = [];
 
-    Map<String, String> requestMap = request.toJson();
+    Map<String, dynamic> requestMap = request.toJson();
     for (String key in requestMap.keys) {
       TextField info = TextField(
         readOnly: true,

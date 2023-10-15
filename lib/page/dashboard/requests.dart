@@ -67,7 +67,7 @@ class _RequestsState extends State<Requests> {
 
     if (widget.selectedAssessment != 'All') {
       filteredByAssignment = _allRequests.where((request) {
-        return request.assessment == widget.selectedAssessment;
+        return request.assessment.name == widget.selectedAssessment;
       }).toList();
     } else {
       filteredByAssignment = _allRequests;
@@ -320,7 +320,7 @@ class _RequestsState extends State<Requests> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   const SizedBox(width: 8),
-                                  Text(_foundRequests[index].assessment),
+                                  Text(_foundRequests[index].assessment.name),
                                   const SizedBox(width: 8),
                                   const Text('4h'),
                                   const SizedBox(width: 8),

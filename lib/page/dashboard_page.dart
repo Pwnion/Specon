@@ -6,6 +6,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/page/db.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/asm_mana.dart';
@@ -45,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
       databasePath: '',
       roles: {});
 
-  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
+  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: RequestType(name: '', type: '', id: ''), state: '', requestedByStudentID: '', databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
