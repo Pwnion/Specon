@@ -101,7 +101,7 @@ class _SpeconFormState extends State<SpeconForm> {
   FilePickerResult? _selectedFiles;
   FilePickerResult? _selectedAap;
   String _displayFileNames = "no file selected";
-  String _displayAapName = "original aap (todo)"; // should change to existed one if exist
+  String _displayAapName = "original aap"; // should change to existed one if exist
   UploadTask? _uploadTask;
 
   void _setDisplayFileName(String name){

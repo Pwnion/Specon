@@ -52,7 +52,7 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-            name: documentSnapshot['assessment'],
+            name: documentSnapshot['name'],
             type: '',
             id: request['assessment'].path
           );
