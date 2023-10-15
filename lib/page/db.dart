@@ -155,16 +155,6 @@ class DataBase {
     // Add request to subject's collection
     final DocumentReference requestRef = await subjectRef.collection('requests').add(request.toJson());
 
-    // Add first discussion to the database
-    await requestRef.collection('discussions').add(
-      {'subject': subject.code,
-      'reason': request.reason,
-      'assessment': request.assessment,
-      'submittedBy': user.name,
-      'submittedByUserID': user.id,
-      'type': 'request'}
-    );
-
     return requestRef;
   }
 
@@ -174,8 +164,8 @@ class DataBase {
     List<Map<String, String>> allDiscussions = [];
 
     // use it after deleting all past discussion
-    //final discussions = await docRef.collection('discussions').orderBy("timestamp").get();
-    final discussions = await docRef.collection('discussions').get();
+    final discussions = await docRef.collection('discussions').orderBy("timestamp").get();
+    //final discussions = await docRef.collection('discussions').get();
 
     for (final discussion in discussions.docs) {
       allDiscussions.add(

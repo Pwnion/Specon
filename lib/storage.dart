@@ -82,6 +82,7 @@ void downloadFilesToDisc (String dataPath, String? aapPath) async{
   //File file;
 
   // if user has aap, download their aap as well
+  print(aapPath);
   if(aapPath != null && aapPath != ""){
     final aapList = await _documentsRef.child(aapPath!).listAll();
     for (var item in aapList.items) {
