@@ -6,8 +6,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/page/db.dart';
-import 'package:specon/page/landing_page.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/asm_mana.dart';
 import 'package:specon/page/dashboard/navigation.dart';
@@ -46,12 +46,13 @@ class _DashboardState extends State<Dashboard> {
       databasePath: '',
       roles: {});
 
-  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: '', state: '', requestedByStudentID: '', databasePath: '');
+  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: RequestType(name: '', type: '', id: ''), state: '', requestedByStudentID: '', databasePath: '');
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;
   String selectedAssessment = '';
   String role = '';
+  int counter = 0;
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
@@ -68,6 +69,9 @@ class _DashboardState extends State<Dashboard> {
       currentRequest = request;
     });
   }
+
+  ///
+  void incrementCounter() => setState(() => counter++);
 
   ///
   void setSelectedAssessment(String assessment) {
@@ -129,6 +133,8 @@ class _DashboardState extends State<Dashboard> {
         currentSubject: currentSubject,
         getSubjectList: getSubjectList,
         setCurrentSubject: setCurrentSubject,
+        openSubmittedRequest: openSubmittedRequest,
+        incrementCounter: incrementCounter,
       );
     }
     // Show a submitted request's details
@@ -138,6 +144,7 @@ class _DashboardState extends State<Dashboard> {
           currentRequest: currentRequest,
           currentUser: currentUser,
           role: role,
+          subjectCode: currentSubject.code,
         ),
       );
     }
@@ -338,6 +345,8 @@ class _DashboardState extends State<Dashboard> {
                   currentUser: currentUser,
                   selectedAssessment: selectedAssessment,
                   role: UserTypeUtils.convertString(role),
+                  counter: counter,
+                  selectedRequest: currentRequest,
                 ),
               ),
               // Divider

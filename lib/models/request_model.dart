@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:specon/models/request_type.dart';
+
 class RequestModel {
   final String requestedBy;
   final String reason;
   final String additionalInfo;
   final String assessedBy;
-  final String assessment;
+  final RequestType assessment;
   String state;
   final String requestedByStudentID;
   final String databasePath;
@@ -19,14 +22,19 @@ class RequestModel {
     required this.databasePath
   });
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
+
+    final db = FirebaseFirestore.instance;
+
+    DocumentReference docRef = db.doc(assessment.id);
+
     return {
       'requested_by': requestedBy,
       'requested_by_student_id': requestedByStudentID,
       'reason': reason,
       'additional_info': additionalInfo,
       'assessed_by': assessedBy,
-      'assessment': assessment,
+      'assessment': docRef,
       'state': state,
     };
   }
