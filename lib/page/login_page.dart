@@ -145,17 +145,13 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0.0,
-        title: const Text('Sign in'),
-        actions: [
-          TextButton.icon(
-            style: ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.surface),
-            ),
-            icon: const Icon(Icons.person),
-            label: const Text('Register'),
-            onPressed: () {},
+        title: Text(
+          'Sign in',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onBackground
           ),
-        ],
+        ),
+        centerTitle: true,
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(
