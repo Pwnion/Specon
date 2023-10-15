@@ -216,38 +216,6 @@ class _RequestsState extends State<Requests> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
-
-                // assessment filter
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isDense: true,
-                    iconDisabledColor: Theme.of(context).colorScheme.background,
-                    focusColor: Theme.of(context).colorScheme.background,
-                    style: TextStyle(
-                        color: assFilterClicked == true
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(context).colorScheme.onBackground,
-                        fontSize: 12),
-                    padding: const EdgeInsets.all(1),
-                    value: _dropdownValueAssess,
-                    items: filterSelectionsAssess
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      assFilterClicked = true;
-                      setState(() {
-                        _dropdownValueAssess = value!;
-                      });
-                    },
-                  ),
-                ),
               ],
             ),
             Padding(
