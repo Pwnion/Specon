@@ -10,18 +10,21 @@ import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/page/db.dart';
+import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
   final SubjectModel Function() getCurrentSubject;
   final void Function(RequestModel) openSubmittedRequest;
   final UserModel currentUser;
   final String selectedAssessment;
+  final UserType role;
   const Requests(
       {Key? key,
       required this.getCurrentSubject,
       required this.openSubmittedRequest,
       required this.currentUser,
-      required this.selectedAssessment})
+      required this.selectedAssessment,
+      required this.role})
       : super(key: key);
 
   @override
@@ -110,7 +113,7 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValueState = filterSelectionsState.first;
+      _dropdownValueState = widget.role == UserType.student ? 'All state' : filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
 

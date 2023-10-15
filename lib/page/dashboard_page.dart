@@ -322,6 +322,7 @@ class _DashboardState extends State<Dashboard> {
                   openSubmittedRequest: openSubmittedRequest,
                   currentUser: currentUser,
                   selectedAssessment: selectedAssessment,
+                  role: UserTypeUtils.convertString(role),
                 ),
               ),
               // Divider
