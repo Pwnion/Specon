@@ -50,6 +50,7 @@ class _SpeconFormState extends State<SpeconForm> {
     'Student ID', // 2
     'Subject',
     'Assessment',
+    'Request Type',
     'Extend due date to (if applicable)',
     'Additional Information', // 3
     'Reason', // 4
@@ -57,7 +58,6 @@ class _SpeconFormState extends State<SpeconForm> {
     'AAP'
   ];
 
-  String requestType = '';
   late Future<Map<String, dynamic>> basicForm;
 
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
@@ -67,6 +67,7 @@ class _SpeconFormState extends State<SpeconForm> {
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
+  static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
   final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
@@ -81,11 +82,13 @@ class _SpeconFormState extends State<SpeconForm> {
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
   String selectedAssessment = '';
+  String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
-  final List<String> subjectNamesList = [];
+  final List<String> subjectCodeList = [];
   List<String> assessmentList = [];
   final _assessmentFormKey = GlobalKey<FormState>();
+  final _requestTypeFormKey = GlobalKey<FormState>();
 
   // File related variable
   bool _showClearButton = false;
@@ -188,7 +191,7 @@ class _SpeconFormState extends State<SpeconForm> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
             value: widget.currentSubject.code,
-            items: subjectNamesList
+            items: subjectCodeList
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -222,7 +225,7 @@ class _SpeconFormState extends State<SpeconForm> {
             ),
             onChanged: (value) {
               setState(() {
-                selectedSubject =  subjectList[subjectNamesList.indexOf(value!)];
+                selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
                 assessmentList = RequestType.getAssessmentNames(selectedSubject!.assessments);
               });
             }
@@ -232,7 +235,7 @@ class _SpeconFormState extends State<SpeconForm> {
     }
 
     // Assessment field
-    else {
+    else if (field == 'Assessment') {
       return SizedBox(
         width: 420.0,
         child: Form(
@@ -278,6 +281,57 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               onChanged: (value) {
                 selectedAssessment = value!;
+              }),
+        ),
+      );
+    }
+
+    // Request Type field
+    else {
+      return SizedBox(
+        width: 420.0,
+        child: Form(
+          key: _requestTypeFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+              validator: (value) {
+                if (value == null) {
+                  return 'Please selected a request type';
+                }
+                return null;
+              },
+              value: null, // TODO: need to change to match selected subject
+              items: requestTypes.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:
+                  Text(value, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    width: 0.5,
+                  ),
+                ),
+                labelText: field,
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFD78521),
+                    width: 1,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                selectedRequestType = value!;
               }),
         ),
       );
@@ -334,8 +388,8 @@ class _SpeconFormState extends State<SpeconForm> {
         textFormFields.add(const SizedBox(height: 15));
       }
 
-      // Subject & Assessment field
-      else if (field == 'Subject' || field == 'Assessment') {
+      // Subject, Assessment & Request Type field
+      else if (field == 'Subject' || field == 'Assessment' || field == 'Request Type') {
         textFormFields.add(buildDropdownField(field));
         textFormFields.add(const SizedBox(height: 15.0));
       }
@@ -611,7 +665,7 @@ class _SpeconFormState extends State<SpeconForm> {
     subjectList = widget.getSubjectList();
 
     for (final subject in subjectList) {
-      subjectNamesList.add(subject.code);
+      subjectCodeList.add(subject.code);
     }
 
     selectedSubject = widget.currentSubject;
@@ -704,7 +758,8 @@ class _SpeconFormState extends State<SpeconForm> {
             ElevatedButton(
               onPressed: () async {
                 // Check validity of dropdowns
-                if (!_assessmentFormKey.currentState!.validate()) {
+                if (!_assessmentFormKey.currentState!.validate() ||
+                    !_requestTypeFormKey.currentState!.validate()) {
                   return;
                 }
 
