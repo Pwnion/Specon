@@ -19,6 +19,7 @@ class Requests extends StatefulWidget {
   final String selectedAssessment;
   final UserType role;
   final int counter;
+  final RequestModel selectedRequest;
 
   const Requests(
       {Key? key,
@@ -27,7 +28,8 @@ class Requests extends StatefulWidget {
       required this.currentUser,
       required this.selectedAssessment,
       required this.role,
-      required this.counter})
+      required this.counter,
+      required this.selectedRequest})
       : super(key: key);
 
   @override
@@ -187,7 +189,7 @@ class _RequestsState extends State<Requests> {
                 ),
               ),
             ),
-            // end of search bar
+            // Divider Line
             Divider(
               color: Theme.of(context).colorScheme.surface,
               thickness: 0.5,
@@ -231,6 +233,7 @@ class _RequestsState extends State<Requests> {
                 ),
               ],
             ),
+            // Divider Line
             Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Divider(
@@ -239,7 +242,7 @@ class _RequestsState extends State<Requests> {
                 height: 1,
               ),
             ),
-
+            // Display Requests
             Expanded(
               child: RawScrollbar(
                 controller: _scrollController,
@@ -253,100 +256,81 @@ class _RequestsState extends State<Requests> {
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.only(right: 6.0),
                     child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            // TODO: Retrieve request from database and display, pass in some sort of submission ID
-                            // widget.openSubmittedRequest(
-                            //     _foundRequests[index]); // TODO
-// <<<<<<< assessmentManager
-//                               });
-//                             },
-//                             child: Card(
-// =======
-                            widget.openSubmittedRequest(_foundRequests[index]);
-                          });
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          color: Colors.white,
-//>>>>>>> main
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                // request first row
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.album, size: 20.0),
-                                    const SizedBox(width: 12),
-                                    Text(_foundRequests[index].requestedBy),
-                                    // green tick icon
-                                    Expanded(
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.only(right: 7.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Visibility(
-                                              visible:
-                                                  _foundRequests[index].state ==
-                                                          'Approved'
-                                                      ? true
-                                                      : false,
-                                              child: const Icon(
-                                                  Icons.gpp_good_sharp,
-                                                  color: Colors.green),
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  _foundRequests[index].state ==
-                                                          'Flagged'
-                                                      ? true
-                                                      : false,
-                                              child: const Icon(Icons.flag,
-                                                  color: Colors.orange),
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  _foundRequests[index].state ==
-                                                          'Declined'
-                                                      ? true
-                                                      : false,
-                                              child: const Icon(
-                                                  Icons.not_interested,
-                                                  color: Colors.red),
-                                            ),
-                                          ],
-                                        ),
+                      onTap: () {
+                        setState(() {
+                          widget.openSubmittedRequest(_foundRequests[index]);
+                        });
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        color: widget.selectedRequest.databasePath == _foundRequests[index].databasePath ? Colors.white70 : Colors.white,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              // request first row
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.album, size: 20.0),
+                                  const SizedBox(width: 12),
+                                  Text(_foundRequests[index].requestedBy),
+                                  // State Icons
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.only(right: 7.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          // Approved icon
+                                          Visibility(
+                                            visible: _foundRequests[index].state == 'Approved',
+                                            child: const Icon(
+                                                Icons.gpp_good_sharp,
+                                                color: Colors.green),
+                                          ),
+                                          // Flagged icon
+                                          Visibility(
+                                            visible:_foundRequests[index].state == 'Flagged',
+                                            child: const Icon(Icons.flag,
+                                                color: Colors.orange),
+                                          ),
+                                          // Declined icon
+                                          Visibility(
+                                            visible: _foundRequests[index].state == 'Declined',
+                                            child: const Icon(
+                                                Icons.not_interested,
+                                                color: Colors.red),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                margin:
-                                    const EdgeInsets.only(top: 10, bottom: 10),
-                                // bottom row
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(width: 8),
-                                    Text(_foundRequests[index].assessment),
-                                    const SizedBox(width: 8),
-                                    const Text('4h'),
-                                    const SizedBox(width: 8),
-                                  ],
-                                ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 10, bottom: 10),
+                              // bottom row
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(width: 8),
+                                  Text(_foundRequests[index].assessment),
+                                  const SizedBox(width: 8),
+                                  const Text('4h'),
+                                  const SizedBox(width: 8),
+                                ],
                               ),
-                            ],
-                          ),
-                        )),
+                            ),
+                          ],
+                        ),
+                      )
+                    ),
                   ),
                 ),
               ),
@@ -358,9 +342,12 @@ class _RequestsState extends State<Requests> {
     // No subject is selected
     else if (_currentSubject.code.isEmpty) {
       return Center(
-          child: Text('Select a subject',
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface, fontSize: 25)));
+        child: Text('Select a subject',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface, fontSize: 25
+          )
+        )
+      );
     }
     // Fetching requests from database
     else {

@@ -66,9 +66,11 @@ class _DashboardState extends State<Dashboard> {
       showSubmittedRequest = true;
       newRequest = false;
       currentRequest = request;
-      counter++;
     });
   }
+
+  ///
+  void incrementCounter() => setState(() => counter++);
 
   ///
   void setSelectedAssessment(String assessment) {
@@ -131,6 +133,7 @@ class _DashboardState extends State<Dashboard> {
         getSubjectList: getSubjectList,
         setCurrentSubject: setCurrentSubject,
         openSubmittedRequest: openSubmittedRequest,
+        incrementCounter: incrementCounter,
       );
     }
     // Show a submitted request's details
@@ -341,6 +344,7 @@ class _DashboardState extends State<Dashboard> {
                   selectedAssessment: selectedAssessment,
                   role: UserTypeUtils.convertString(role),
                   counter: counter,
+                  selectedRequest: currentRequest,
                 ),
               ),
               // Divider

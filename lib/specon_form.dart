@@ -18,6 +18,7 @@ class SpeconForm extends StatefulWidget {
   final List<SubjectModel> Function() getSubjectList;
   final void Function(SubjectModel) setCurrentSubject;
   final void Function(RequestModel) openSubmittedRequest;
+  final void Function() incrementCounter;
 
   const SpeconForm(
       {super.key,
@@ -26,7 +27,8 @@ class SpeconForm extends StatefulWidget {
       required this.currentSubject,
       required this.getSubjectList,
       required this.setCurrentSubject,
-      required this.openSubmittedRequest});
+      required this.openSubmittedRequest,
+      required this.incrementCounter});
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
@@ -810,10 +812,10 @@ class _SpeconFormState extends State<SpeconForm> {
                     reason: _reasonController.text,
                     additionalInfo: _additionalInformationController.text,
                     state: 'Open',
-                    databasePath: docRef.toString()
+                    databasePath: docRef.path
                   )
                 );
-
+                widget.incrementCounter();
               },
               child: const Text('Submit'),
             ),
