@@ -266,6 +266,19 @@ class _DashboardState extends State<Dashboard> {
                 padding: const EdgeInsets.only(right: 10),
                 child: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
+
+                    PopupMenuItem(
+                      enabled: false,
+                      onTap: () {},
+                      child: Text(
+                        currentUser.email,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ),
+
                     PopupMenuItem(
                       child: const Text('Logout'),
                       onTap: () {
