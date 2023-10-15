@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
+import 'package:specon/page/landing_page.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/asm_mana.dart';
 import 'package:specon/page/dashboard/navigation.dart';
@@ -19,12 +20,14 @@ import 'package:specon/models/user_model.dart';
 
 class Dashboard extends StatefulWidget {
   final String? canvasEmail;
+  final void Function()? canvasLogout;
   final UserType userType;
 
   const Dashboard(
     {
       Key? key,
       this.canvasEmail,
+      this.canvasLogout,
       required this.userType
     }
   ) : super(key: key);
@@ -34,7 +37,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   SubjectModel currentSubject = SubjectModel(
       name: '',
       code: '',
@@ -267,7 +269,7 @@ class _DashboardState extends State<Dashboard> {
                       child: const Text('Logout'),
                       onTap: () {
                         if(widget.canvasEmail != null) {
-                          Navigator.pop(context);
+                          widget.canvasLogout!();
                         } else {
                           _auth.signOut();
                         }
