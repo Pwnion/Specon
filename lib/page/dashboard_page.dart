@@ -67,8 +67,8 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-
-  void getSelectedAssessment(String assessment) {
+  ///
+  void setSelectedAssessment(String assessment) {
     setState(() {
       selectedAssessment = assessment;
     });
@@ -87,6 +87,9 @@ class _DashboardState extends State<Dashboard> {
 
   /// Getter for current selected subject in column 1
   SubjectModel getCurrentSubject() => currentSubject;
+
+  ///
+  String getSelectedAssessment() => selectedAssessment;
 
   /// Getter for user's enrolled subjects
   List<SubjectModel> getSubjectList() => subjectList;
@@ -299,6 +302,7 @@ class _DashboardState extends State<Dashboard> {
                   subjectList: subjectList,
                   currentUser: currentUser,
                   currentSubject: currentSubject,
+                  setSelectedAssessment: setSelectedAssessment,
                   getSelectedAssessment: getSelectedAssessment,
                   role: role,
                   setRole: setRole,
