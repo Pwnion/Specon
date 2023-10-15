@@ -31,30 +31,28 @@ class SpeconForm extends StatefulWidget {
 }
 
 class _SpeconFormState extends State<SpeconForm> {
+
   final List<String> _preFilledFieldTitles = [
-    'First Name',
+    'Full Name',
     'Last Name',
     'Email',
-    'Student ID',
   ];
 
   final Map<String, String> _databaseFields = {
-    'First Name': 'first_name',
-    'Last Name': 'last_name',
+    'Full Name': 'name',
     'Email': 'email',
     'Student ID': 'student_id',
   };
 
   final List<String> _fieldTitles = [
-    'First Name', // 0
-    'Last Name', // 1
-    'Email', // 2
-    'Student ID', // 3
+    'Full Name', // 0
+    'Email', // 1
+    'Student ID', // 2
     'Subject',
     'Assessment',
     'Extend due date to (if applicable)',
-    'Additional Information', // 4
-    'Reason', // 5
+    'Additional Information', // 3
+    'Reason', // 4
     'Attachments',
     'AAP'
   ];
@@ -64,6 +62,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
   final _additionalInformationController = TextEditingController();
+  final _studentIDController = TextEditingController();
   final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
@@ -416,82 +415,82 @@ class _SpeconFormState extends State<SpeconForm> {
           ),
         );
       }
+
       // select supporting files
       else if (field == 'Attachments'){
         attachments = Container(
           width: 420,
-          child: Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                        "Select supporting documents (use CTRL to select more files)",
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                      "Select supporting documents (use CTRL to select more files)",
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    style: ButtonStyle(
+                        shape: MaterialStatePropertyAll(
+                            RoundedRectangleBorder(
+                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
+                            )
+                        )
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(
-                              RoundedRectangleBorder(
-                                  side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                              )
-                          )
-                      ),
-                      onPressed: () async {
-                        _selectedFiles = await selectFile();
-                        _setDisplayFileName(_selectedFiles!.names.join("\n"));
-                        _setShowClearButton(true);
-                      },
-                      child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
-                      ),
+                    onPressed: () async {
+                      _selectedFiles = await selectFile();
+                      _setDisplayFileName(_selectedFiles!.names.join("\n"));
+                      _setShowClearButton(true);
+                    },
+                    child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
                     ),
-                    // display selected file names
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.all(17.0),
-                          child: Text(
-                            _displayFileNames,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // clear selection button
-                    Visibility(
-                      visible: _showClearButton,
-                      child: TextButton(
-                        onPressed: (){
-                          _clearFileVariables();
-                          _setShowClearButton(false);
-                        }, //downloadAttachment,
-                        style: TextButton.styleFrom(
-                          alignment: Alignment.centerLeft,
-                        ),
+                  ),
+                  // display selected file names
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(17.0),
                         child: Text(
-                          'Clear',
+                          _displayFileNames,
                           style: TextStyle(
-                              fontSize: 14,
                               color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+
+                  // clear selection button
+                  Visibility(
+                    visible: _showClearButton,
+                    child: TextButton(
+                      onPressed: (){
+                        _clearFileVariables();
+                        _setShowClearButton(false);
+                      }, //downloadAttachment,
+                      style: TextButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onPrimary),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       }
+
       // select aap file
       else if (field == 'AAP'){
         aap = Container(
@@ -572,6 +571,8 @@ class _SpeconFormState extends State<SpeconForm> {
         TextEditingController controller;
         if (field == 'Additional Information') {
           controller = _additionalInformationController;
+        }else if (field == 'Student ID'){
+          controller = _studentIDController;
         } else {
           controller = _reasonController;
         }
@@ -724,8 +725,8 @@ class _SpeconFormState extends State<SpeconForm> {
                   requestedByStudentID: widget.currentUser.id,
                   assessedBy: '',
                   assessment: selectedAssessment,
-                  reason: controllers[5].text,
-                  additionalInfo: controllers[4].text,
+                  reason: _reasonController.text,
+                  additionalInfo: _additionalInformationController.text,
                   state: 'Open',
                   databasePath: ''
                 );
