@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/page/db.dart';
-import 'package:specon/page/landing_page.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/asm_mana.dart';
 import 'package:specon/page/dashboard/navigation.dart';
@@ -129,6 +128,7 @@ class _DashboardState extends State<Dashboard> {
         currentSubject: currentSubject,
         getSubjectList: getSubjectList,
         setCurrentSubject: setCurrentSubject,
+        openSubmittedRequest: openSubmittedRequest,
       );
     }
     // Show a submitted request's details

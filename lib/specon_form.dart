@@ -17,6 +17,7 @@ class SpeconForm extends StatefulWidget {
   final SubjectModel currentSubject;
   final List<SubjectModel> Function() getSubjectList;
   final void Function(SubjectModel) setCurrentSubject;
+  final void Function(RequestModel) openSubmittedRequest;
 
   const SpeconForm(
       {super.key,
@@ -24,7 +25,8 @@ class SpeconForm extends StatefulWidget {
       required this.currentUser,
       required this.currentSubject,
       required this.getSubjectList,
-      required this.setCurrentSubject});
+      required this.setCurrentSubject,
+      required this.openSubmittedRequest});
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
@@ -773,7 +775,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   state: 'Open',
                   databasePath: ''
                 );
-                DocumentReference docref = await dataBase.submitRequest(
+                DocumentReference docRef = await dataBase.submitRequest(
                     widget.currentUser,
                     selectedSubject == null
                         ? widget.currentSubject
@@ -787,7 +789,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
                 // upload selected files
                 if(_selectedFiles != null){
-                  _uploadTask = uploadFile(docref.id, _selectedFiles!);
+                  _uploadTask = uploadFile(docRef.id, _selectedFiles!);
                 }
                 if(_aapUpdated){
                   // right now hard coded to user jerrya 12345678
@@ -798,6 +800,20 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
                 // clear all variables\
                 _clearFileVariables();
+
+                widget.openSubmittedRequest(
+                  RequestModel(
+                    requestedBy: controllers[0].text,
+                    requestedByStudentID: widget.currentUser.id,
+                    assessedBy: '',
+                    assessment: selectedAssessment,
+                    reason: _reasonController.text,
+                    additionalInfo: _additionalInformationController.text,
+                    state: 'Open',
+                    databasePath: docRef.toString()
+                  )
+                );
+
               },
               child: const Text('Submit'),
             ),
