@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'models/user_model.dart';
 
@@ -84,14 +84,7 @@ class _SpeconFormState extends State<SpeconForm> {
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
   final List<String> subjectNamesList = [];
-  final List<String> assessmentList = [
-    'Project 1',
-    'Project 2',
-    'Project 3',
-    'Mid Semester Test',
-    'Final Exam',
-    'Others'
-  ]; // TODO: Need to get from database
+  List<String> assessmentList = [];
   final _subjectFormKey = GlobalKey<FormState>();
   final _assessmentFormKey = GlobalKey<FormState>();
 
@@ -196,51 +189,52 @@ class _SpeconFormState extends State<SpeconForm> {
           key: _subjectFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-              validator: (value) {
-                if (value == null) {
-                  return 'Please selected a subject';
-                }
-                return null;
-              },
-              value: widget.currentSubject.code.isNotEmpty
-                  ? widget.currentSubject.code
-                  : null,
-              items: subjectNamesList
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child:
-                      Text(value, style: const TextStyle(color: Colors.white)),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    width: 0.5,
-                  ),
-                ),
-                labelText: field,
-                labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFD78521),
-                    width: 1,
-                  ),
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected a subject';
+              }
+              return null;
+            },
+            value: widget.currentSubject.code,
+            items: subjectNamesList
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child:
+                    Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  selectedSubject =
-                      subjectList[subjectNamesList.indexOf(value!)];
-                });
-              }),
+              labelText: field,
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedSubject =  subjectList[subjectNamesList.indexOf(value!)];
+                assessmentList = RequestType.getAssessmentNames(selectedSubject!.assessments);
+              });
+            }
+          ),
         ),
       );
     }
@@ -418,7 +412,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
       // select supporting files
       else if (field == 'Attachments'){
-        attachments = Container(
+        attachments = SizedBox(
           width: 420,
           child: Column(
             children: [
@@ -493,7 +487,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
       // select aap file
       else if (field == 'AAP'){
-        aap = Container(
+        aap = SizedBox(
           width: 420,
           // used to have expanded widget
           child: Column(
@@ -627,6 +621,9 @@ class _SpeconFormState extends State<SpeconForm> {
     for (final subject in subjectList) {
       subjectNamesList.add(subject.code);
     }
+
+    selectedSubject = widget.currentSubject;
+    assessmentList = RequestType.getAssessmentNames(selectedSubject!.assessments);
 
     super.initState();
   }

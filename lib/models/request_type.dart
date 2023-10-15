@@ -16,6 +16,17 @@ class RequestType {
     required this.id,
   });
 
+  static List<String> getAssessmentNames(List<RequestType> assessments) {
+
+    List<String> names = [];
+
+    for(final assessment in assessments){
+      names.add(assessment.name);
+    }
+
+    return names;
+  }
+
   // fake request types
   static List<RequestType> importTypes() {
     return [
