@@ -42,14 +42,7 @@ class _RequestsState extends State<Requests> {
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 
-  SubjectModel _currentSubject = SubjectModel(
-    roles: {},
-    name: '',
-    code: '',
-    assessments: [],
-    semester: '',
-    year: '',
-    databasePath: '');
+  SubjectModel _currentSubject = SubjectModel.emptySubject;
   String _dropdownValueState = '';
   String _searchString = '';
   bool fetchingRequests = true;

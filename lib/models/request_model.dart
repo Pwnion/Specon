@@ -41,6 +41,23 @@ class RequestModel {
     };
   }
 
+  static final emptyRequest = RequestModel(
+    requestedBy: '',
+    reason: '',
+    additionalInfo: '',
+    assessedBy: '',
+    assessment:
+    RequestType(
+      name: '',
+      type: '',
+      id: ''
+    ),
+    state: '',
+    requestedByStudentID: '',
+    databasePath: '',
+    timeSubmitted: DateTime.now()
+  );
+
   String timeSinceSubmission() {
 
     final difference = timeSubmitted.difference(DateTime.now());
