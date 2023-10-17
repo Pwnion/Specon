@@ -281,6 +281,7 @@ class _DashboardState extends State<Dashboard> {
           currentUser: currentUser,
           role: role,
           subjectCode: currentSubject.code,
+          incrementCounter: incrementCounter,
         ),
       );
     }

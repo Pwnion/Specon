@@ -5,9 +5,6 @@
 /// coordinator.
 /// Author: Kuo Wei Wu
 
-
-import 'dart:js_interop';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,13 +22,15 @@ class Discussion extends StatefulWidget {
   final UserModel currentUser;
   final String role;
   final String subjectCode;
+  final void Function() incrementCounter;
 
   const Discussion(
     {Key? key,
     required this.currentRequest,
     required this.currentUser,
     required this.role,
-    required this.subjectCode
+    required this.subjectCode,
+    required this.incrementCounter
     }
   ): super(key: key);
 
@@ -213,6 +212,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               acceptRequest(widget.currentRequest);
                               updateLocalRequestState("Approved");
+                              widget.incrementCounter();
                             },
                             child: const Text('Accept'),
                           ),
@@ -220,6 +220,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               declineRequest(widget.currentRequest);
                               updateLocalRequestState("Declined");
+                              widget.incrementCounter();
                             },
                             child: const Text('Decline'),
                           ),
@@ -227,6 +228,7 @@ class _DiscussionState extends State<Discussion> {
                             onPressed: () {
                               flagRequest(widget.currentRequest);
                               updateLocalRequestState("Flagged");
+                              widget.incrementCounter();
                             },
                             child: const Text('Flag'),
                           ),
