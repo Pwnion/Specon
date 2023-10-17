@@ -120,13 +120,18 @@ class _DashboardState extends State<Dashboard> {
   void setRole(SubjectModel subject, UserModel user) async {
     setState(() {
       role = subject.roles[user.id]!;
-
-      if(UserTypeUtils.convertString(role) == UserType.student) {
-        askForStudentIDPopUp().then((value) {
-          _database.setStudentID(value!);
-        });
-      }
     });
+
+    // If user is a student, and no student ID is found, prompt a popup
+    if(UserTypeUtils.convertString(role) == UserType.student && currentUser.studentID.isEmpty) {
+      askForStudentIDPopUp().then((value) {
+        _database.setStudentID(value!);
+        setState(() {
+          currentUser.studentID = value;
+        });
+      });
+    }
+
   }
 
   Future<String?> askForStudentIDPopUp() {

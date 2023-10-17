@@ -6,7 +6,7 @@ class UserModel {
   final String email;
   final List<dynamic> subjects;
   final String? aapPath;
-  final String studentID;
+  String studentID;
 
   UserModel({
     required this.id,

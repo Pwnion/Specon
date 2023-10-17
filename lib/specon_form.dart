@@ -36,28 +36,28 @@ class SpeconForm extends StatefulWidget {
 
 class _SpeconFormState extends State<SpeconForm> {
 
-  final List<String> _preFilledFieldTitles = [
+  static final List<String> _preFilledFieldTitles = [
     'Full Name',
-    'Last Name',
     'Email',
+    'Student ID'
   ];
 
-  final Map<String, String> _databaseFields = {
+  static final Map<String, String> _databaseFields = {
     'Full Name': 'name',
     'Email': 'email',
     'Student ID': 'student_id',
   };
 
-  final List<String> _fieldTitles = [
-    'Full Name', // 0
-    'Email', // 1
-    'Student ID', // 2
+  static final List<String> _fieldTitles = [
+    'Full Name',
+    'Email',
+    'Student ID',
     'Subject',
     'Assessment',
     'Request Type',
     'Extend due date to (if applicable)',
-    'Additional Information', // 3
-    'Reason', // 4
+    'Additional Information',
+    'Reason',
     'Attachments',
     'AAP'
   ];
@@ -66,7 +66,6 @@ class _SpeconFormState extends State<SpeconForm> {
 
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
   final _additionalInformationController = TextEditingController();
-  final _studentIDController = TextEditingController();
   final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
@@ -346,7 +345,6 @@ class _SpeconFormState extends State<SpeconForm> {
 
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
-    final List<TextEditingController> controllers = <TextEditingController>[];
     Widget attachments = const Text("initialize attachments");
     Widget aap = const Text("initialize aap");
 
@@ -355,15 +353,22 @@ class _SpeconFormState extends State<SpeconForm> {
     for (final field in _fieldTitles) {
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
-        final TextEditingController newController =
-            TextEditingController(text: jsonUser[_databaseFields[field]]);
-        controllers.add(newController);
+
+        TextEditingController controller;
+
+        if(field == 'Student ID') {
+          controller = TextEditingController(text:currentUser.studentID);
+        }
+        else {
+          controller = TextEditingController(text: jsonUser[_databaseFields[field]]);
+        }
+
         textFormFields.add(
           SizedBox(
             width: 420.0,
             child: TextField(
               readOnly: true,
-              controller: newController,
+              controller: controller,
               style: const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
@@ -617,12 +622,10 @@ class _SpeconFormState extends State<SpeconForm> {
         TextEditingController controller;
         if (field == 'Additional Information') {
           controller = _additionalInformationController;
-        }else if (field == 'Student ID'){
-          controller = _studentIDController;
-        } else {
+        }
+        else {
           controller = _reasonController;
         }
-        controllers.add(controller);
 
         textFormFields.add(
           SizedBox(
@@ -663,7 +666,7 @@ class _SpeconFormState extends State<SpeconForm> {
         textFormFields.add(const SizedBox(height: 15));
       }
     }
-    return {'Form': textFormFields, 'Controllers': controllers, 'Attachments': attachments, 'AAP': aap};
+    return {'Form': textFormFields, 'Attachments': attachments, 'AAP': aap};
   }
 
   @override
@@ -684,7 +687,6 @@ class _SpeconFormState extends State<SpeconForm> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> form = buildForm(widget.currentUser);
-    final List<TextEditingController> controllers = form['Controllers'];
     final List<Widget> textFields = form['Form'];
     final Widget attachments = form['Attachments'];
     final Widget aap = form['AAP'];
@@ -771,8 +773,8 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
 
                 final RequestModel request = RequestModel(
-                  requestedBy: controllers[0].text,
-                  requestedByStudentID: widget.currentUser.id,
+                  requestedBy: widget.currentUser.name,
+                  requestedByStudentID: widget.currentUser.id, // TODO: change to student id
                   assessedBy: '',
                   assessment: selectedAssessment!,
                   reason: _reasonController.text,
@@ -808,7 +810,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
                 widget.openSubmittedRequest(
                   RequestModel(
-                    requestedBy: controllers[0].text,
+                    requestedBy: widget.currentUser.name,
                     requestedByStudentID: widget.currentUser.id,
                     assessedBy: '',
                     assessment: selectedAssessment!,
