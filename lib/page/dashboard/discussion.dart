@@ -23,6 +23,7 @@ class Discussion extends StatefulWidget {
   final String role;
   final String subjectCode;
   final void Function() incrementCounter;
+  final void Function() closeSubmittedRequest;
 
   const Discussion(
     {Key? key,
@@ -30,7 +31,8 @@ class Discussion extends StatefulWidget {
     required this.currentUser,
     required this.role,
     required this.subjectCode,
-    required this.incrementCounter
+    required this.incrementCounter,
+    required this.closeSubmittedRequest
     }
   ): super(key: key);
 
@@ -234,7 +236,19 @@ class _DiscussionState extends State<Discussion> {
                           ),
                         ],
                       ),
-                    )
+                    ),
+
+                    // Delete button for student and request is still open
+                    if(UserTypeUtils.convertString(widget.role) == UserType.student && widget.currentRequest.state == 'Open')
+                    TextButton(
+                      onPressed: () {
+                        _db.deleteOpenRequests(widget.currentRequest);
+                        widget.closeSubmittedRequest();
+                        widget.incrementCounter();
+                      },
+                      child: const Text('Delete'),
+                    ),
+
                   ],
                 ),
               ),

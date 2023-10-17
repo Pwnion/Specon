@@ -106,6 +106,14 @@ class _DashboardState extends State<Dashboard> {
   /// Function that closes new request form that was shown in column 3
   void closeNewRequestForm() => setState(() => newRequest = false);
 
+  ///
+  void closeSubmittedRequest() {
+    setState(() {
+      showSubmittedRequest = false;
+      currentRequest = RequestModel.emptyRequest;
+    });
+  }
+
   /// Setter for current selected subject in column 1, refreshes column 2, and closes any submitted request that was shown in column 3
   void setCurrentSubject(SubjectModel subject) {
     setState(() {
@@ -282,6 +290,7 @@ class _DashboardState extends State<Dashboard> {
           role: role,
           subjectCode: currentSubject.code,
           incrementCounter: incrementCounter,
+          closeSubmittedRequest: closeSubmittedRequest,
         ),
       );
     }
@@ -289,8 +298,10 @@ class _DashboardState extends State<Dashboard> {
     else {
       return Center(
         child: Text('Select a request',
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.surface, fontSize: 25)),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface, fontSize: 25
+          )
+        ),
       );
     }
   }

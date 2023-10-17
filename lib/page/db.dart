@@ -232,6 +232,11 @@ class DataBase {
     await docRef.collection('discussions').add(newDiscussion);
   }
 
+  Future<void> deleteOpenRequests(RequestModel request) async {
+
+    await FirebaseFirestore.instance.doc(request.databasePath).delete();
+  }
+
 }
 
 Future<void> acceptRequest(RequestModel request) async {
