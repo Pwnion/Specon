@@ -117,12 +117,14 @@ class _DashboardState extends State<Dashboard> {
   }
 
   ///
-  void setRole(SubjectModel subject, UserModel user) {
+  void setRole(SubjectModel subject, UserModel user) async {
     setState(() {
       role = subject.roles[user.id]!;
 
       if(UserTypeUtils.convertString(role) == UserType.student) {
-        askForStudentIDPopUp();
+        askForStudentIDPopUp().then((value) {
+          _database.setStudentID(value!);
+        });
       }
     });
   }
@@ -241,8 +243,8 @@ class _DashboardState extends State<Dashboard> {
                     !confirmStudentIDFormKey.currentState!.validate()) {
                   return;
                 }
-                studentIDController.clear();
                 Navigator.pop(context, studentIDController.text);
+                studentIDController.clear();
               },
               child: const Text('Save'),
             ),

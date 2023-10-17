@@ -29,6 +29,18 @@ class DataBase {
     user = userModel;
     return userModel;
   }
+  
+  Future<void> setStudentID(String studentID) async {
+
+    final usersRef = _db.collection("users");
+    final query =
+    await usersRef.where('email', isEqualTo: user!.email).get();
+
+    final fetchedUser = query.docs[0];
+
+    await fetchedUser.reference.update({'student_id': studentID});
+    
+  }
 
   Future<List<RequestModel>> getRequests(UserModel user, SubjectModel subject) async {
 
