@@ -136,6 +136,9 @@ class DataBase {
       return [];
     }
 
+    // Sort by oldest requests on the top
+    requests.sort((a, b) => a.timeSubmitted.compareTo(b.timeSubmitted));
+
     return requests;
   }
 
