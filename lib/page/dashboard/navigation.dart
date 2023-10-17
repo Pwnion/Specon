@@ -62,7 +62,6 @@ class _NavigationState extends State<Navigation> {
             padding: const EdgeInsets.only(top: 10.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
-// Set radius only if selected
               child: MaterialButton(
                 color: isSelected
                     ? Theme.of(context).colorScheme.onBackground

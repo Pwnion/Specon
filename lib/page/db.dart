@@ -23,6 +23,7 @@ class DataBase {
       name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
       aapPath: fetchedUser["aap_path"],
+      studentID: fetchedUser["student_id"]
     );
 
     user = userModel;

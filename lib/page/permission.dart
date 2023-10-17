@@ -298,6 +298,7 @@ class _PermissionState extends State<Permission> {
     }
 
     return showDialog<List<String>>(
+      barrierDismissible: false,
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (_, setState) => AlertDialog(

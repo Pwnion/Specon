@@ -53,6 +53,10 @@ class _DashboardState extends State<Dashboard> {
   String selectedAssessment = '';
   String role = '';
   int counter = 0;
+  final studentIDController = TextEditingController();
+  final studentIDFormKey = GlobalKey<FormState>();
+  final confirmStudentIDFormKey = GlobalKey<FormState>();
+  static const int minStudentIdLen = 7;
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final _database = DataBase();
@@ -101,11 +105,7 @@ class _DashboardState extends State<Dashboard> {
   List<SubjectModel> getSubjectList() => subjectList;
 
   /// Function that closes new request form that was shown in column 3
-  void closeNewRequestForm() {
-    setState(() {
-      newRequest = false;
-    });
-  }
+  void closeNewRequestForm() => setState(() => newRequest = false);
 
   /// Setter for current selected subject in column 1, refreshes column 2, and closes any submitted request that was shown in column 3
   void setCurrentSubject(SubjectModel subject) {
@@ -117,10 +117,139 @@ class _DashboardState extends State<Dashboard> {
   }
 
   ///
-  void setRole(SubjectModel subject, UserModel user){
+  void setRole(SubjectModel subject, UserModel user) {
     setState(() {
       role = subject.roles[user.id]!;
+
+      if(UserTypeUtils.convertString(role) == UserType.student) {
+        askForStudentIDPopUp();
+      }
     });
+  }
+
+  Future<String?> askForStudentIDPopUp() {
+
+    return showDialog<String>(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (_, setState) => AlertDialog(
+          title: Text(
+              "Please enter your Student ID",
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface
+              )
+          ),
+          content: SizedBox(
+            width: 100.0,
+            height: 170.0,
+            child: Column(
+              children: [
+                // Enter StudentID
+                Form(
+                  key: studentIDFormKey,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your student id';
+                      } else if (value.length < minStudentIdLen) {
+                        return 'Please enter a valid student id';
+                      }
+                      return null;
+                    },
+                    enableInteractiveSelection: false,
+                    controller: studentIDController,
+                    style: const TextStyle(color: Colors.white54), // TODO: Color theme
+                    cursorColor: Theme.of(context).colorScheme.onSecondary,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          width: 0.5,
+                        ),
+                      ),
+                      labelText: 'Student ID',
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 18
+                      ),
+                      floatingLabelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 18
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xFFD78521),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15.0),
+                // Confirm StudentID
+                Form(
+                  key: confirmStudentIDFormKey,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your student id again';
+                      }
+                      else if (value != studentIDController.text) {
+                        return 'Student id does not match the one entered above,\n please enter again';
+                      }
+                      return null;
+                    },
+                    enableInteractiveSelection: false,
+                    style: const TextStyle(color: Colors.white54), // TODO: Color theme
+                    cursorColor: Theme.of(context).colorScheme.onSecondary,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          width: 0.5,
+                        ),
+                      ),
+                      labelText: 'Confirm Student ID',
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 18
+                      ),
+                      floatingLabelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 18
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xFFD78521),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+
+                if (!studentIDFormKey.currentState!.validate() ||
+                    !confirmStudentIDFormKey.currentState!.validate()) {
+                  return;
+                }
+                studentIDController.clear();
+                Navigator.pop(context, studentIDController.text);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      )
+    );
   }
 
   /// Function that determines which widget should be display in column 3
