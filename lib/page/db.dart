@@ -71,6 +71,8 @@ class DataBase {
           );
         });
 
+        final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -80,7 +82,8 @@ class DataBase {
             assessedBy: request['assessed_by'],
             assessment: assessmentFromDB,
             state: request['state'],
-            databasePath: request.reference.path
+            databasePath: request.reference.path,
+            timeSubmitted: timeSubmitted
           )
         );
       }
@@ -110,6 +113,8 @@ class DataBase {
           );
         });
 
+        final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -119,7 +124,8 @@ class DataBase {
             assessment: assessmentFromDB,
             state: request['state'],
             requestedByStudentID: request['requested_by_student_id'],
-            databasePath: request.reference.path
+            databasePath: request.reference.path,
+            timeSubmitted: timeSubmitted
           )
         );
       }
@@ -187,6 +193,8 @@ class DataBase {
 
     // Add request to subject's collection
     final DocumentReference requestRef = await subjectRef.collection('requests').add(request.toJson());
+    
+    await requestRef.update({'time_submitted': Timestamp.now()});
 
     return requestRef;
   }

@@ -772,27 +772,25 @@ class _SpeconFormState extends State<SpeconForm> {
                   return;
                 }
 
-                final RequestModel request = RequestModel(
+                final request = RequestModel(
                   requestedBy: widget.currentUser.name,
-                  requestedByStudentID: widget.currentUser.studentID, // TODO: change to student id
+                  requestedByStudentID: widget.currentUser.studentID, // TODO: add request time and slider value
                   assessedBy: '',
                   assessment: selectedAssessment!,
                   reason: _reasonController.text,
                   additionalInfo: _additionalInformationController.text,
                   state: 'Open',
-                  databasePath: ''
+                  databasePath: '',
+                  timeSubmitted: DateTime.now()
                 );
-                DocumentReference docRef = await dataBase.submitRequest(
-                    widget.currentUser,
-                    selectedSubject == null
-                        ? widget.currentSubject
-                        : selectedSubject!,
-                    request); //
+
+                final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject!, request);
+                request.databasePath = docRef.path;
+                request.timeSubmitted = DateTime.now();
                 widget.closeNewRequestForm();
-                widget.setCurrentSubject(selectedSubject == null
-                    ? widget.currentSubject
-                    : selectedSubject!);
-                // TODO: selected the submitted request
+                widget.setCurrentSubject(selectedSubject!);
+                widget.openSubmittedRequest(request);
+                widget.incrementCounter();
 
                 // upload selected files
                 if(_selectedFiles != null){
@@ -807,20 +805,6 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
                 // clear all variables\
                 _clearFileVariables();
-
-                widget.openSubmittedRequest(
-                  RequestModel(
-                    requestedBy: widget.currentUser.name,
-                    requestedByStudentID: widget.currentUser.studentID,
-                    assessedBy: '',
-                    assessment: selectedAssessment!,
-                    reason: _reasonController.text,
-                    additionalInfo: _additionalInformationController.text,
-                    state: 'Open',
-                    databasePath: docRef.path
-                  )
-                );
-                widget.incrementCounter();
               },
               child: const Text('Submit'),
             ),

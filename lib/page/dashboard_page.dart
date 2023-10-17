@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
       databasePath: '',
       roles: {});
 
-  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: RequestType(name: '', type: '', id: ''), state: '', requestedByStudentID: '', databasePath: '');
+  RequestModel currentRequest = RequestModel(requestedBy: '', reason: '', additionalInfo: '', assessedBy: '', assessment: RequestType(name: '', type: '', id: ''), state: '', requestedByStudentID: '', databasePath: '', timeSubmitted: DateTime.now());
   bool newRequest = false;
   bool showSubmittedRequest = false;
   Widget? requestWidget;

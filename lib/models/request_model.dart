@@ -9,7 +9,8 @@ class RequestModel {
   final RequestType assessment;
   String state;
   final String requestedByStudentID;
-  final String databasePath;
+  String databasePath;
+  DateTime timeSubmitted;
 
   RequestModel({
     required this.requestedBy,
@@ -19,7 +20,8 @@ class RequestModel {
     required this.assessment,
     required this.state,
     required this.requestedByStudentID,
-    required this.databasePath
+    required this.databasePath,
+    required this.timeSubmitted
   });
 
   Map<String, dynamic> toJson() {
