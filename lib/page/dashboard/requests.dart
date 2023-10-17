@@ -322,7 +322,7 @@ class _RequestsState extends State<Requests> {
                                   const SizedBox(width: 8),
                                   Text(_foundRequests[index].assessment.name),
                                   const SizedBox(width: 8),
-                                  const Text('4h'),
+                                  Text(_foundRequests[index].timeSinceSubmission()),
                                   const SizedBox(width: 8),
                                 ],
                               ),

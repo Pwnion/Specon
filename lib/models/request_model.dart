@@ -40,4 +40,31 @@ class RequestModel {
       'state': state,
     };
   }
+
+  String timeSinceSubmission() {
+
+    final difference = timeSubmitted.difference(DateTime.now());
+    final seconds = (difference.inMilliseconds/1000).abs().round();
+    final minutes = (difference.inMinutes).abs().round();
+    final hours = (difference.inHours).abs().round();
+    final days = (difference.inDays).abs().round();
+
+    // Seconds
+    if (seconds < 60) {
+      return '${seconds}s';
+    }
+    // Minutes
+    else if (minutes < 60){
+      return '${minutes}m';
+    }
+    // Hours
+    else if (hours < 24){
+      return '${hours}h';
+    }
+    // Days
+    else {
+      return '${days}d';
+    }
+  }
+
 }
