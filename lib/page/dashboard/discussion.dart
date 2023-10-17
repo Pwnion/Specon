@@ -482,7 +482,7 @@ class _DiscussionState extends State<Discussion> {
                                                   'text': "${_textController.value.text}${_selectedFileToString()}",
                                                   //'subject': discussionThread[1]['subject'],
                                                   'submittedBy': widget.currentUser.name,
-                                                  'submittedByUserID': widget.currentUser.id,
+                                                  'submittedByUserID': UserTypeUtils.convertString(widget.role) == UserType.student? widget.currentUser.studentID : widget.currentUser.id,
                                                   'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
                                               });
                                           }
