@@ -162,6 +162,39 @@ class _DiscussionState extends State<Discussion> {
     });
   }
 
+  Future<bool?> deleteConfirmationPopUp() {
+
+    return showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => StatefulBuilder(
+          builder: (_, setState) => AlertDialog(
+            title: Text(
+              "Are you sure you want to delete this request?",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface
+              )
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Yes'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text('No'),
+              ),
+            ],
+          ),
+        )
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -242,9 +275,14 @@ class _DiscussionState extends State<Discussion> {
                     if(UserTypeUtils.convertString(widget.role) == UserType.student && widget.currentRequest.state == 'Open')
                     TextButton(
                       onPressed: () {
-                        _db.deleteOpenRequests(widget.currentRequest);
-                        widget.closeSubmittedRequest();
-                        widget.incrementCounter();
+
+                        deleteConfirmationPopUp().then((value) {
+                          if(value == true){
+                            _db.deleteOpenRequest(widget.currentRequest);
+                            widget.closeSubmittedRequest();
+                            widget.incrementCounter();
+                          }
+                        });
                       },
                       child: const Text('Delete'),
                     ),
