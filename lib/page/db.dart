@@ -91,7 +91,8 @@ class DataBase {
             assessment: assessmentFromDB,
             state: request['state'],
             databasePath: request.reference.path,
-            timeSubmitted: timeSubmitted
+            timeSubmitted: timeSubmitted,
+            requestType: request['request_type']
           )
         );
       }
@@ -133,7 +134,8 @@ class DataBase {
             state: request['state'],
             requestedByStudentID: request['requested_by_student_id'],
             databasePath: request.reference.path,
-            timeSubmitted: timeSubmitted
+            timeSubmitted: timeSubmitted,
+            requestType: request['request_type']
           )
         );
       }

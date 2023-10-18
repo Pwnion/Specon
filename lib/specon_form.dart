@@ -76,7 +76,7 @@ class _SpeconFormState extends State<SpeconForm> {
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
-  final Map<int, String> dayName = {
+  static final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
     3: 'WED',
@@ -789,7 +789,8 @@ class _SpeconFormState extends State<SpeconForm> {
                   additionalInfo: _additionalInformationController.text,
                   state: 'Open',
                   databasePath: '',
-                  timeSubmitted: DateTime.now()
+                  timeSubmitted: DateTime.now(),
+                  requestType: selectedRequestType
                 );
 
                 final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject!, request);

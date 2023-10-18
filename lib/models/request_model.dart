@@ -11,6 +11,7 @@ class RequestModel {
   final String requestedByStudentID;
   String databasePath;
   DateTime timeSubmitted;
+  String requestType;
 
   RequestModel({
     required this.requestedBy,
@@ -21,7 +22,8 @@ class RequestModel {
     required this.state,
     required this.requestedByStudentID,
     required this.databasePath,
-    required this.timeSubmitted
+    required this.timeSubmitted,
+    required this.requestType
   });
 
   Map<String, dynamic> toJson() {
@@ -38,6 +40,7 @@ class RequestModel {
       'assessed_by': assessedBy,
       'assessment': docRef,
       'state': state,
+      'request_type': requestType
     };
   }
 
@@ -55,7 +58,8 @@ class RequestModel {
     state: '',
     requestedByStudentID: '',
     databasePath: '',
-    timeSubmitted: DateTime.now()
+    timeSubmitted: DateTime.now(),
+    requestType: ''
   );
 
   String timeSinceSubmission() {
