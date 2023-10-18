@@ -89,7 +89,7 @@ class _SpeconFormState extends State<SpeconForm> {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
-  SubjectModel? selectedSubject;
+  SubjectModel selectedSubject = SubjectModel.emptySubject;
   RequestType selectedAssessment = RequestType.emptyAssessment;
   String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
@@ -154,21 +154,22 @@ class _SpeconFormState extends State<SpeconForm> {
     var displayString = '';
     var extendedDate = dateAfterExtension(daysExtended);
 
-    displayString += '${_mockAssessmentDueDate.day}-'
-        '${_mockAssessmentDueDate.month}-'
-        '${_mockAssessmentDueDate.year} '
-        '${_mockAssessmentDueDate.hour}'
-        ':'
-        '${_mockAssessmentDueDate.minute}'
-        ' [${dayName[_mockAssessmentDueDate.weekday]}]'
-        '  -->  '
-        '${extendedDate.day}-'
-        '${extendedDate.month}-'
-        '${extendedDate.year} '
-        '${extendedDate.hour}'
-        ':'
-        '${extendedDate.minute}'
-        ' [${dayName[extendedDate.weekday]}]';
+    displayString +=
+      '${_mockAssessmentDueDate.day}-'
+      '${_mockAssessmentDueDate.month}-'
+      '${_mockAssessmentDueDate.year} '
+      '${_mockAssessmentDueDate.hour}'
+      ':'
+      '${_mockAssessmentDueDate.minute}'
+      ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+      '  -->  '
+      '${extendedDate.day}-'
+      '${extendedDate.month}-'
+      '${extendedDate.year} '
+      '${extendedDate.hour}'
+      ':'
+      '${extendedDate.minute}'
+      ' [${dayName[extendedDate.weekday]}]';
 
     return displayString;
   }
@@ -220,8 +221,10 @@ class _SpeconFormState extends State<SpeconForm> {
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child:
-                    Text(value, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.white)
+                ),
               );
             }).toList(),
             decoration: InputDecoration(
@@ -251,7 +254,7 @@ class _SpeconFormState extends State<SpeconForm> {
             onChanged: (value) {
               setState(() {
                 selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
-                assessmentList = selectedSubject!.assessments;
+                assessmentList = selectedSubject.assessments;
                 assessmentNameList = RequestType.getAssessmentNames(assessmentList);
               });
             }
@@ -328,12 +331,14 @@ class _SpeconFormState extends State<SpeconForm> {
               }
               return null;
             },
-            value: null, // TODO: need to change to match selected subject
+            value: null,
             items: requestTypes.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child:
-                Text(value, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.white)
+                ),
               );
             }).toList(),
             decoration: InputDecoration(
@@ -345,11 +350,13 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               labelText: field,
               labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
               floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18),
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(
@@ -407,11 +414,13 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18
+                ),
                 floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18
+                ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -442,7 +451,8 @@ class _SpeconFormState extends State<SpeconForm> {
               readOnly: true,
               controller: _dueDateSelectorController,
               style: const TextStyle(
-                  color: Colors.white54), // TODO: set color scheme
+                color: Colors.white54
+              ), // TODO: set color scheme
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -502,8 +512,10 @@ class _SpeconFormState extends State<SpeconForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                      "Select supporting documents (use CTRL to select more files)",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                    "Select supporting documents (use CTRL to select more files)",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary
+                    )
                   ),
                 ],
               ),
@@ -512,11 +524,12 @@ class _SpeconFormState extends State<SpeconForm> {
                 children: [
                   TextButton(
                     style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(
-                            RoundedRectangleBorder(
-                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                            )
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: BorderSide(color: Theme.of(context).colorScheme.secondary
+                          )
                         )
+                      )
                     ),
                     onPressed: () async {
                       _selectedFiles = await selectFile();
@@ -535,7 +548,8 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayFileNames,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
+                            color: Theme.of(context).colorScheme.onPrimary
+                          ),
                         ),
                       ),
                     ),
@@ -555,8 +569,9 @@ class _SpeconFormState extends State<SpeconForm> {
                       child: Text(
                         'Clear',
                         style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onPrimary),
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onPrimary
+                        ),
                       ),
                     ),
                   ),
@@ -578,8 +593,10 @@ class _SpeconFormState extends State<SpeconForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                      "If you have an AAP or want to update the existed one\nplease provide it down below",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                    "If you have an AAP or want to update the existed one\nplease provide it down below",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary
+                    )
                   ),
                 ],
               ),
@@ -588,11 +605,13 @@ class _SpeconFormState extends State<SpeconForm> {
                 children: [
                   TextButton(
                     style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(
-                            RoundedRectangleBorder(
-                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                            )
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary
+                          )
                         )
+                      )
                     ),
                     onPressed: () async {
                       // AAP document should only be one
@@ -600,7 +619,12 @@ class _SpeconFormState extends State<SpeconForm> {
                       _setDisplayAapName(_selectedAap!.names.join());
                       _setAapUpdated(true);
                     },
-                    child: Text('Select AAP', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
+                    child: Text(
+                      'Select AAP',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.secondary
+                      )
                     ),
                   ),
                   // display selected file names
@@ -612,7 +636,8 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayAapName,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
+                            color: Theme.of(context).colorScheme.onPrimary
+                          ),
                         ),
                       ),
                     ),
@@ -630,8 +655,9 @@ class _SpeconFormState extends State<SpeconForm> {
                       child: Text(
                         'Undo',
                         style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onPrimary),
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onPrimary
+                        ),
                       ),
                     ),
                   ),
@@ -734,8 +760,11 @@ class _SpeconFormState extends State<SpeconForm> {
                         widget.closeNewRequestForm();
                       });
                     },
-                    icon: const Icon(Icons.close,
-                        size: 40.0, color: Colors.white),
+                    icon: const Icon(
+                      Icons.close,
+                      size: 40.0,
+                      color: Colors.white
+                    ),
                   ),
                 ),
                 // Form title
@@ -795,7 +824,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
                 final request = RequestModel(
                   requestedBy: widget.currentUser.name,
-                  requestedByStudentID: widget.currentUser.studentID, // TODO: add request time and slider value
+                  requestedByStudentID: widget.currentUser.studentID,
                   assessedBy: '',
                   assessment: selectedAssessment,
                   reason: _reasonController.text,
@@ -807,11 +836,11 @@ class _SpeconFormState extends State<SpeconForm> {
                   daysExtending: daysExtending
                 );
 
-                final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject!, request);
+                final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject, request);
                 request.databasePath = docRef.path;
                 request.timeSubmitted = DateTime.now();
                 widget.closeNewRequestForm();
-                widget.setCurrentSubject(selectedSubject!);
+                widget.setCurrentSubject(selectedSubject);
                 widget.openSubmittedRequest(request);
                 widget.incrementCounter();
 
