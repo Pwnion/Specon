@@ -75,6 +75,7 @@ class _SpeconFormState extends State<SpeconForm> {
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
+  final businessDaysOnly = true; // TODO: Decided by subject coordinator
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
   static final Map<int, String> dayName = {
     1: 'MON',
@@ -93,6 +94,7 @@ class _SpeconFormState extends State<SpeconForm> {
   String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
+  int daysExtending = 0;
   final List<String> subjectCodeList = [];
   List<RequestType> assessmentList = [];
   List<String> assessmentNameList = [];
@@ -173,24 +175,35 @@ class _SpeconFormState extends State<SpeconForm> {
 
   /// Function that calculates the date after a given number of extension days
   DateTime dateAfterExtension(int daysExtended) {
-    int daysExtendedExcludingWeekend = 0;
-    int daysExtendedIncludingWeekend = 0;
+    int daysExcludingWeekend = 0;
+    int daysIncludingWeekend = 0;
+    final year = _mockAssessmentDueDate.year;
+    final month = _mockAssessmentDueDate.month;
+    final day = _mockAssessmentDueDate.day;
 
-    while (daysExtendedExcludingWeekend < daysExtended) {
-      if (DateTime(_mockAssessmentDueDate.year, _mockAssessmentDueDate.month,
-                  _mockAssessmentDueDate.day + daysExtendedIncludingWeekend + 1)
-              .weekday <=
-          5) {
-        daysExtendedExcludingWeekend++;
+    while (daysExcludingWeekend < daysExtended) {
+
+      if (DateTime(year, month, day + daysIncludingWeekend + 1).weekday <= 5) {
+        daysExcludingWeekend++;
       }
-      daysExtendedIncludingWeekend++;
+      daysIncludingWeekend++;
     }
+
+    if(!businessDaysOnly) {
+      daysIncludingWeekend = daysExtended;
+    }
+
+    setState(() {
+      daysExtending = daysIncludingWeekend;
+    });
+
     return DateTime(
-        _mockAssessmentDueDate.year,
-        _mockAssessmentDueDate.month,
-        _mockAssessmentDueDate.day + daysExtendedIncludingWeekend,
-        _mockAssessmentDueDate.hour,
-        _mockAssessmentDueDate.minute);
+      _mockAssessmentDueDate.year,
+      _mockAssessmentDueDate.month,
+      _mockAssessmentDueDate.day + daysIncludingWeekend,
+      _mockAssessmentDueDate.hour,
+      _mockAssessmentDueDate.minute
+    );
   }
 
   /// Function that builds dropdowns for subject, assessment and request type
@@ -790,7 +803,8 @@ class _SpeconFormState extends State<SpeconForm> {
                   state: 'Open',
                   databasePath: '',
                   timeSubmitted: DateTime.now(),
-                  requestType: selectedRequestType
+                  requestType: selectedRequestType,
+                  daysExtending: daysExtending
                 );
 
                 final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject!, request);

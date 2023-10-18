@@ -92,7 +92,8 @@ class DataBase {
             state: request['state'],
             databasePath: request.reference.path,
             timeSubmitted: timeSubmitted,
-            requestType: request['request_type']
+            requestType: request['request_type'],
+            daysExtending: request['days_extending']
           )
         );
       }
@@ -105,7 +106,7 @@ class DataBase {
       final requestListFromDB = await _db
           .doc(subject.databasePath)
           .collection('requests')
-          .where('requested_by_student_id', isEqualTo: user.studentID) // TODO:
+          .where('requested_by_student_id', isEqualTo: user.studentID)
           .get();
 
 
@@ -135,7 +136,8 @@ class DataBase {
             requestedByStudentID: request['requested_by_student_id'],
             databasePath: request.reference.path,
             timeSubmitted: timeSubmitted,
-            requestType: request['request_type']
+            requestType: request['request_type'],
+            daysExtending: request['days_extending']
           )
         );
       }
