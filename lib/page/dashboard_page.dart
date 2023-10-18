@@ -123,6 +123,7 @@ class _DashboardState extends State<Dashboard> {
       currentSubject = subject;
       requestWidget;
       showSubmittedRequest = false;
+      currentRequest = RequestModel.emptyRequest;
     });
   }
 
