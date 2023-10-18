@@ -1,3 +1,8 @@
+/// This class has all the functions relating to the database, this includes
+/// adding data from the database, removing and fetching data from the database
+///
+/// Author: Jeremy Annal, Zhi Xiang Chan (Lucas)
+
 import "package:cloud_firestore/cloud_firestore.dart";
 import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
@@ -10,6 +15,7 @@ class DataBase {
 
   static UserModel? user;
 
+  /// Function that queries the users collection with an email and returns an user model
   Future<UserModel> getUserFromEmail(String emailToMatch) async {
     final usersRef = _db.collection("users");
     final query =
@@ -29,7 +35,8 @@ class DataBase {
     user = userModel;
     return userModel;
   }
-  
+
+  /// Function that sets the student id on a student's document
   Future<void> setStudentID(String studentID) async {
 
     final usersRef = _db.collection("users");
@@ -42,6 +49,7 @@ class DataBase {
     
   }
 
+  /// Function that fetches the requests for a subject based on a user's role
   Future<List<RequestModel>> getRequests(UserModel user, SubjectModel subject) async {
 
     List<RequestModel> requests = [];
@@ -142,6 +150,7 @@ class DataBase {
     return requests;
   }
 
+  /// Function that fetches a user's enrolled subjects
   Future<List<SubjectModel>> getEnrolledSubjects() async {
     List<SubjectModel> subjects = [];
 
@@ -168,6 +177,7 @@ class DataBase {
     return subjects;
   }
 
+  /// Function that fetches the assessments of a subject
   Future<List<RequestType>> getAssessments(String subjectPath) async {
     List<RequestType> assessments = [];
 
@@ -189,6 +199,7 @@ class DataBase {
     return assessments;
   }
 
+  /// Function that adds a request onto the database
   Future<DocumentReference> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
 
     // Get subject's reference
@@ -202,6 +213,7 @@ class DataBase {
     return requestRef;
   }
 
+  ///
   Future<List<Map<String, String>>> getDiscussionThreads(RequestModel request) async {
 
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -225,6 +237,7 @@ class DataBase {
     return allDiscussions;
   }
 
+  ///
   Future<void> addNewDiscussion(RequestModel request, Map<String, String> newDiscussion) async {
 
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -232,6 +245,7 @@ class DataBase {
     await docRef.collection('discussions').add(newDiscussion);
   }
 
+  /// Function that deletes a request from the database
   Future<void> deleteOpenRequest(RequestModel request) async {
 
     await FirebaseFirestore.instance.doc(request.databasePath).delete();
@@ -239,6 +253,7 @@ class DataBase {
 
 }
 
+///
 Future<void> acceptRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -246,6 +261,7 @@ Future<void> acceptRequest(RequestModel request) async {
   await docRef.update({'state': 'Approved'});
 }
 
+///
 Future<void> declineRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -253,6 +269,7 @@ Future<void> declineRequest(RequestModel request) async {
   await docRef.update({'state': 'Declined'});
 }
 
+///
 Future<void> flagRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
