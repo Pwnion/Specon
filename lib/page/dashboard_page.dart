@@ -154,10 +154,10 @@ class _DashboardState extends State<Dashboard> {
       builder: (_) => StatefulBuilder(
         builder: (_, setState) => AlertDialog(
           title: Text(
-              "Please enter your Student ID",
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface
-              )
+            "Please enter your Student ID",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface
+            )
           ),
           content: SizedBox(
             width: 100.0,
@@ -189,12 +189,12 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       labelText: 'Student ID',
                       labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontSize: 18
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        fontSize: 18
                       ),
                       floatingLabelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontSize: 18
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        fontSize: 18
                       ),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       focusedBorder: const OutlineInputBorder(
@@ -232,12 +232,12 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       labelText: 'Confirm Student ID',
                       labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontSize: 18
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        fontSize: 18
                       ),
                       floatingLabelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          fontSize: 18
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        fontSize: 18
                       ),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       focusedBorder: const OutlineInputBorder(
@@ -323,7 +323,6 @@ class _DashboardState extends State<Dashboard> {
           currentUser = user;
           fetchingFromDB = false;
         });
-
       });
     });
     super.initState();
@@ -339,19 +338,26 @@ class _DashboardState extends State<Dashboard> {
             elevation: 0.0,
             // Logo
             leading: InkWell(
-                onTap: () {},
-                child: const Center(
-                    child: Text(
-                      'Specon',
-                      style: TextStyle(
-                          fontSize: 25.0, fontWeight: FontWeight.bold),
-                    ))),
+              onTap: () {},
+              child: const Center(
+                child: Text(
+                  'Specon',
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold
+                  )
+                )
+              )
+            ),
             leadingWidth: 110.0,
             // Subject code and name title
-            title: Text('${currentSubject.code} - ${currentSubject.name}',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
-                    fontSize: 20.0)),
+            title: Text(
+              '${currentSubject.code} - ${currentSubject.name}',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface,
+                fontSize: 20.0
+              )
+            ),
             centerTitle: true,
             actions: [
               // Home Button
@@ -372,12 +378,14 @@ class _DashboardState extends State<Dashboard> {
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => AsmManager(
-                                subject: currentSubject,
-                                refreshFn: setState,
-                              )));
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AsmManager(
+                            subject: currentSubject,
+                            refreshFn: setState,
+                          )
+                        )
+                      );
                     },
                     child: const Icon(
                       Icons.document_scanner,
@@ -427,7 +435,7 @@ class _DashboardState extends State<Dashboard> {
                 padding: const EdgeInsets.only(right: 10),
                 child: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
-
+                    // Display user's email
                     PopupMenuItem(
                       enabled: false,
                       onTap: () {},
@@ -439,7 +447,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ),
                     ),
-
+                    // Logout button
                     PopupMenuItem(
                       child: const Text('Logout'),
                       onTap: () {
@@ -456,62 +464,66 @@ class _DashboardState extends State<Dashboard> {
                   icon: CircleAvatar(
                     backgroundColor:
                     Theme.of(context).colorScheme.secondary,
-                    child: Text(currentUser.name[0],
-                        style: TextStyle(
-                            color:
-                            Theme.of(context).colorScheme.surface)),
+                    child: Text(
+                      currentUser.name[0],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface
+                      )
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           body: Stack(children: [
-            Row(children: [
-              // Dashboard column 1
-              SizedBox(
-                width: 150.0,
-                child: Navigation(
-                  openNewRequestForm: openNewRequestForm,
-                  setCurrentSubject: setCurrentSubject,
-                  subjectList: subjectList,
-                  currentUser: currentUser,
-                  currentSubject: currentSubject,
-                  setSelectedAssessment: setSelectedAssessment,
-                  getSelectedAssessment: getSelectedAssessment,
-                  role: role,
-                  setRole: setRole,
+            Row(
+              children: [
+                // Dashboard column 1
+                SizedBox(
+                  width: 150.0,
+                  child: Navigation(
+                    openNewRequestForm: openNewRequestForm,
+                    setCurrentSubject: setCurrentSubject,
+                    subjectList: subjectList,
+                    currentUser: currentUser,
+                    currentSubject: currentSubject,
+                    setSelectedAssessment: setSelectedAssessment,
+                    getSelectedAssessment: getSelectedAssessment,
+                    role: role,
+                    setRole: setRole,
+                  )
                 ),
-              ),
-              // Divider
-              VerticalDivider(
-                color: Theme.of(context).colorScheme.surface,
-                thickness: 1,
-                width: 1,
-              ),
-              // Dashboard column 2
-              SizedBox(
-                width: 300.0,
-                child: requestWidget = Requests(
-                  getCurrentSubject: getCurrentSubject,
-                  openSubmittedRequest: openSubmittedRequest,
-                  currentUser: currentUser,
-                  selectedAssessment: selectedAssessment,
-                  role: UserTypeUtils.convertString(role),
-                  counter: counter,
-                  selectedRequest: currentRequest,
+                // Divider
+                VerticalDivider(
+                  color: Theme.of(context).colorScheme.surface,
+                  thickness: 1,
+                  width: 1,
                 ),
-              ),
-              // Divider
-              VerticalDivider(
-                color: Theme.of(context).colorScheme.surface,
-                thickness: 1,
-                width: 1,
-              ),
-              // Dashboard column 3
-              Expanded(
-                child: displayThirdColumn(currentUser),
-              ),
-            ]),
+                // Dashboard column 2
+                SizedBox(
+                  width: 300.0,
+                  child: requestWidget = Requests(
+                    getCurrentSubject: getCurrentSubject,
+                    openSubmittedRequest: openSubmittedRequest,
+                    currentUser: currentUser,
+                    selectedAssessment: selectedAssessment,
+                    role: UserTypeUtils.convertString(role),
+                    counter: counter,
+                    selectedRequest: currentRequest,
+                  )
+                ),
+                // Divider
+                VerticalDivider(
+                  color: Theme.of(context).colorScheme.surface,
+                  thickness: 1,
+                  width: 1,
+                ),
+                // Dashboard column 3
+                Expanded(
+                  child: displayThirdColumn(currentUser),
+                )
+              ]
+            ),
           ]
         )
       );
