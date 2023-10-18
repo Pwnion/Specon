@@ -1,7 +1,7 @@
 /// The main page for an authenticated user.
 ///
 /// Content changes based on the [UserType] that is authenticated.
-/// Authors: Kuo Wei WU (Brian), Zhi Xiang CHAN (Lucas), Aden MCCUSKER, Jeremy ANNAL, Hung Long NGUYEN (Drey)
+/// Authors: Kuo Wei Wu, Zhi Xiang CHAN (Lucas)
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -73,17 +73,19 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  ///
+  /// Function that increments a counter each time a new request has been
+  /// submitted, or a request's state has been changed, to refresh column 2
   void incrementCounter() => setState(() => counter++);
 
-  ///
+  /// Setter for current selected assessment in column 1
   void setSelectedAssessment(String assessment) {
     setState(() {
       selectedAssessment = assessment;
     });
   }
 
-  /// Function that opens a new request form, closes any submitted request that was shown in column 3
+  /// Function that opens a new request form, closes any submitted request that
+  /// was shown in column 3
   void openNewRequestForm() {
     setState(() {
       newRequest = true;
@@ -97,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
   /// Getter for current selected subject in column 1
   SubjectModel getCurrentSubject() => currentSubject;
 
-  ///
+  /// Getter for current selected assessment of a subject in column 1
   String getSelectedAssessment() => selectedAssessment;
 
   /// Getter for user's enrolled subjects
@@ -106,7 +108,7 @@ class _DashboardState extends State<Dashboard> {
   /// Function that closes new request form that was shown in column 3
   void closeNewRequestForm() => setState(() => newRequest = false);
 
-  ///
+  /// Function that closes the submitted request that was shown in column 3
   void closeSubmittedRequest() {
     setState(() {
       showSubmittedRequest = false;
@@ -114,7 +116,8 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  /// Setter for current selected subject in column 1, refreshes column 2, and closes any submitted request that was shown in column 3
+  /// Setter for current selected subject in column 1, refreshes column 2, and
+  /// closes any submitted request that was shown in column 3
   void setCurrentSubject(SubjectModel subject) {
     setState(() {
       currentSubject = subject;
@@ -123,7 +126,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  ///
+  /// Setter for the user's role in a subject
   void setRole(SubjectModel subject, UserModel user) async {
     setState(() {
       role = subject.roles[user.id]!;
@@ -141,7 +144,7 @@ class _DashboardState extends State<Dashboard> {
 
   }
 
-  ///
+  /// Function that builds a dialog to prompt a student to enter student ID
   Future<String?> askForStudentIDPopUp() {
 
     return showDialog<String>(

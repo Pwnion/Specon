@@ -1,3 +1,9 @@
+/// The request form part of the [Dashboard] page.
+///
+/// This will display a request form with prefilled fields and to be filled
+/// fields that a student needs to fill in, to submit a request
+/// Author: Jeremy Annal, Zhi Xiang Chan (Lucas)
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -54,7 +60,7 @@ class _SpeconFormState extends State<SpeconForm> {
     'Subject',
     'Assessment',
     'Request Type',
-    'Extend due date to (if applicable)',
+    'Extend due date to (For extension request type only)',
     'Additional Information',
     'Reason',
     'Attachments',
@@ -83,7 +89,7 @@ class _SpeconFormState extends State<SpeconForm> {
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel? selectedSubject;
-  RequestType? selectedAssessment;
+  RequestType selectedAssessment = RequestType.emptyAssessment;
   String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
@@ -141,6 +147,7 @@ class _SpeconFormState extends State<SpeconForm> {
     });
   }
 
+  /// Function that returns a string to display the before and after due dates
   String dateConversionString(int daysExtended) {
     var displayString = '';
     var extendedDate = dateAfterExtension(daysExtended);
@@ -164,6 +171,7 @@ class _SpeconFormState extends State<SpeconForm> {
     return displayString;
   }
 
+  /// Function that calculates the date after a given number of extension days
   DateTime dateAfterExtension(int daysExtended) {
     int daysExtendedExcludingWeekend = 0;
     int daysExtendedIncludingWeekend = 0;
@@ -185,6 +193,7 @@ class _SpeconFormState extends State<SpeconForm> {
         _mockAssessmentDueDate.minute);
   }
 
+  /// Function that builds dropdowns for subject, assessment and request type
   Widget buildDropdownField(String field) {
     // Subject field
     if (field == 'Subject') {
@@ -284,7 +293,9 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ),
               onChanged: (value) {
-                selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
+                setState(() {
+                  selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
+                });
               }),
         ),
       );
@@ -298,50 +309,54 @@ class _SpeconFormState extends State<SpeconForm> {
           key: _requestTypeFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-              validator: (value) {
-                if (value == null) {
-                  return 'Please selected a request type';
-                }
-                return null;
-              },
-              value: null, // TODO: need to change to match selected subject
-              items: requestTypes.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child:
-                  Text(value, style: const TextStyle(color: Colors.white)),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    width: 0.5,
-                  ),
-                ),
-                labelText: field,
-                labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFD78521),
-                    width: 1,
-                  ),
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected a request type';
+              }
+              return null;
+            },
+            value: null, // TODO: need to change to match selected subject
+            items: requestTypes.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child:
+                Text(value, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
                 ),
               ),
-              onChanged: (value) {
+              labelText: field,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
                 selectedRequestType = value!;
-              }),
+              });
+            }
+          ),
         ),
       );
     }
   }
 
+  /// Function that is responsible for building the entire request form
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
     Widget attachments = const Text("initialize attachments");
@@ -405,7 +420,7 @@ class _SpeconFormState extends State<SpeconForm> {
       }
 
       // Extension date field
-      else if (field == 'Extend due date to (if applicable)') {
+      else if (field == 'Extend due date to (For extension request type only)') {
         // Display dates
         textFormFields.add(
           SizedBox(
@@ -423,12 +438,10 @@ class _SpeconFormState extends State<SpeconForm> {
                   ),
                 ),
                 labelText: field,
-                labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
                 floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 22),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 20
+                ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -450,7 +463,7 @@ class _SpeconFormState extends State<SpeconForm> {
               max: _mockMaxExtendDays.toDouble(),
               divisions: _mockMaxExtendDays,
               label: '${_currentSliderValue.round().toString()} days',
-              onChanged: (double value) {
+              onChanged: selectedAssessment.name.isNotEmpty && selectedRequestType == 'Extension' ? (double value) {
                 setState(() {
                   _currentSliderValue = value;
                   if (value == 0.0) {
@@ -460,7 +473,7 @@ class _SpeconFormState extends State<SpeconForm> {
                         dateConversionString(value.toInt());
                   }
                 });
-              },
+              } : null,
             ),
           ),
         );
@@ -726,8 +739,6 @@ class _SpeconFormState extends State<SpeconForm> {
               ],
             ),
             const SizedBox(height: 20.0),
-
-
             // Information part
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,8 +755,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ],
             ),
-
-            // attachment part
+            // Attachment part
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -760,7 +770,6 @@ class _SpeconFormState extends State<SpeconForm> {
                 aap,
               ],
             ),
-
             const SizedBox(height: 20),
             // Submit button
             ElevatedButton(
@@ -775,7 +784,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   requestedBy: widget.currentUser.name,
                   requestedByStudentID: widget.currentUser.studentID, // TODO: add request time and slider value
                   assessedBy: '',
-                  assessment: selectedAssessment!,
+                  assessment: selectedAssessment,
                   reason: _reasonController.text,
                   additionalInfo: _additionalInformationController.text,
                   state: 'Open',
@@ -811,46 +820,5 @@ class _SpeconFormState extends State<SpeconForm> {
         ),
       ),
     );
-  }
-
-  List<TextField> displayRequest(RequestModel request) {
-    List<TextField> form = [];
-
-    Map<String, dynamic> requestMap = request.toJson();
-    for (String key in requestMap.keys) {
-      TextField info = TextField(
-        readOnly: true,
-        controller: TextEditingController(text: requestMap[key]),
-        style: const TextStyle(color: Colors.white54), // TODO: Color theme
-        cursorColor: Theme.of(context).colorScheme.onSecondary,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onSecondary,
-              width: 0.5,
-            ),
-          ),
-          labelText: key,
-          labelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontSize: 18
-          ),
-          floatingLabelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontSize: 18
-          ),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Color(0xFFD78521),
-              width: 1,
-            ),
-          ),
-        ),
-      );
-      form.add(info);
-    }
-
-    return form;
   }
 }
