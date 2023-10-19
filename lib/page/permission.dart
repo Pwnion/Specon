@@ -523,7 +523,7 @@ class _PermissionState extends State<Permission> {
                         // If in edit mode, save the changes
                         if(inEditMode){
                           permissionGroups = deepCopy(temporaryPermissionGroups);
-                          // _db.updatePermissionGroups(widget.currentSubject, permissionGroups);
+                          _db.updatePermissionGroups(widget.currentSubject, permissionGroups);
                         }
                         // If not in edit mode, copy original list
                         else {

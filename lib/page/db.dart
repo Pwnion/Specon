@@ -297,6 +297,51 @@ class DataBase {
     return userGroups;
   }
 
+  /// Function that updates the permission groups in the database if changes were made
+  Future<void> updatePermissionGroups(SubjectModel subject, List<Map<String, dynamic>> groups) async {
+    final groupsOnDatabase = await _db.doc(subject.databasePath).collection('groups').get();
+    final assessments = await _db.doc(subject.databasePath).collection('assessments').get();
+    Map<String, String> assessmentsToID = {};
+
+    // Get name and ID of assessments
+    for (final assessment in assessments.docs) {
+      assessmentsToID[assessment['name']] = assessment.id;
+    }
+
+    // Delete old groups
+    for (final group in groupsOnDatabase.docs) {
+
+      final assessments = await _db.doc(group.reference.path).collection('assessments').get();
+
+      for (final assessment in assessments.docs) {
+        await _db.doc(assessment.reference.path).delete();
+      }
+
+      await _db.doc(group.reference.path).delete();
+    }
+
+    // Add new groups
+    for (final group in groups) {
+
+      final groupRef = await _db.doc(subject.databasePath).collection('groups').add({
+        'name': group['name'],
+        'priority': group['priority']
+      });
+
+      for(final assessment in group['assessments'].keys.toList()){
+        final assessmentID = assessmentsToID[assessment];
+        _db.doc(groupRef.path).collection('assessments').doc(assessmentID).set(
+          {'extension': group['assessments'][assessment]['Extension'],
+           'regrade': group['assessments'][assessment]['Regrade'],
+           'waiver': group['assessments'][assessment]['Waiver'],
+           'others': group['assessments'][assessment]['Others']
+          }
+        );
+      }
+    }
+
+  }
+
 }
 
 ///
