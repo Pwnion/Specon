@@ -319,6 +319,19 @@ class _PermissionState extends State<Permission> {
     );
   }
 
+  ///
+  void adjustPriority() {
+
+    var priority = 1;
+
+    for(final group in temporaryPermissionGroups) {
+      setState(() {
+        group['priority'] = priority;
+      });
+      priority++;
+    }
+  }
+
   /// Function that builds rows for each permission group
   Widget buildPermissionRows() {
     return Flexible(
@@ -341,8 +354,8 @@ class _PermissionState extends State<Permission> {
               temporaryPermissionGroups.remove(permissionGroup);
               temporaryPermissionGroups.insert(newIndex, permissionGroup);
             });
-            // TODO: Create function to update new priorities for each item
-            // TODO: Change priority on DB
+            adjustPriority();
+            print(temporaryPermissionGroups);
           },
           itemBuilder: (context, index) => Container(
             key: ValueKey(temporaryPermissionGroups[index]['priority']),
