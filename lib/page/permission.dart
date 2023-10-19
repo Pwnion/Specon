@@ -319,7 +319,7 @@ class _PermissionState extends State<Permission> {
     );
   }
 
-  ///
+  /// Function that adjusts each user group's priority
   void adjustPriority() {
 
     var priority = 1;
@@ -355,7 +355,6 @@ class _PermissionState extends State<Permission> {
               temporaryPermissionGroups.insert(newIndex, permissionGroup);
             });
             adjustPriority();
-            print(temporaryPermissionGroups);
           },
           itemBuilder: (context, index) => Container(
             key: ValueKey(temporaryPermissionGroups[index]['priority']),
@@ -466,6 +465,19 @@ class _PermissionState extends State<Permission> {
     return copyTo;
   }
 
+  /// Function to add assessments into new user group
+  Map<String,Map<String, bool>> addNewGroup() {
+
+    Map<String,Map<String, bool>> newGroup = {};
+    Map<String, bool> requestTypes = {'Extension': false, 'Regrade': false, 'Waiver': false, 'Others': false};
+
+    for(final assessment in widget.currentSubject.assessments){
+      newGroup[assessment.name] = {...requestTypes};
+    }
+
+    return newGroup;
+  }
+
   @override
   void initState() {
 
@@ -511,7 +523,7 @@ class _PermissionState extends State<Permission> {
                         // If in edit mode, save the changes
                         if(inEditMode){
                           permissionGroups = deepCopy(temporaryPermissionGroups);
-                          // TODO: Update changes on DB
+                          // _db.updatePermissionGroups(widget.currentSubject, permissionGroups);
                         }
                         // If not in edit mode, copy original list
                         else {
@@ -545,7 +557,13 @@ class _PermissionState extends State<Permission> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        // temporaryPermissionGroups.add();
+                        temporaryPermissionGroups.add(
+                          {'name': 'new group',
+                           'priority': temporaryPermissionGroups.length + 1,
+                           'users': [],
+                           'assessments': addNewGroup() // TODO:
+                          }
+                        );
                       });
                     },
                     child: const Text('Add new group')
