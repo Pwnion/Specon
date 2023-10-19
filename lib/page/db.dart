@@ -54,10 +54,6 @@ class DataBase {
 
     List<RequestModel> requests = [];
 
-    if (subject.databasePath.isEmpty){
-      return [];
-    }
-
     // Subject Coordinator
     if (subject.roles[user.id] == 'subject_coordinator') {
 
@@ -253,6 +249,44 @@ class DataBase {
   Future<void> deleteOpenRequest(RequestModel request) async {
 
     await FirebaseFirestore.instance.doc(request.databasePath).delete();
+  }
+
+  /// Function that fetches permission groups of a subject from the database
+  Future<List<Map<String, dynamic>>> getPermissionGroups(SubjectModel subject) async {
+
+    final groups = await _db.doc(subject.databasePath).collection('groups').get();
+    List<Map<String, dynamic>> userGroups = [];
+
+    for (final group in groups.docs) {
+
+      final assessments = await _db.doc(group.reference.path).collection('assessments').get();
+
+      Map<String, Map<String, bool>> allAssessments = {};
+
+      for (final assessment in assessments.docs) {
+
+        final assessmentDoc = await _db.doc(subject.databasePath).collection('assessments').doc(assessment.id).get();
+
+        allAssessments[assessmentDoc['name']] = {
+          'Extension': assessment['extension'],
+          'Regrade': assessment['regrade'],
+          'Waiver': assessment['waiver'],
+          'Others': assessment['others']
+        };
+      }
+
+      userGroups.add({
+        'name': group['name'],
+        'priority': group['priority'],
+        'users': [],
+        'assessments': allAssessments
+      });
+    }
+
+    // Sort by priority (1 at the top)
+    userGroups.sort((a, b) => a['priority'].compareTo(b['priority']));
+
+    return userGroups;
   }
 
 }
