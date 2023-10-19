@@ -286,7 +286,7 @@ class DataBase {
       userGroups.add({
         'name': group['name'],
         'priority': group['priority'],
-        'users': [], // TODO:
+        'users': group['users'], // TODO:
         'assessments': allAssessments
       });
     }
@@ -299,6 +299,7 @@ class DataBase {
 
   /// Function that updates the permission groups in the database if changes were made
   Future<void> updatePermissionGroups(SubjectModel subject, List<Map<String, dynamic>> groups) async {
+
     final groupsOnDatabase = await _db.doc(subject.databasePath).collection('groups').get();
     final assessments = await _db.doc(subject.databasePath).collection('assessments').get();
     Map<String, String> assessmentsToID = {};
@@ -325,7 +326,8 @@ class DataBase {
 
       final groupRef = await _db.doc(subject.databasePath).collection('groups').add({
         'name': group['name'],
-        'priority': group['priority']
+        'priority': group['priority'],
+        'users': FieldValue.arrayUnion(group['users']) // TODO:
       });
 
       for(final assessment in group['assessments'].keys.toList()){
