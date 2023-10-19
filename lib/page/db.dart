@@ -255,19 +255,27 @@ class DataBase {
   Future<List<Map<String, dynamic>>> getPermissionGroups(SubjectModel subject) async {
 
     final groups = await _db.doc(subject.databasePath).collection('groups').get();
+    final assessments = await _db.doc(subject.databasePath).collection('assessments').get();
     List<Map<String, dynamic>> userGroups = [];
+    Map<String, String> assessmentsInSubject = {};
 
+    // Get all assessments in the subject
+    for(final assessment in assessments.docs) {
+      assessmentsInSubject[assessment.id] = assessment['name'];
+    }
+
+    // Get information of all groups and append to list
     for (final group in groups.docs) {
 
-      final assessments = await _db.doc(group.reference.path).collection('assessments').get();
+      final assessmentsInGroup = await _db.doc(group.reference.path).collection('assessments').get();
 
       Map<String, Map<String, bool>> allAssessments = {};
 
-      for (final assessment in assessments.docs) {
+      for (final assessment in assessmentsInGroup.docs) {
 
-        final assessmentDoc = await _db.doc(subject.databasePath).collection('assessments').doc(assessment.id).get();
+        String assessmentName = assessmentsInSubject[assessment.id]!;
 
-        allAssessments[assessmentDoc['name']] = {
+        allAssessments[assessmentName] = {
           'Extension': assessment['extension'],
           'Regrade': assessment['regrade'],
           'Waiver': assessment['waiver'],
@@ -278,7 +286,7 @@ class DataBase {
       userGroups.add({
         'name': group['name'],
         'priority': group['priority'],
-        'users': [],
+        'users': [], // TODO:
         'assessments': allAssessments
       });
     }
