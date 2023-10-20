@@ -28,7 +28,7 @@ class _PermissionState extends State<Permission> {
   var editButtonText = 'Edit';
 
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
-  static final List<String> canvasUser = ['Tawfiq', 'Alex', 'Aden', 'Brian', 'Drey', 'Jeremy', 'Lucas', 'Geela']; // TODO: Should get from API
+  static final List<String> canvasUser = ['Tawfiq Islam', 'Alex Zable', 'Brian Wu', 'Drey Nguyen', 'Lucas Chan', 'Geela Chee']; // TODO: Should get from API
   List<Map<String, dynamic>> permissionGroups = [];
   List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
@@ -561,7 +561,7 @@ class _PermissionState extends State<Permission> {
                           {'name': 'new group',
                            'priority': temporaryPermissionGroups.length + 1,
                            'users': [],
-                           'assessments': addNewGroup() // TODO:
+                           'assessments': addNewGroup()
                           }
                         );
                       });
