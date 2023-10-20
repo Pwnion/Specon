@@ -36,7 +36,7 @@ async function requestAccessToken(code: string): Promise<Map<string, string>> {
 
   const tokenData = await tokenResponse.json();
   return new Map<string, string>(Object.entries({
-    accountId: tokenData["user"]["id"],
+    accountId: tokenData["user"]["id"].toString(),
     accessToken: tokenData["access_token"],
     refreshToken: tokenData["refresh_token"],
   }));

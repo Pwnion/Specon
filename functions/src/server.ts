@@ -20,6 +20,7 @@ SERVER.get("/code", async (req, res) => {
     accountId,
     profile.get("name")!,
     email,
+    "",
     accessToken,
     tokenData.get("refreshToken")!,
     new Array<DocumentReference>()

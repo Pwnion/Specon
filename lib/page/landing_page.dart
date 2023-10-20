@@ -24,11 +24,26 @@ class Landing extends StatefulWidget {
 class _LandingState extends State<Landing> {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  late bool _canvasLogin;
+
+  void _canvasLogout() {
+    setState(() {
+      _canvasLogin = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _canvasLogin = widget.email != null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    if(widget.email != null) {
+    if(_canvasLogin) {
       return Dashboard(
         canvasEmail: widget.email,
+        canvasLogout: _canvasLogout,
         userType: UserType.student,
       );
     }

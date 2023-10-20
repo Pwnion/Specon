@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final List<dynamic> subjects;
   final String? aapPath;
+  String studentID;
 
   UserModel({
     required this.id,
@@ -13,11 +14,12 @@ class UserModel {
     required this.email,
     required this.subjects,
     required this.aapPath,
+    required this.studentID
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'first_name': name,
+      'name': name,
       'email': email,
       'subjects': subjects.toString(),
       'aap': aapPath,

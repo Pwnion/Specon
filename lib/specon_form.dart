@@ -1,9 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/// The request form part of the [Dashboard] page.
+///
+/// This will display a request form with prefilled fields and to be filled
+/// fields that a student needs to fill in, to submit a request
+/// Author: Jeremy Annal, Zhi Xiang Chan (Lucas)
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'models/user_model.dart';
 
@@ -17,6 +22,8 @@ class SpeconForm extends StatefulWidget {
   final SubjectModel currentSubject;
   final List<SubjectModel> Function() getSubjectList;
   final void Function(SubjectModel) setCurrentSubject;
+  final void Function(RequestModel) openSubmittedRequest;
+  final void Function() incrementCounter;
 
   const SpeconForm(
       {super.key,
@@ -24,42 +31,42 @@ class SpeconForm extends StatefulWidget {
       required this.currentUser,
       required this.currentSubject,
       required this.getSubjectList,
-      required this.setCurrentSubject});
+      required this.setCurrentSubject,
+      required this.openSubmittedRequest,
+      required this.incrementCounter});
 
   @override
   State<SpeconForm> createState() => _SpeconFormState();
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-  final List<String> _preFilledFieldTitles = [
-    'First Name',
-    'Last Name',
+
+  static final List<String> _preFilledFieldTitles = [
+    'Full Name',
     'Email',
-    'Student ID',
+    'Student ID'
   ];
 
-  final Map<String, String> _databaseFields = {
-    'First Name': 'first_name',
-    'Last Name': 'last_name',
+  static final Map<String, String> _databaseFields = {
+    'Full Name': 'name',
     'Email': 'email',
     'Student ID': 'student_id',
   };
 
-  final List<String> _fieldTitles = [
-    'First Name', // 0
-    'Last Name', // 1
-    'Email', // 2
-    'Student ID', // 3
+  static final List<String> _fieldTitles = [
+    'Full Name',
+    'Email',
+    'Student ID',
     'Subject',
     'Assessment',
-    'Extend due date to (if applicable)',
-    'Additional Information', // 4
-    'Reason', // 5
+    'Request Type',
+    'Extend due date to (For extension request type only)',
+    'Additional Information',
+    'Reason',
     'Attachments',
     'AAP'
   ];
 
-  String requestType = '';
   late Future<Map<String, dynamic>> basicForm;
 
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
@@ -68,7 +75,9 @@ class _SpeconFormState extends State<SpeconForm> {
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
-  final Map<int, String> dayName = {
+  final businessDaysOnly = true; // TODO: Decided by subject coordinator
+  static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
+  static final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
     3: 'WED',
@@ -80,21 +89,17 @@ class _SpeconFormState extends State<SpeconForm> {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
   final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
-  SubjectModel? selectedSubject;
-  String selectedAssessment = '';
+  SubjectModel selectedSubject = SubjectModel.emptySubject;
+  RequestType selectedAssessment = RequestType.emptyAssessment;
+  String selectedRequestType = '';
   List<SubjectModel> subjectList = [];
   double _currentSliderValue = 0;
-  final List<String> subjectNamesList = [];
-  final List<String> assessmentList = [
-    'Project 1',
-    'Project 2',
-    'Project 3',
-    'Mid Semester Test',
-    'Final Exam',
-    'Others'
-  ]; // TODO: Need to get from database
-  final _subjectFormKey = GlobalKey<FormState>();
+  int daysExtending = 0;
+  final List<String> subjectCodeList = [];
+  List<RequestType> assessmentList = [];
+  List<String> assessmentNameList = [];
   final _assessmentFormKey = GlobalKey<FormState>();
+  final _requestTypeFormKey = GlobalKey<FormState>();
 
   // File related variable
   bool _showClearButton = false;
@@ -102,7 +107,7 @@ class _SpeconFormState extends State<SpeconForm> {
   FilePickerResult? _selectedFiles;
   FilePickerResult? _selectedAap;
   String _displayFileNames = "no file selected";
-  String _displayAapName = "original aap (todo)"; // should change to existed one if exist
+  String _displayAapName = "original aap"; // should change to existed one if exist
   UploadTask? _uploadTask;
 
   void _setDisplayFileName(String name){
@@ -144,70 +149,137 @@ class _SpeconFormState extends State<SpeconForm> {
     });
   }
 
+  /// Function that returns a string to display the before and after due dates
   String dateConversionString(int daysExtended) {
     var displayString = '';
     var extendedDate = dateAfterExtension(daysExtended);
 
-    displayString += '${_mockAssessmentDueDate.day}-'
-        '${_mockAssessmentDueDate.month}-'
-        '${_mockAssessmentDueDate.year} '
-        '${_mockAssessmentDueDate.hour}'
-        ':'
-        '${_mockAssessmentDueDate.minute}'
-        ' [${dayName[_mockAssessmentDueDate.weekday]}]'
-        '  -->  '
-        '${extendedDate.day}-'
-        '${extendedDate.month}-'
-        '${extendedDate.year} '
-        '${extendedDate.hour}'
-        ':'
-        '${extendedDate.minute}'
-        ' [${dayName[extendedDate.weekday]}]';
+    displayString +=
+      '${_mockAssessmentDueDate.day}-'
+      '${_mockAssessmentDueDate.month}-'
+      '${_mockAssessmentDueDate.year} '
+      '${_mockAssessmentDueDate.hour}'
+      ':'
+      '${_mockAssessmentDueDate.minute}'
+      ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+      '  -->  '
+      '${extendedDate.day}-'
+      '${extendedDate.month}-'
+      '${extendedDate.year} '
+      '${extendedDate.hour}'
+      ':'
+      '${extendedDate.minute}'
+      ' [${dayName[extendedDate.weekday]}]';
 
     return displayString;
   }
 
+  /// Function that calculates the date after a given number of extension days
   DateTime dateAfterExtension(int daysExtended) {
-    int daysExtendedExcludingWeekend = 0;
-    int daysExtendedIncludingWeekend = 0;
+    int daysExcludingWeekend = 0;
+    int daysIncludingWeekend = 0;
+    final year = _mockAssessmentDueDate.year;
+    final month = _mockAssessmentDueDate.month;
+    final day = _mockAssessmentDueDate.day;
 
-    while (daysExtendedExcludingWeekend < daysExtended) {
-      if (DateTime(_mockAssessmentDueDate.year, _mockAssessmentDueDate.month,
-                  _mockAssessmentDueDate.day + daysExtendedIncludingWeekend + 1)
-              .weekday <=
-          5) {
-        daysExtendedExcludingWeekend++;
+    while (daysExcludingWeekend < daysExtended) {
+
+      if (DateTime(year, month, day + daysIncludingWeekend + 1).weekday <= 5) {
+        daysExcludingWeekend++;
       }
-      daysExtendedIncludingWeekend++;
+      daysIncludingWeekend++;
     }
+
+    if(!businessDaysOnly) {
+      daysIncludingWeekend = daysExtended;
+    }
+
+    setState(() {
+      daysExtending = daysIncludingWeekend;
+    });
+
     return DateTime(
-        _mockAssessmentDueDate.year,
-        _mockAssessmentDueDate.month,
-        _mockAssessmentDueDate.day + daysExtendedIncludingWeekend,
-        _mockAssessmentDueDate.hour,
-        _mockAssessmentDueDate.minute);
+      _mockAssessmentDueDate.year,
+      _mockAssessmentDueDate.month,
+      _mockAssessmentDueDate.day + daysIncludingWeekend,
+      _mockAssessmentDueDate.hour,
+      _mockAssessmentDueDate.minute
+    );
   }
 
+  /// Function that builds dropdowns for subject, assessment and request type
   Widget buildDropdownField(String field) {
     // Subject field
     if (field == 'Subject') {
       return SizedBox(
         width: 420.0,
         child: Form(
-          key: _subjectFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+            value: widget.currentSubject.code,
+            items: subjectCodeList
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.white)
+                ),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
+                ),
+              ),
+              labelText: field,
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
+                assessmentList = selectedSubject.assessments;
+                assessmentNameList = RequestType.getAssessmentNames(assessmentList);
+              });
+            }
+          ),
+        ),
+      );
+    }
+
+    // Assessment field
+    else if (field == 'Assessment') {
+      return SizedBox(
+        width: 420.0,
+        child: Form(
+          key: _assessmentFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
               validator: (value) {
                 if (value == null) {
-                  return 'Please selected a subject';
+                  return 'Please selected an assessment';
                 }
                 return null;
               },
-              value: widget.currentSubject.code.isNotEmpty
-                  ? widget.currentSubject.code
-                  : null,
-              items: subjectNamesList
-                  .map<DropdownMenuItem<String>>((String value) {
+              value: null, // TODO: need to change to match selected subject
+              items:
+                  assessmentNameList.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child:
@@ -238,70 +310,75 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               onChanged: (value) {
                 setState(() {
-                  selectedSubject =
-                      subjectList[subjectNamesList.indexOf(value!)];
+                  selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
                 });
               }),
         ),
       );
     }
 
-    // Assessment field
+    // Request Type field
     else {
       return SizedBox(
         width: 420.0,
         child: Form(
-          key: _assessmentFormKey,
+          key: _requestTypeFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-              validator: (value) {
-                if (value == null) {
-                  return 'Please selected an assessment';
-                }
-                return null;
-              },
-              value: null, // TODO: need to change to match selected subject
-              items:
-                  assessmentList.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child:
-                      Text(value, style: const TextStyle(color: Colors.white)),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    width: 0.5,
-                  ),
+            validator: (value) {
+              if (value == null) {
+                return 'Please selected a request type';
+              }
+              return null;
+            },
+            value: null,
+            items: requestTypes.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.white)
                 ),
-                labelText: field,
-                labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFD78521),
-                    width: 1,
-                  ),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 0.5,
                 ),
               ),
-              onChanged: (value) {
-                selectedAssessment = value!;
-              }),
+              labelText: field,
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+                fontSize: 18
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD78521),
+                  width: 1,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedRequestType = value!;
+              });
+            }
+          ),
         ),
       );
     }
   }
 
+  /// Function that is responsible for building the entire request form
   Map<String, dynamic> buildForm(UserModel currentUser) {
     final List<Widget> textFormFields = <Widget>[];
-    final List<TextEditingController> controllers = <TextEditingController>[];
     Widget attachments = const Text("initialize attachments");
     Widget aap = const Text("initialize aap");
 
@@ -310,15 +387,22 @@ class _SpeconFormState extends State<SpeconForm> {
     for (final field in _fieldTitles) {
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
-        final TextEditingController newController =
-            TextEditingController(text: jsonUser[_databaseFields[field]]);
-        controllers.add(newController);
+
+        TextEditingController controller;
+
+        if(field == 'Student ID') {
+          controller = TextEditingController(text:currentUser.studentID);
+        }
+        else {
+          controller = TextEditingController(text: jsonUser[_databaseFields[field]]);
+        }
+
         textFormFields.add(
           SizedBox(
             width: 420.0,
             child: TextField(
               readOnly: true,
-              controller: newController,
+              controller: controller,
               style: const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
@@ -330,11 +414,13 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18
+                ),
                 floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 18
+                ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -349,14 +435,14 @@ class _SpeconFormState extends State<SpeconForm> {
         textFormFields.add(const SizedBox(height: 15));
       }
 
-      // Subject & Assessment field
-      else if (field == 'Subject' || field == 'Assessment') {
+      // Subject, Assessment & Request Type field
+      else if (field == 'Subject' || field == 'Assessment' || field == 'Request Type') {
         textFormFields.add(buildDropdownField(field));
         textFormFields.add(const SizedBox(height: 15.0));
       }
 
       // Extension date field
-      else if (field == 'Extend due date to (if applicable)') {
+      else if (field == 'Extend due date to (For extension request type only)') {
         // Display dates
         textFormFields.add(
           SizedBox(
@@ -365,7 +451,8 @@ class _SpeconFormState extends State<SpeconForm> {
               readOnly: true,
               controller: _dueDateSelectorController,
               style: const TextStyle(
-                  color: Colors.white54), // TODO: set color scheme
+                color: Colors.white54
+              ), // TODO: set color scheme
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -374,12 +461,10 @@ class _SpeconFormState extends State<SpeconForm> {
                   ),
                 ),
                 labelText: field,
-                labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 18),
                 floatingLabelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 22),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 20
+                ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -401,7 +486,7 @@ class _SpeconFormState extends State<SpeconForm> {
               max: _mockMaxExtendDays.toDouble(),
               divisions: _mockMaxExtendDays,
               label: '${_currentSliderValue.round().toString()} days',
-              onChanged: (double value) {
+              onChanged: selectedAssessment.name.isNotEmpty && selectedRequestType == 'Extension' ? (double value) {
                 setState(() {
                   _currentSliderValue = value;
                   if (value == 0.0) {
@@ -411,100 +496,26 @@ class _SpeconFormState extends State<SpeconForm> {
                         dateConversionString(value.toInt());
                   }
                 });
-              },
+              } : null,
             ),
           ),
         );
       }
+
       // select supporting files
       else if (field == 'Attachments'){
-        attachments = Container(
+        attachments = SizedBox(
           width: 420,
-          child: Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                        "Select supporting documents (use CTRL to select more files)",
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      style: ButtonStyle(
-                          shape: MaterialStatePropertyAll(
-                              RoundedRectangleBorder(
-                                  side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                              )
-                          )
-                      ),
-                      onPressed: () async {
-                        _selectedFiles = await selectFile();
-                        _setDisplayFileName(_selectedFiles!.names.join("\n"));
-                        _setShowClearButton(true);
-                      },
-                      child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
-                      ),
-                    ),
-                    // display selected file names
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.all(17.0),
-                          child: Text(
-                            _displayFileNames,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // clear selection button
-                    Visibility(
-                      visible: _showClearButton,
-                      child: TextButton(
-                        onPressed: (){
-                          _clearFileVariables();
-                          _setShowClearButton(false);
-                        }, //downloadAttachment,
-                        style: TextButton.styleFrom(
-                          alignment: Alignment.centerLeft,
-                        ),
-                        child: Text(
-                          'Clear',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context).colorScheme.onPrimary),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      // select aap file
-      else if (field == 'AAP'){
-        aap = Container(
-          width: 420,
-          // used to have expanded widget
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                      "If you have an AAP or want to update the existed one\nplease provide it down below",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)
+                    "Select supporting documents (use CTRL to select more files)",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary
+                    )
                   ),
                 ],
               ),
@@ -513,11 +524,94 @@ class _SpeconFormState extends State<SpeconForm> {
                 children: [
                   TextButton(
                     style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(
-                            RoundedRectangleBorder(
-                                side: BorderSide(color: Theme.of(context).colorScheme.secondary)
-                            )
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: BorderSide(color: Theme.of(context).colorScheme.secondary
+                          )
                         )
+                      )
+                    ),
+                    onPressed: () async {
+                      _selectedFiles = await selectFile();
+                      _setDisplayFileName(_selectedFiles!.names.join("\n"));
+                      _setShowClearButton(true);
+                    },
+                    child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
+                    ),
+                  ),
+                  // display selected file names
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(17.0),
+                        child: Text(
+                          _displayFileNames,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // clear selection button
+                  Visibility(
+                    visible: _showClearButton,
+                    child: TextButton(
+                      onPressed: (){
+                        _clearFileVariables();
+                        _setShowClearButton(false);
+                      }, //downloadAttachment,
+                      style: TextButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onPrimary
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+
+      // select aap file
+      else if (field == 'AAP'){
+        aap = SizedBox(
+          width: 420,
+          // used to have expanded widget
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "If you have an AAP or want to update the existed one\nplease provide it down below",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary
+                    )
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    style: ButtonStyle(
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary
+                          )
+                        )
+                      )
                     ),
                     onPressed: () async {
                       // AAP document should only be one
@@ -525,7 +619,12 @@ class _SpeconFormState extends State<SpeconForm> {
                       _setDisplayAapName(_selectedAap!.names.join());
                       _setAapUpdated(true);
                     },
-                    child: Text('Select AAP', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
+                    child: Text(
+                      'Select AAP',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.secondary
+                      )
                     ),
                   ),
                   // display selected file names
@@ -537,7 +636,8 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayAapName,
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
+                            color: Theme.of(context).colorScheme.onPrimary
+                          ),
                         ),
                       ),
                     ),
@@ -555,8 +655,9 @@ class _SpeconFormState extends State<SpeconForm> {
                       child: Text(
                         'Undo',
                         style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onPrimary),
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onPrimary
+                        ),
                       ),
                     ),
                   ),
@@ -572,10 +673,10 @@ class _SpeconFormState extends State<SpeconForm> {
         TextEditingController controller;
         if (field == 'Additional Information') {
           controller = _additionalInformationController;
-        } else {
+        }
+        else {
           controller = _reasonController;
         }
-        controllers.add(controller);
 
         textFormFields.add(
           SizedBox(
@@ -616,7 +717,7 @@ class _SpeconFormState extends State<SpeconForm> {
         textFormFields.add(const SizedBox(height: 15));
       }
     }
-    return {'Form': textFormFields, 'Controllers': controllers, 'Attachments': attachments, 'AAP': aap};
+    return {'Form': textFormFields, 'Attachments': attachments, 'AAP': aap};
   }
 
   @override
@@ -624,8 +725,12 @@ class _SpeconFormState extends State<SpeconForm> {
     subjectList = widget.getSubjectList();
 
     for (final subject in subjectList) {
-      subjectNamesList.add(subject.code);
+      subjectCodeList.add(subject.code);
     }
+
+    selectedSubject = widget.currentSubject;
+    assessmentList = widget.currentSubject.assessments;
+    assessmentNameList = RequestType.getAssessmentNames(assessmentList);
 
     super.initState();
   }
@@ -633,7 +738,6 @@ class _SpeconFormState extends State<SpeconForm> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> form = buildForm(widget.currentUser);
-    final List<TextEditingController> controllers = form['Controllers'];
     final List<Widget> textFields = form['Form'];
     final Widget attachments = form['Attachments'];
     final Widget aap = form['AAP'];
@@ -656,8 +760,11 @@ class _SpeconFormState extends State<SpeconForm> {
                         widget.closeNewRequestForm();
                       });
                     },
-                    icon: const Icon(Icons.close,
-                        size: 40.0, color: Colors.white),
+                    icon: const Icon(
+                      Icons.close,
+                      size: 40.0,
+                      color: Colors.white
+                    ),
                   ),
                 ),
                 // Form title
@@ -674,8 +781,6 @@ class _SpeconFormState extends State<SpeconForm> {
               ],
             ),
             const SizedBox(height: 20.0),
-
-
             // Information part
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -692,8 +797,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
               ],
             ),
-
-            // attachment part
+            // Attachment part
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -708,42 +812,41 @@ class _SpeconFormState extends State<SpeconForm> {
                 aap,
               ],
             ),
-
             const SizedBox(height: 20),
             // Submit button
             ElevatedButton(
               onPressed: () async {
                 // Check validity of dropdowns
-                if (!_subjectFormKey.currentState!.validate() ||
-                    !_assessmentFormKey.currentState!.validate()) {
+                if (!_assessmentFormKey.currentState!.validate() ||
+                    !_requestTypeFormKey.currentState!.validate()) {
                   return;
                 }
 
-                final RequestModel request = RequestModel(
-                  requestedBy: controllers[0].text,
-                  requestedByStudentID: widget.currentUser.id,
+                final request = RequestModel(
+                  requestedBy: widget.currentUser.name,
+                  requestedByStudentID: widget.currentUser.studentID,
                   assessedBy: '',
                   assessment: selectedAssessment,
-                  reason: controllers[5].text,
-                  additionalInfo: controllers[4].text,
+                  reason: _reasonController.text,
+                  additionalInfo: _additionalInformationController.text,
                   state: 'Open',
-                  databasePath: ''
+                  databasePath: '',
+                  timeSubmitted: DateTime.now(),
+                  requestType: selectedRequestType,
+                  daysExtending: daysExtending
                 );
-                DocumentReference docref = await dataBase.submitRequest(
-                    widget.currentUser,
-                    selectedSubject == null
-                        ? widget.currentSubject
-                        : selectedSubject!,
-                    request); //
+
+                final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject, request);
+                request.databasePath = docRef.path;
+                request.timeSubmitted = DateTime.now();
                 widget.closeNewRequestForm();
-                widget.setCurrentSubject(selectedSubject == null
-                    ? widget.currentSubject
-                    : selectedSubject!);
-                // TODO: selected the submitted request
+                widget.setCurrentSubject(selectedSubject);
+                widget.openSubmittedRequest(request);
+                widget.incrementCounter();
 
                 // upload selected files
                 if(_selectedFiles != null){
-                  _uploadTask = uploadFile(docref.id, _selectedFiles!);
+                  _uploadTask = uploadFile(docRef.id, _selectedFiles!);
                 }
                 if(_aapUpdated){
                   // right now hard coded to user jerrya 12345678
@@ -761,46 +864,5 @@ class _SpeconFormState extends State<SpeconForm> {
         ),
       ),
     );
-  }
-
-  List<TextField> displayRequest(RequestModel request) {
-    List<TextField> form = [];
-
-    Map<String, String> requestMap = request.toJson();
-    for (String key in requestMap.keys) {
-      TextField info = TextField(
-        readOnly: true,
-        controller: TextEditingController(text: requestMap[key]),
-        style: const TextStyle(color: Colors.white54), // TODO: Color theme
-        cursorColor: Theme.of(context).colorScheme.onSecondary,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.onSecondary,
-              width: 0.5,
-            ),
-          ),
-          labelText: key,
-          labelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontSize: 18
-          ),
-          floatingLabelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontSize: 18
-          ),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Color(0xFFD78521),
-              width: 1,
-            ),
-          ),
-        ),
-      );
-      form.add(info);
-    }
-
-    return form;
   }
 }

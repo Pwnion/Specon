@@ -4,6 +4,7 @@ class User {
   id: string;
   name: string;
   email: string;
+  aapPath: string;
   accessToken: string;
   refreshToken: string;
   subjects: Array<DocumentReference>;
@@ -12,6 +13,7 @@ class User {
     id: string,
     name: string,
     email: string,
+    aapPath: string,
     accessToken: string,
     refreshToken: string,
     subjects: Array<DocumentReference>
@@ -19,6 +21,7 @@ class User {
     this.id = id;
     this.name = name;
     this.email = email;
+    this.aapPath = aapPath;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.subjects = subjects;
@@ -29,6 +32,7 @@ class User {
       data["account_id"],
       data["name"],
       data["email"],
+      data["aap_path"],
       data["access_token"],
       data["refresh_token"],
       data["subjects"]
@@ -40,6 +44,7 @@ class User {
       id: this.id,
       name: this.name,
       email: this.email,
+      aap_path: this.aapPath,
       access_token: this.accessToken,
       refresh_token: this.refreshToken,
       subjects: this.subjects,

@@ -15,7 +15,8 @@ class Navigation extends StatefulWidget {
   final List<SubjectModel> subjectList;
   final UserModel currentUser;
   final SubjectModel currentSubject;
-  final void Function(String) getSelectedAssessment;
+  final void Function(String) setSelectedAssessment;
+  final String Function() getSelectedAssessment;
   final String role;
   final void Function(SubjectModel, UserModel) setRole;
 
@@ -26,6 +27,7 @@ class Navigation extends StatefulWidget {
       required this.subjectList,
       required this.currentUser,
       required this.currentSubject,
+      required this.setSelectedAssessment,
       required this.getSelectedAssessment,
       required this.role,
       required this.setRole})
@@ -60,7 +62,6 @@ class _NavigationState extends State<Navigation> {
             padding: const EdgeInsets.only(top: 10.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
-// Set radius only if selected
               child: MaterialButton(
                 color: isSelected
                     ? Theme.of(context).colorScheme.onBackground
@@ -85,6 +86,7 @@ class _NavigationState extends State<Navigation> {
                       selectSubject(subject);
                       widget.setCurrentSubject(subject);
                       widget.setRole(subject, widget.currentUser);
+                      widget.setSelectedAssessment("All");
                     }
                   });
                 },
@@ -114,12 +116,12 @@ class _NavigationState extends State<Navigation> {
               alignment: Alignment.centerLeft, // Align text to the left
               child: InkWell(
                 onTap: () {
-                  widget.getSelectedAssessment("All");
+                  widget.setSelectedAssessment("All");
                 },
                 child: Text(
                   "All",
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: widget.getSelectedAssessment() == 'All' ? Colors.orange : Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -136,12 +138,12 @@ class _NavigationState extends State<Navigation> {
                 alignment: Alignment.centerLeft, // Align text to the left
                 child: InkWell(
                   onTap: () {
-                    widget.getSelectedAssessment(assessment.name);
+                    widget.setSelectedAssessment(assessment.name);
                   },
                   child: Text(
                     assessment.name,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: widget.getSelectedAssessment() == assessment.name ? Colors.orange : Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),

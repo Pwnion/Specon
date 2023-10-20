@@ -11,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'page/landing_page.dart';
 import 'page/loading_page.dart';
@@ -50,7 +51,13 @@ class _AppState extends State<App> {
   /// Initialise and configure the Firebase backend for this app.
   Future<void> _initialiseFirebase() async {
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+      options: DefaultFirebaseOptions.currentPlatform
+    );
+    await FirebaseAppCheck.instance.activate(
+      webProvider: ReCaptchaV3Provider(
+        '6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'
+      )
+    );
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
 
