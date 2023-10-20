@@ -1,4 +1,5 @@
-///
+/// Page where subject coordinators can configure user group's permissions
+/// to view various types of requests
 ///
 /// Author: Zhi Xiang Chan (Lucas)
 
@@ -73,12 +74,12 @@ class _PermissionState extends State<Permission> {
   static List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
 
-  ///
+  /// Function that builds the group column (Column 2)
   List<Widget> buildUserColumn(final List users) {
     return users.map((user) => Text(user)).toList();
   }
 
-  ///
+  /// Function that builds the checkboxes in column 3
   List<Widget> buildCheckboxRow(Map<String, bool> requestTypePermissions) {
 
     List<Widget> row = [];
@@ -130,7 +131,7 @@ class _PermissionState extends State<Permission> {
     }
   }
 
-  ///
+  /// Function that builds the permission column (Column 3)
   Widget buildPermissionColumn(Map<String, dynamic> assessments){
     final List<Widget> requestTypeHeaders = [];
     final List<Widget> rows = [];
@@ -248,7 +249,7 @@ class _PermissionState extends State<Permission> {
     );
   }
 
-  ///
+  /// Function that builds the group column (Column 1)
   Widget buildGroupColumn(String userGroupName) {
 
     final controller = TextEditingController(text: userGroupName);
@@ -288,7 +289,7 @@ class _PermissionState extends State<Permission> {
     }
   }
 
-  ///
+  /// Function that builds the user management dialog for a user group
   Future<List<String>?> buildUserManagementDialog(int currentGroupIndex) {
 
     if(temporaryUserList.isEmpty){
@@ -298,6 +299,7 @@ class _PermissionState extends State<Permission> {
     }
 
     return showDialog<List<String>>(
+      barrierDismissible: false,
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (_, setState) => AlertDialog(
@@ -357,7 +359,7 @@ class _PermissionState extends State<Permission> {
     );
   }
 
-  ///
+  /// Function that builds rows for each permission group
   Widget buildPermissionRows() {
     return Flexible(
       child: Scrollbar(

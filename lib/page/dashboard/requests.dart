@@ -42,14 +42,7 @@ class _RequestsState extends State<Requests> {
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 
-  SubjectModel _currentSubject = SubjectModel(
-    roles: {},
-    name: '',
-    code: '',
-    assessments: [],
-    semester: '',
-    year: '',
-    databasePath: '');
+  SubjectModel _currentSubject = SubjectModel.emptySubject;
   String _dropdownValueState = '';
   String _searchString = '';
   bool fetchingRequests = true;
@@ -96,8 +89,8 @@ class _RequestsState extends State<Requests> {
       // apply search logic, should change later or not?
       searchResult = _foundRequests.where((request) {
         return request.requestedBy
-            .toLowerCase()
-            .contains(_searchString.toLowerCase());
+          .toLowerCase()
+          .contains(_searchString.toLowerCase());
       }).toList();
     }
     _foundRequests = searchResult;
@@ -151,7 +144,7 @@ class _RequestsState extends State<Requests> {
       _filterBySearch();
 
       return Scaffold(
-          body: Padding(
+        body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
@@ -168,17 +161,17 @@ class _RequestsState extends State<Requests> {
                       _searchString = value;
                     });
                   },
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     labelText: 'Name',
                     floatingLabelBehavior: FloatingLabelBehavior.auto,
-                    labelStyle:
-                        TextStyle(color: Theme.of(context).colorScheme.surface),
-                    suffixIcon: Icon(Icons.search,
-                        color: Theme.of(context).colorScheme.surface),
+                    labelStyle: TextStyle(color: Theme.of(context).colorScheme.surface),
+                    suffixIcon: Icon(
+                      Icons.search,
+                      color: Theme.of(context).colorScheme.surface
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -210,14 +203,15 @@ class _RequestsState extends State<Requests> {
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
                     style: TextStyle(
-                        color: statusFilterClicked
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(context).colorScheme.onBackground,
-                        fontSize: 12),
+                      color: statusFilterClicked
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).colorScheme.onBackground,
+                      fontSize: 12
+                    ),
                     padding: const EdgeInsets.all(1),
                     value: _dropdownValueState,
                     items: filterSelectionsState
-                        .map<DropdownMenuItem<String>>((String state) {
+                      .map<DropdownMenuItem<String>>((String state) {
                       return DropdownMenuItem<String>(
                         value: state,
                         child: Text(state),
@@ -290,21 +284,25 @@ class _RequestsState extends State<Requests> {
                                           Visibility(
                                             visible: _foundRequests[index].state == 'Approved',
                                             child: const Icon(
-                                                Icons.gpp_good_sharp,
-                                                color: Colors.green),
+                                              Icons.gpp_good_sharp,
+                                              color: Colors.green
+                                            ),
                                           ),
                                           // Flagged icon
                                           Visibility(
                                             visible:_foundRequests[index].state == 'Flagged',
-                                            child: const Icon(Icons.flag,
-                                                color: Colors.orange),
+                                            child: const Icon(
+                                              Icons.flag,
+                                              color: Colors.orange
+                                            ),
                                           ),
                                           // Declined icon
                                           Visibility(
                                             visible: _foundRequests[index].state == 'Declined',
                                             child: const Icon(
-                                                Icons.not_interested,
-                                                color: Colors.red),
+                                              Icons.not_interested,
+                                              color: Colors.red
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -322,7 +320,7 @@ class _RequestsState extends State<Requests> {
                                   const SizedBox(width: 8),
                                   Text(_foundRequests[index].assessment.name),
                                   const SizedBox(width: 8),
-                                  const Text('4h'),
+                                  Text(_foundRequests[index].timeSinceSubmission()),
                                   const SizedBox(width: 8),
                                 ],
                               ),
@@ -344,7 +342,8 @@ class _RequestsState extends State<Requests> {
       return Center(
         child: Text('Select a subject',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.surface, fontSize: 25
+            color: Theme.of(context).colorScheme.surface,
+            fontSize: 25
           )
         )
       );

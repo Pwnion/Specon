@@ -1,3 +1,8 @@
+/// This class has all the functions relating to the database, this includes
+/// adding data from the database, removing and fetching data from the database
+///
+/// Author: Jeremy Annal, Zhi Xiang Chan (Lucas)
+
 import "package:cloud_firestore/cloud_firestore.dart";
 import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
@@ -10,6 +15,7 @@ class DataBase {
 
   static UserModel? user;
 
+  /// Function that queries the users collection with an email and returns an user model
   Future<UserModel> getUserFromEmail(String emailToMatch) async {
     final usersRef = _db.collection("users");
     final query =
@@ -23,12 +29,27 @@ class DataBase {
       name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
       aapPath: fetchedUser["aap_path"],
+      studentID: fetchedUser["student_id"]
     );
 
     user = userModel;
     return userModel;
   }
 
+  /// Function that sets the student id on a student's document
+  Future<void> setStudentID(String studentID) async {
+
+    final usersRef = _db.collection("users");
+    final query =
+    await usersRef.where('email', isEqualTo: user!.email).get();
+
+    final fetchedUser = query.docs[0];
+
+    await fetchedUser.reference.update({'student_id': studentID});
+    
+  }
+
+  /// Function that fetches the requests for a subject based on a user's role
   Future<List<RequestModel>> getRequests(UserModel user, SubjectModel subject) async {
 
     List<RequestModel> requests = [];
@@ -58,6 +79,8 @@ class DataBase {
           );
         });
 
+        final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -67,7 +90,10 @@ class DataBase {
             assessedBy: request['assessed_by'],
             assessment: assessmentFromDB,
             state: request['state'],
-            databasePath: request.reference.path
+            databasePath: request.reference.path,
+            timeSubmitted: timeSubmitted,
+            requestType: request['request_type'],
+            daysExtending: request['days_extending']
           )
         );
       }
@@ -80,7 +106,7 @@ class DataBase {
       final requestListFromDB = await _db
           .doc(subject.databasePath)
           .collection('requests')
-          .where('requested_by_student_id', isEqualTo: user.id) // TODO:
+          .where('requested_by_student_id', isEqualTo: user.studentID)
           .get();
 
 
@@ -97,6 +123,8 @@ class DataBase {
           );
         });
 
+        final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
+
         requests.add(
           RequestModel(
             requestedBy: request['requested_by'],
@@ -106,7 +134,10 @@ class DataBase {
             assessment: assessmentFromDB,
             state: request['state'],
             requestedByStudentID: request['requested_by_student_id'],
-            databasePath: request.reference.path
+            databasePath: request.reference.path,
+            timeSubmitted: timeSubmitted,
+            requestType: request['request_type'],
+            daysExtending: request['days_extending']
           )
         );
       }
@@ -117,9 +148,13 @@ class DataBase {
       return [];
     }
 
+    // Sort by oldest requests on the top
+    requests.sort((a, b) => a.timeSubmitted.compareTo(b.timeSubmitted));
+
     return requests;
   }
 
+  /// Function that fetches a user's enrolled subjects
   Future<List<SubjectModel>> getEnrolledSubjects() async {
     List<SubjectModel> subjects = [];
 
@@ -146,6 +181,7 @@ class DataBase {
     return subjects;
   }
 
+  /// Function that fetches the assessments of a subject
   Future<List<RequestType>> getAssessments(String subjectPath) async {
     List<RequestType> assessments = [];
 
@@ -167,6 +203,7 @@ class DataBase {
     return assessments;
   }
 
+  /// Function that adds a request onto the database
   Future<DocumentReference> submitRequest(UserModel user, SubjectModel subject, RequestModel request) async {
 
     // Get subject's reference
@@ -174,10 +211,13 @@ class DataBase {
 
     // Add request to subject's collection
     final DocumentReference requestRef = await subjectRef.collection('requests').add(request.toJson());
+    
+    await requestRef.update({'time_submitted': Timestamp.now()});
 
     return requestRef;
   }
 
+  ///
   Future<List<Map<String, String>>> getDiscussionThreads(RequestModel request) async {
 
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -201,6 +241,7 @@ class DataBase {
     return allDiscussions;
   }
 
+  ///
   Future<void> addNewDiscussion(RequestModel request, Map<String, String> newDiscussion) async {
 
     DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -208,8 +249,15 @@ class DataBase {
     await docRef.collection('discussions').add(newDiscussion);
   }
 
+  /// Function that deletes a request from the database
+  Future<void> deleteOpenRequest(RequestModel request) async {
+
+    await FirebaseFirestore.instance.doc(request.databasePath).delete();
+  }
+
 }
 
+///
 Future<void> acceptRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -217,6 +265,7 @@ Future<void> acceptRequest(RequestModel request) async {
   await docRef.update({'state': 'Approved'});
 }
 
+///
 Future<void> declineRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);
@@ -224,6 +273,7 @@ Future<void> declineRequest(RequestModel request) async {
   await docRef.update({'state': 'Declined'});
 }
 
+///
 Future<void> flagRequest(RequestModel request) async {
 
   DocumentReference docRef = FirebaseFirestore.instance.doc(request.databasePath);

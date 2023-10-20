@@ -9,6 +9,16 @@ class SubjectModel {
   final String databasePath;
   final Map<String, dynamic> roles;
 
+  static final emptySubject = SubjectModel(
+    roles: {},
+    name: '',
+    code: '',
+    assessments: [],
+    semester: '',
+    year: '',
+    databasePath: ''
+  );
+
   SubjectModel(
       {required this.name,
       required this.code,
