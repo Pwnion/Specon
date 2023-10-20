@@ -407,16 +407,18 @@ class DataBase {
         'users': FieldValue.arrayUnion(group['users']) // TODO:
       });
 
-      for(final user in group['users']){
-        final userRef = await _db.collection('users').where('name', isEqualTo: user).get();
+      final subjectFields = await subjectRef.get();
+      Map<String, dynamic> roles = subjectFields['roles'];
+      roles.removeWhere((key, value) => value != 'subject_coordinator' && value != 'student');
 
+      for(final user in group['users']){
+
+        final userRef = await _db.collection('users').where('name', isEqualTo: user).get();
+        
         if (userRef.docs.isNotEmpty) {
 
-          final subjectFields = await subjectRef.get();
           final userID = userRef.docs[0]['id'];
 
-          Map<String, dynamic> roles = subjectFields['roles'];
-          roles.remove(userID);
           roles[userID] = group['name'];
           subjectRef.update({'roles': roles});
         }
