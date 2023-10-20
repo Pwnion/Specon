@@ -54,9 +54,7 @@ class DataBase {
 
     List<RequestModel> requests = [];
 
-    if (subject.databasePath.isEmpty){
-      return [];
-    }
+    if (subject.code.isEmpty) return [];
 
     // Subject Coordinator
     if (subject.roles[user.id] == 'subject_coordinator') {
@@ -143,9 +141,87 @@ class DataBase {
       }
     }
 
-    // TODO: for permission (Tutor, etc)
+    // For other roles (Determined by permissions set by subject coordinator)
     else {
-      return [];
+
+      final subjectRef = await _db.doc(subject.databasePath).get();
+
+      // Get user's role in the subject
+      final userRole = subjectRef['roles'][user.id];
+
+      // Query for the group's reference with the role
+      final groupRef = await _db
+        .doc(subject.databasePath)
+        .collection('groups')
+        .where('name', isEqualTo: userRole)
+        .get();
+
+      final group = groupRef.docs[0];
+
+      // Get all assessments under a group
+      final assessments = await _db.doc(group.reference.path).collection('assessments').get();
+
+      Map<DocumentReference, List<String>> allowedPermissions = {};
+
+      // If a assessment's request type is allowed, add it into list
+      for (final assessment in assessments.docs) {
+
+        List<String> allowedRequestTypes = [];
+
+        assessment.data().forEach((key, value) {
+          if (value) allowedRequestTypes.add(key);
+        });
+
+        final assessmentPath = '${subjectRef.reference.path}/assessments/${assessment.id}';
+        final assessmentRef = await _db.doc(assessmentPath).get();
+
+        allowedPermissions[assessmentRef.reference] = [...allowedRequestTypes];
+      }
+
+      // Query for all request which this role has permission to view
+      for (final assessmentRef in allowedPermissions.keys.toList()) {
+
+        final allowedRequestTypes = allowedPermissions[assessmentRef];
+
+        final requestListFromDB = await _db
+          .doc(subject.databasePath)
+          .collection('requests')
+          .where('assessment', isEqualTo: assessmentRef)
+          .where('request_type', whereIn: allowedRequestTypes)
+          .get();
+
+        for(final request in requestListFromDB.docs){
+
+          final assessmentRef = _db.doc(request['assessment'].path);
+          late final RequestType assessmentFromDB;
+
+          await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
+            assessmentFromDB = RequestType(
+              name: documentSnapshot['name'],
+              type: '',
+              id: request['assessment'].path
+            );
+          });
+
+          final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
+
+          requests.add(
+            RequestModel(
+              requestedBy: request['requested_by'],
+              reason: request['reason'],
+              additionalInfo: request['additional_info'],
+              assessedBy: request['assessed_by'],
+              assessment: assessmentFromDB,
+              state: request['state'],
+              requestedByStudentID: request['requested_by_student_id'],
+              databasePath: request.reference.path,
+              timeSubmitted: timeSubmitted,
+              requestType: request['request_type'],
+              daysExtending: request['days_extending']
+            )
+          );
+        }
+      }
     }
 
     // Sort by oldest requests on the top
@@ -253,6 +329,109 @@ class DataBase {
   Future<void> deleteOpenRequest(RequestModel request) async {
 
     await FirebaseFirestore.instance.doc(request.databasePath).delete();
+  }
+
+  /// Function that fetches permission groups of a subject from the database
+  Future<List<Map<String, dynamic>>> getPermissionGroups(SubjectModel subject) async {
+
+    final groups = await _db.doc(subject.databasePath).collection('groups').get();
+    final assessments = await _db.doc(subject.databasePath).collection('assessments').get();
+    List<Map<String, dynamic>> userGroups = [];
+    Map<String, String> assessmentsInSubject = {};
+
+    // Get all assessments in the subject
+    for(final assessment in assessments.docs) {
+      assessmentsInSubject[assessment.id] = assessment['name'];
+    }
+
+    // Get information of all groups and append to list
+    for (final group in groups.docs) {
+
+      final assessmentsInGroup = await _db.doc(group.reference.path).collection('assessments').get();
+
+      Map<String, Map<String, bool>> allAssessments = {};
+
+      for (final assessment in assessmentsInGroup.docs) {
+
+        String assessmentName = assessmentsInSubject[assessment.id]!;
+        Map<String, bool> requestTypes = assessment.data().map((key, value) => MapEntry(key, value));
+
+        allAssessments[assessmentName] = {...requestTypes};
+      }
+
+      userGroups.add({
+        'name': group['name'],
+        'priority': group['priority'],
+        'users': group['users'], // TODO:
+        'assessments': allAssessments
+      });
+    }
+
+    // Sort by priority (1 at the top)
+    userGroups.sort((a, b) => a['priority'].compareTo(b['priority']));
+
+    return userGroups;
+  }
+
+  /// Function that updates the permission groups in the database if changes were made
+  Future<void> updatePermissionGroups(SubjectModel subject, List<Map<String, dynamic>> groups) async {
+
+    final groupsOnDatabase = await _db.doc(subject.databasePath).collection('groups').get();
+    final assessments = await _db.doc(subject.databasePath).collection('assessments').get();
+    final subjectRef = _db.doc(subject.databasePath);
+    Map<String, String> assessmentsToID = {};
+
+    // Get name and ID of assessments
+    for (final assessment in assessments.docs) {
+      assessmentsToID[assessment['name']] = assessment.id;
+    }
+
+    // Delete old groups
+    for (final group in groupsOnDatabase.docs) {
+
+      final assessments = await _db.doc(group.reference.path).collection('assessments').get();
+
+      for (final assessment in assessments.docs) {
+        await _db.doc(assessment.reference.path).delete();
+      }
+
+      await _db.doc(group.reference.path).delete();
+    }
+
+    // Add new groups
+    for (final group in groups) {
+
+      final groupRef = await _db.doc(subject.databasePath).collection('groups').add({
+        'name': group['name'],
+        'priority': group['priority'],
+        'users': FieldValue.arrayUnion(group['users']) // TODO:
+      });
+
+      final subjectFields = await subjectRef.get();
+      Map<String, dynamic> roles = subjectFields['roles'];
+      roles.removeWhere((key, value) => value != 'subject_coordinator' && value != 'student');
+
+      for(final user in group['users']){
+
+        final userRef = await _db.collection('users').where('name', isEqualTo: user).get();
+        
+        if (userRef.docs.isNotEmpty) {
+
+          final userID = userRef.docs[0]['id'];
+
+          roles[userID] = group['name'];
+          subjectRef.update({'roles': roles});
+        }
+      }
+
+      for(final assessment in group['assessments'].keys.toList()){
+        final assessmentID = assessmentsToID[assessment];
+        _db.doc(groupRef.path).collection('assessments').doc(assessmentID).set(
+          group['assessments'][assessment]
+        );
+      }
+    }
+
   }
 
 }
