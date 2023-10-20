@@ -30,6 +30,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
   runApp(const App());
+  doWidgetTests();
+}
+
+void doWidgetTests(){
+
 }
 
 class App extends StatefulWidget {
