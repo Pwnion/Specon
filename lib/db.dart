@@ -260,6 +260,24 @@ class DataBase {
         );
       });
     }
+
+    // Checks if any subject is not initialised yet
+    if (subjects.length != user!.canvasData.subjects.length) {
+
+      final subjectCodesInDatabase = subjects.map((subject) => subject.code).toList();
+      final subjectCodesInCanvas = user!.canvasData.subjects.map((subject) => subject['code']).toList();
+
+      subjectCodesInCanvas.removeWhere((subject) => subjectCodesInDatabase.contains(subject));
+
+      for (final subjectCode in subjectCodesInCanvas) {
+
+        final subjectInformation = user!.canvasData.subjects.where((element) => element['code'] == subjectCode);
+        await initialiseSubject(subjectInformation.first);
+      }
+      user = await getUserFromEmail(user!.email);
+      return getEnrolledSubjects();
+    }
+
     return subjects;
   }
 
@@ -440,8 +458,38 @@ class DataBase {
 
   }
 
+  /// Function that syncs the database with Canvas (Updates the database)
   Future<void> syncDatabaseWithCanvas() async {
-    await Future.delayed(const Duration(seconds: 3));
+
+    await Future.delayed(const Duration(seconds: 3)); // TODO
+  }
+
+  ///
+  Future<void> initialiseSubject(Map<String, dynamic> subjectInformation) async {
+
+    final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get();
+
+    if (findSubjectRef.docs.isNotEmpty) return;
+
+    final subjectsRef = _db.collection('subjects');
+    final subjectID = await subjectsRef.add(
+      {'name': subjectInformation['name'],
+       'code': subjectInformation['code'],
+       'semester': '2', // TODO
+       'year': '2023', // TODO
+       'roles': subjectInformation['roles']}
+
+    );
+
+    for(final userID in subjectInformation['roles'].keys.toList()) {
+
+      final userRef = await _db.collection('users').where('id', isEqualTo: userID).get();
+
+      final userDatabasePath = userRef.docs[0].reference.path;
+
+      await _db.doc(userDatabasePath).update({'subjects': FieldValue.arrayUnion([subjectID])});
+    }
+    
   }
 
 }

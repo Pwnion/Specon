@@ -340,166 +340,167 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
 
     if (!fetchingFromDB){
       return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            elevation: 0.0,
-            // Logo
-            leading: InkWell(
-              onTap: () {},
-              child: const Center(
-                child: Text(
-                  'Specon',
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold
-                  )
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 0.0,
+          // Logo
+          leading: InkWell(
+            onTap: () {},
+            child: const Center(
+              child: Text(
+                'Specon',
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold
                 )
               )
-            ),
-            leadingWidth: 110.0,
-            // Subject code and name title
-            title: Text(
-              '${currentSubject.code} - ${currentSubject.name}',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-                fontSize: 20.0
-              )
-            ),
-            centerTitle: true,
-            actions: [
-              // Home Button
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.home,
-                    size: 30.0,
-                  ),
+            )
+          ),
+          leadingWidth: 110.0,
+          // Subject code and name title
+          title: Text(
+            '${currentSubject.code} - ${currentSubject.name}',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+              fontSize: 20.0
+            )
+          ),
+          centerTitle: true,
+          actions: [
+            // Home Button
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {},
+                child: const Icon(
+                  Icons.home,
+                  size: 30.0,
                 ),
               ),
-              // Sync Button
-              if (role == 'subject_coordinator')
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: Tooltip(
-                  message: 'Sync with Canvas',
-                  child: AnimatedSync(
-                    animation: rotateAnimation,
-                    callback: () async{
-                      controller.forward();
-                      await _database.syncDatabaseWithCanvas();
-                      controller.stop();
-                      controller.reset();
-                    },
-                  ),
+            ),
+            // Sync Button
+            if (role == 'subject_coordinator')
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Tooltip(
+                message: 'Sync with Canvas',
+                child: AnimatedSync(
+                  animation: rotateAnimation,
+                  callback: () async{
+                    controller.forward();
+                    await _database.syncDatabaseWithCanvas();
+                    controller.stop();
+                    controller.reset();
+                  },
                 ),
               ),
-              // Assessment Manager Button
-              if (role == 'subject_coordinator')
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
+            ),
+            // Assessment Manager Button
+            if (role == 'subject_coordinator')
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssessmentManager(
+                        subject: currentSubject,
+                        refreshFn: setState,
+                      )
+                    )
+                  );
+                },
+                child: const Icon(
+                  Icons.document_scanner,
+                  size: 30.0,
+                ),
+              ),
+            ),
+            // Permission Settings Button
+            if (role == 'subject_coordinator')
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Tooltip(
+                message: 'Permission Settings',
                 child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => AssessmentManager(
-                          subject: currentSubject,
-                          refreshFn: setState,
+                    setState(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PermissionManager(
+                            currentSubject: currentSubject
+                          )
                         )
-                      )
-                    );
+                      );
+                    });
                   },
                   child: const Icon(
-                    Icons.document_scanner,
+                    Icons.admin_panel_settings,
                     size: 30.0,
                   ),
                 ),
               ),
-              // Permission Settings Button
-              if (role == 'subject_coordinator')
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: Tooltip(
-                  message: 'Permission Settings',
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PermissionManager(
-                              currentSubject: currentSubject
-                            )
-                          )
-                        );
-                      });
-                    },
-                    child: const Icon(
-                      Icons.admin_panel_settings,
-                      size: 30.0,
-                    ),
-                  ),
+            ),
+            // Notification Button
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {},
+                child: const Icon(
+                  Icons.notifications,
+                  size: 30.0,
                 ),
               ),
-              // Notification Button
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.notifications,
-                    size: 30.0,
-                  ),
-                ),
-              ),
-              // Avatar Button
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: PopupMenuButton(
-                  itemBuilder: (BuildContext context) => [
-                    // Display user's email
-                    PopupMenuItem(
-                      enabled: false,
-                      onTap: () {},
-                      child: Text(
-                        currentUser.email,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                        ),
+            ),
+            // Avatar Button
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: PopupMenuButton(
+                itemBuilder: (BuildContext context) => [
+                  // Display user's email
+                  PopupMenuItem(
+                    enabled: false,
+                    onTap: () {},
+                    child: Text(
+                      currentUser.email,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
-                    // Logout button
-                    PopupMenuItem(
-                      child: const Text('Logout'),
-                      onTap: () {
-                        if(widget.canvasEmail != null) {
-                          widget.canvasLogout!();
-                        } else {
-                          _auth.signOut();
-                        }
-                      },
-                    ),
-                  ],
-                  tooltip: 'User Options',
-                  iconSize: 50,
-                  icon: CircleAvatar(
-                    backgroundColor:
-                    Theme.of(context).colorScheme.secondary,
-                    child: Text(
-                      currentUser.name[0],
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface
-                      )
-                    ),
+                  ),
+                  // Logout button
+                  PopupMenuItem(
+                    child: const Text('Logout'),
+                    onTap: () {
+                      if(widget.canvasEmail != null) {
+                        widget.canvasLogout!();
+                      } else {
+                        _auth.signOut();
+                      }
+                    },
+                  ),
+                ],
+                tooltip: 'User Options',
+                iconSize: 50,
+                icon: CircleAvatar(
+                  backgroundColor:
+                  Theme.of(context).colorScheme.secondary,
+                  child: Text(
+                    currentUser.name[0],
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface
+                    )
                   ),
                 ),
               ),
-            ],
-          ),
-          body: Stack(children: [
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
             Row(
               children: [
                 // Dashboard column 1
