@@ -5,7 +5,6 @@ class User {
   name: string;
   email: string;
   studentID: string;
-  aapPath: string;
   accessToken: string;
   refreshToken: string;
   subjects: Array<DocumentReference>;
@@ -15,7 +14,6 @@ class User {
     name: string,
     email: string,
     studentID: string,
-    aapPath: string,
     accessToken: string,
     refreshToken: string,
     subjects: Array<DocumentReference>
@@ -24,7 +22,6 @@ class User {
     this.name = name;
     this.email = email;
     this.studentID = studentID;
-    this.aapPath = aapPath;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.subjects = subjects;
@@ -36,7 +33,6 @@ class User {
       data["name"],
       data["email"],
       data["student_id"],
-      data["aap_path"],
       data["access_token"],
       data["refresh_token"],
       data["subjects"]
@@ -49,7 +45,6 @@ class User {
       name: this.name,
       email: this.email,
       student_id: this.studentID,
-      aap_path: this.aapPath,
       access_token: this.accessToken,
       refresh_token: this.refreshToken,
       subjects: this.subjects,

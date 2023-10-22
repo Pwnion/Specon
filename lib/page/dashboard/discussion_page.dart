@@ -51,7 +51,6 @@ class _DiscussionState extends State<Discussion> {
   bool _showClearButton = false;
   FilePickerResult? _selectedFiles;
   String _displayFileNames = "";
-  String? aapPath;
 
   void _setDisplayFileName(String name){
     setState(() {
@@ -200,7 +199,6 @@ class _DiscussionState extends State<Discussion> {
   Widget build(BuildContext context) {
 
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
-    aapPath = widget.currentUser.aapPath;
 
     // Fetch discussions from the database
     //discussionThread = [];
@@ -361,7 +359,7 @@ class _DiscussionState extends State<Discussion> {
                                 margin: const EdgeInsets.only(
                                     top: 10, bottom: 10),
                                 child: TextButton(
-                                  onPressed: ()=> downloadFilesToDisc(requestRef.id, aapPath),  //downloadAttachment, TODO
+                                  onPressed: ()=> downloadFilesToDisc(requestRef.id, widget.currentUser.uuid),  //downloadAttachment, TODO
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                   ),

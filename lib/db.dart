@@ -29,11 +29,11 @@ class DataBase {
     final List<dynamic> fetchedCanvasData = fetchedCanvasDataQuery.data()!['subjects'];
 
     final userModel = UserModel(
+      uuid: fetchedUser.id,
       id: fetchedUser["id"],
       email: fetchedUser["email"],
       name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
-      aapPath: fetchedUser["aap_path"],
       studentID: fetchedUser["student_id"],
       canvasData: CanvasData.fromDB(fetchedCanvasData)
     );
