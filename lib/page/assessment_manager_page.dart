@@ -318,13 +318,17 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   }
 
   void _addRequestTypeItem(String name, String requestType) {
+    final assessment = RequestType(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      type: requestType,
+    );
     setState(() {
-      _foundRequestType.add(RequestType(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: name,
-        type: requestType,
-      ));
+      _foundRequestType.add(assessment);
     });
+
+    // add to temp stack
+    _addToDb.add(assessment);
   }
 
   void _runFilter(String enteredKeyword) {
