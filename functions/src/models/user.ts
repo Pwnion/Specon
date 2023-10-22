@@ -29,7 +29,7 @@ class User {
 
   static fromDB(data: DocumentData): User {
     return new User(
-      data["account_id"],
+      data["id"],
       data["name"],
       data["email"],
       data["student_id"],

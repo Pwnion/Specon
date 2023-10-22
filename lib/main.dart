@@ -11,7 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
+// import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'page/utility/landing_page.dart';
 import 'page/utility/loading_page.dart';
@@ -48,11 +48,11 @@ class _AppState extends State<App> {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform
     );
-    await FirebaseAppCheck.instance.activate(
-      webProvider: ReCaptchaV3Provider(
-        '6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'
-      )
-    );
+    // await FirebaseAppCheck.instance.activate(
+    //   webProvider: ReCaptchaV3Provider(
+    //     '6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'
+    //   )
+    // );
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
 

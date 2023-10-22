@@ -5,6 +5,7 @@ class Course {
   id: number;
   name: string;
   code: string;
+  term: Map<string, string>;
   roles: Map<string, string>;
   assessments: Array<Map<string, string>>;
 
@@ -13,6 +14,7 @@ class Course {
     id: number,
     name: string,
     code: string,
+    term: Map<string, string>,
     roles: Map<string, string>,
     assessments: Array<Map<string, string>>
   ) {
@@ -20,6 +22,7 @@ class Course {
     this.id = id;
     this.name = name;
     this.code = code;
+    this.term = term;
     this.roles = roles;
     this.assessments = assessments;
   }
@@ -30,6 +33,7 @@ class Course {
       data["id"] as number,
       data["name"] as string,
       data["course_code"] as string,
+      data["term"] as Map<string, string>,
       data["roles"] as Map<string, string>,
       data["assessments"] as Array<Map<string, string>>
     );
@@ -41,6 +45,7 @@ class Course {
       id: this.id,
       name: this.name,
       code: this.code,
+      term: this.term,
       roles: this.roles,
       assessments: this.assessments,
     };

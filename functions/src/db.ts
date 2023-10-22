@@ -38,6 +38,7 @@ async function updateAccessToken(
 
 async function putUserInfoForLaunch(
   uid: string,
+  selectedCourseCode: string,
   courses: Courses
 ): Promise<void> {
   const infoRef: DocumentReference = usersRef
@@ -45,7 +46,10 @@ async function putUserInfoForLaunch(
     .collection("launch")
     .doc("data");
 
-  await infoRef.set({subjects: courses.data()});
+  await infoRef.set({
+    selected_course: selectedCourseCode,
+    subjects: courses.data(),
+  });
 }
 
 export {
