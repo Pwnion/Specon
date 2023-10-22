@@ -5,6 +5,8 @@
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:specon/models/request_type.dart';
+import 'package:specon/models/subject_model.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -47,13 +49,10 @@ class _AppState extends State<App> {
   /// Initialise and configure the Firebase backend for this app.
   Future<void> _initialiseFirebase() async {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-    );
+        options: DefaultFirebaseOptions.currentPlatform);
     await FirebaseAppCheck.instance.activate(
-      webProvider: ReCaptchaV3Provider(
-        '6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'
-      )
-    );
+        webProvider:
+            ReCaptchaV3Provider('6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'));
     await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   }
 
@@ -75,8 +74,22 @@ class _AppState extends State<App> {
 
   /// Determine which page to display based on the state of the initialisation.
   Widget _getPage() {
+    return Onboarder(
+        subject: SubjectModel(
+            name: 'jezz',
+            code: 'jezz42069',
+            assessments: [
+              RequestType(name: 'proj1', type: 'exam', id: '420'),
+              RequestType(name: 'ass2', type: 'mst', id: '69')
+            ],
+            semester: '2',
+            year: '2069',
+            databasePath: '',
+            roles: {'5': 'subject_coordinator'}
+        )
+    );
 
-    if (_error) {
+    /*if (_error) {
       return const Error();
     }
 
@@ -84,7 +97,7 @@ class _AppState extends State<App> {
       return const Loading();
     }
 
-    return Landing(email: email);
+    return Landing(email: email);*/
   }
 
   @override
@@ -96,26 +109,23 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Specon',
-      theme: ThemeData.from(
-        useMaterial3: true,
-        colorScheme: const ColorScheme(
-          brightness: Brightness.dark,
-          primary: Color(0xFF385F71),
-          onPrimary: Color(0xFFD4D4D4),
-          secondary: Color(0xFFDF6C00),
-          onSecondary: Color(0xFFD4D4D4),
-          error: Color(0xFFB00020),
-          onError: Color(0xFFD4D4D4),
-          //background: Color(0xFF333333),
-          background: Color(0xFF222222),
-          onBackground: Color(0xFFD4D4D4),
-          surface: Color(0xFFD4D4D4),
-          onSurface: Color(0xFF000000)
-        )
-      ),
-      home: _getPage()
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Specon',
+        theme: ThemeData.from(
+            useMaterial3: true,
+            colorScheme: const ColorScheme(
+                brightness: Brightness.dark,
+                primary: Color(0xFF385F71),
+                onPrimary: Color(0xFFD4D4D4),
+                secondary: Color(0xFFDF6C00),
+                onSecondary: Color(0xFFD4D4D4),
+                error: Color(0xFFB00020),
+                onError: Color(0xFFD4D4D4),
+                //background: Color(0xFF333333),
+                background: Color(0xFF222222),
+                onBackground: Color(0xFFD4D4D4),
+                surface: Color(0xFFD4D4D4),
+                onSurface: Color(0xFF000000))),
+        home: _getPage());
   }
 }

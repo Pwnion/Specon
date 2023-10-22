@@ -1,15 +1,8 @@
 
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
-import '../models/user_model.dart';
-
-import '../db.dart';
-import '../models/request_model.dart';
-import 'package:specon/storage.dart';
+import 'assessment_manager_page.dart';
+import 'permission_manager_page.dart';
 
 class Onboarder extends StatefulWidget {
 
@@ -28,7 +21,46 @@ class Onboarder extends StatefulWidget {
 class _OnboarderState extends State<Onboarder> {
   @override
   Widget build(BuildContext context) {
-    return
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: Column(
+        children: [
+          Text(widget.subject.name, style: const TextStyle(color: Colors.green)),
+          Text(widget.subject.code, style: const TextStyle(color: Colors.green)),
+          Text(widget.subject.semester, style: const TextStyle(color: Colors.green)),
+          Text(widget.subject.year, style: const TextStyle(color: Colors.green)),
+          
+          TextButton(onPressed: () {
+            setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AssessmentManager(
+                    subject: widget.subject,
+                    refreshFn: setState,
+                  ),
+                ),
+              );
+            });
+          }, child: const Text('Assessment Manager')),
 
+          TextButton(onPressed: () {
+            setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PermissionManager(
+                    currentSubject: widget.subject,
+                  ),
+                ),
+              );
+            });
+          }, child: const Text('Permissions Manager')),
+
+
+        ],
+
+      ),
+    );
   }
 }
