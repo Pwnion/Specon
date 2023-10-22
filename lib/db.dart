@@ -9,6 +9,8 @@ import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/models/request_model.dart';
 
+import 'models/canvas_data_model.dart';
+
 class DataBase {
 
   final _db = FirebaseFirestore.instance;
@@ -23,13 +25,17 @@ class DataBase {
 
     final fetchedUser = query.docs[0];
 
+    final fetchedCanvasDataQuery = await usersRef.doc(fetchedUser.id).collection('launch').doc('data').get();
+    final List<dynamic> fetchedCanvasData = fetchedCanvasDataQuery.data()!['subjects'];
+
     final userModel = UserModel(
       id: fetchedUser["id"],
       email: fetchedUser["email"],
       name: fetchedUser["name"],
       subjects: fetchedUser["subjects"],
       aapPath: fetchedUser["aap_path"],
-      studentID: fetchedUser["student_id"]
+      studentID: fetchedUser["student_id"],
+      canvasData: CanvasData.fromDB(fetchedCanvasData)
     );
 
     user = userModel;

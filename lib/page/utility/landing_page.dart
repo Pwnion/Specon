@@ -43,8 +43,7 @@ class _LandingState extends State<Landing> {
     if(_canvasLogin) {
       return Dashboard(
         canvasEmail: widget.email,
-        canvasLogout: _canvasLogout,
-        userType: UserType.student,
+        canvasLogout: _canvasLogout
       );
     }
 
@@ -65,10 +64,8 @@ class _LandingState extends State<Landing> {
             return const VerifyEmail();
           }
 
-          // Otherwise, navigate to the main dashboard with the appropriate permissions.
-          return const Dashboard(
-            userType: UserType.subjectCoordinator, // TODO: Get actual type from Canvas.
-          );
+          // Otherwise, navigate to the main dashboard.
+          return const Dashboard();
         }
         return const Loading();
       },

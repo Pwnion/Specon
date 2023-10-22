@@ -4,6 +4,7 @@ class User {
   id: string;
   name: string;
   email: string;
+  studentID: string | null;
   aapPath: string;
   accessToken: string;
   refreshToken: string;
@@ -13,6 +14,7 @@ class User {
     id: string,
     name: string,
     email: string,
+    studentID: string | null,
     aapPath: string,
     accessToken: string,
     refreshToken: string,
@@ -21,6 +23,7 @@ class User {
     this.id = id;
     this.name = name;
     this.email = email;
+    this.studentID = studentID;
     this.aapPath = aapPath;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
@@ -32,6 +35,7 @@ class User {
       data["account_id"],
       data["name"],
       data["email"],
+      data["student_id"],
       data["aap_path"],
       data["access_token"],
       data["refresh_token"],
@@ -44,6 +48,7 @@ class User {
       id: this.id,
       name: this.name,
       email: this.email,
+      student_id: this.studentID,
       aap_path: this.aapPath,
       access_token: this.accessToken,
       refresh_token: this.refreshToken,
