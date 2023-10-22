@@ -764,14 +764,14 @@ class _SpeconFormState extends State<SpeconForm> {
   }
 
   void initAapNames()async{
-    _originalAapName = await getAapFileName(widget.currentUser.uuid);
+    _originalAapName = await getAapFileName(widget.currentUser.studentID);
     print("after init $_originalAapName");
   }
 
   @override
   void initState() {
     super.initState();
-    _originalAapName = getAapFileName(widget.currentUser.uuid);
+    _originalAapName = getAapFileName(widget.currentUser.studentID);
   subjectList = widget.getSubjectList();
 
     for (final subject in subjectList) {
@@ -900,8 +900,9 @@ class _SpeconFormState extends State<SpeconForm> {
                   _uploadTask = uploadFile(docRef.id, _selectedFiles!);
                 }
                 if(_selectedAap != null){
-                  // right now hard coded to user jerrya 12345678
-                  uploadFile(widget.currentUser.uuid, _selectedAap!);
+                  // delete old AAP then upload new AAP
+                  clearFolder(widget.currentUser.studentID);
+                  uploadFile(widget.currentUser.studentID, _selectedAap!);
 
                   // TODO: update aapPath for user after uploading aap
                   //_updateUserAapPath("aRTMyP7HK7HV7RgOkMw6");

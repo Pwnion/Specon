@@ -359,7 +359,7 @@ class _DiscussionState extends State<Discussion> {
                                 margin: const EdgeInsets.only(
                                     top: 10, bottom: 10),
                                 child: TextButton(
-                                  onPressed: ()=> downloadFilesToDisc(requestRef.id, widget.currentUser.uuid),  //downloadAttachment, TODO
+                                  onPressed: ()=> downloadFilesToDisc(requestRef.id, widget.currentRequest.requestedByStudentID),  //downloadAttachment, TODO
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                   ),

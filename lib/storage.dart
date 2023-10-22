@@ -52,6 +52,23 @@ Future<String> getAapFileName(String dataPath) async {
   }
 }
 
+void clearFolder(String dataPath) async{
+  try{
+    var folder = await _documentsRef.child(dataPath).listAll();
+    for (var item in folder.items) {
+      try {
+        item.delete();
+      } on FirebaseException catch (e) {
+        print("Failed with error '${e.code}': ${e.message}");
+      }
+    }
+
+  } on FirebaseException catch (e2) {
+    print("Failed with error '${e2.code}': ${e2.message}");
+  }
+
+}
+
 /// upload the selected file to cloud storage in the path 'documents/{requestID/userID}'
 UploadTask? uploadFile(String dataPath, FilePickerResult filePickerResult) {
   Reference? ref;
