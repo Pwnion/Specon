@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/models/user_model.dart';
+import 'package:specon/page/onboarder.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/page/assessment_manager_page.dart';
 import 'package:specon/models/subject_model.dart';
@@ -76,9 +77,8 @@ class _NavigationState extends State<Navigation> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AssessmentManager(
+                          builder: (_) => Onboarder(
                             subject: subject,
-                            refreshFn: setState,
                           ),
                         ),
                       );

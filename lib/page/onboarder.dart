@@ -24,6 +24,7 @@ class _OnboarderState extends State<Onboarder> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(widget.subject.name, style: const TextStyle(color: Colors.green)),
           Text(widget.subject.code, style: const TextStyle(color: Colors.green)),
@@ -42,7 +43,8 @@ class _OnboarderState extends State<Onboarder> {
                 ),
               );
             });
-          }, child: const Text('Assessment Manager')),
+          }, style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5), side: const BorderSide(color: Colors.blue, width: 1)))),
+              child: const Text('Assessment Manager')),
 
           TextButton(onPressed: () {
             setState(() {
@@ -55,11 +57,9 @@ class _OnboarderState extends State<Onboarder> {
                 ),
               );
             });
-          }, child: const Text('Permissions Manager')),
-
-
+          }, style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5), side: const BorderSide(color: Colors.blue, width: 1)))),
+              child: const Text('Permissions Manager')),
         ],
-
       ),
     );
   }
