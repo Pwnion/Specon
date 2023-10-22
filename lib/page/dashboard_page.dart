@@ -20,14 +20,12 @@ import 'package:specon/models/user_model.dart';
 class Dashboard extends StatefulWidget {
   final String? canvasEmail;
   final void Function()? canvasLogout;
-  final UserType userType;
 
   const Dashboard(
     {
       Key? key,
       this.canvasEmail,
-      this.canvasLogout,
-      required this.userType
+      this.canvasLogout
     }
   ) : super(key: key);
 
@@ -134,7 +132,7 @@ class _DashboardState extends State<Dashboard> {
     });
 
     // If user is a student, and no student ID is found, prompt a popup
-    if(UserTypeUtils.convertString(role) == UserType.student && currentUser.studentID.isEmpty) {
+    if(UserTypeUtils.convertString(role) == UserType.student && currentUser.studentID!.isEmpty) {
       askForStudentIDPopUp().then((value) {
         _database.setStudentID(value!);
         setState(() {

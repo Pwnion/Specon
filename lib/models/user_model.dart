@@ -1,4 +1,6 @@
-import 'package:specon/user_type.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'canvas_data_model.dart';
 
 class UserModel {
   final String id;
@@ -6,7 +8,8 @@ class UserModel {
   final String email;
   final List<dynamic> subjects;
   final String? aapPath;
-  String studentID;
+  String? studentID;
+  final CanvasData canvasData;
 
   UserModel({
     required this.id,
@@ -14,7 +17,8 @@ class UserModel {
     required this.email,
     required this.subjects,
     required this.aapPath,
-    required this.studentID
+    this.studentID,
+    required this.canvasData
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +27,7 @@ class UserModel {
       'email': email,
       'subjects': subjects.toString(),
       'aap': aapPath,
+      'student_id': studentID
     };
   }
 }

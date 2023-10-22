@@ -69,7 +69,7 @@ class _RequestsState extends State<Requests> {
 
     final List<RequestModel> filteredByState;
 
-    if (_dropdownValueState != 'All state') {
+    if (_dropdownValueState != RequestState.all.toReadable()) {
       filteredByState = _foundRequests.where((request) {
         return request.state == _dropdownValueState;
       }).toList();
@@ -112,7 +112,7 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValueState = widget.role == UserType.student ? 'All state' : filterSelectionsState.first;
+      _dropdownValueState = widget.role == UserType.student ? RequestState.all.toReadable() : filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
 

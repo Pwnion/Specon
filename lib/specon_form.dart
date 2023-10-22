@@ -824,7 +824,7 @@ class _SpeconFormState extends State<SpeconForm> {
 
                 final request = RequestModel(
                   requestedBy: widget.currentUser.name,
-                  requestedByStudentID: widget.currentUser.studentID,
+                  requestedByStudentID: widget.currentUser.studentID!,
                   assessedBy: '',
                   assessment: selectedAssessment,
                   reason: _reasonController.text,
