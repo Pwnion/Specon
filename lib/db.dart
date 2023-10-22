@@ -475,6 +475,9 @@ class DataBase {
       if (subjectInformation['roles'][user] == 'Subject Coordinator') {
         roles[user] = 'subject_coordinator';
       }
+      else if (subjectInformation['roles'][user] == 'Student') {
+        roles[user] = 'student';
+      }
       else {
         roles[user] = subjectInformation['roles'][user];
       }
