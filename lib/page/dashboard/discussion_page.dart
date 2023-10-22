@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
-import 'package:specon/page/db.dart';
+import 'package:specon/db.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';

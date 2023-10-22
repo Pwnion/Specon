@@ -5,11 +5,11 @@
 /// Authors: Kuo Wei WU, Zhi Xiang Chan
 
 import 'package:flutter/material.dart';
-import 'package:specon/backend.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/page/db.dart';
+import 'package:specon/db.dart';
+import 'package:specon/request_state.dart';
 import 'package:specon/user_type.dart';
 
 class Requests extends StatefulWidget {
@@ -38,7 +38,7 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
 
-  final List<String> filterSelectionsState = BackEnd().getRequestStates();
+  final List<String> filterSelectionsState = allRequestStateReadableValues();
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
 

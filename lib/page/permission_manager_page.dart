@@ -5,21 +5,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/page/db.dart';
+import 'package:specon/db.dart';
 
-class Permission extends StatefulWidget {
+class PermissionManager extends StatefulWidget {
 
   final SubjectModel currentSubject;
 
-  const Permission(
+  const PermissionManager(
     {Key? key, required this.currentSubject}
   ) : super(key: key);
 
   @override
-  State<Permission> createState() => _PermissionState();
+  State<PermissionManager> createState() => _PermissionManagerState();
 }
 
-class _PermissionState extends State<Permission> {
+class _PermissionManagerState extends State<PermissionManager> {
   final _scrollController = ScrollController();
   final _addUserScrollController = ScrollController();
   static final _db = DataBase();
