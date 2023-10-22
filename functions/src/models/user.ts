@@ -4,7 +4,7 @@ class User {
   id: string;
   name: string;
   email: string;
-  studentID: string | null;
+  studentID: string;
   aapPath: string;
   accessToken: string;
   refreshToken: string;
@@ -14,7 +14,7 @@ class User {
     id: string,
     name: string,
     email: string,
-    studentID: string | null,
+    studentID: string,
     aapPath: string,
     accessToken: string,
     refreshToken: string,

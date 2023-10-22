@@ -20,7 +20,7 @@ SERVER.get("/code", async (req, res) => {
     accountId,
     profile.get("name")!,
     email,
-    null,
+    "",
     "",
     accessToken,
     tokenData.get("refreshToken")!,

@@ -8,7 +8,7 @@ class UserModel {
   final String email;
   final List<dynamic> subjects;
   final String? aapPath;
-  String? studentID;
+  String studentID;
   final CanvasData canvasData;
 
   UserModel({
@@ -17,7 +17,7 @@ class UserModel {
     required this.email,
     required this.subjects,
     required this.aapPath,
-    this.studentID,
+    required this.studentID,
     required this.canvasData
   });
 
