@@ -5,6 +5,8 @@
 /// Author: Drey Nguyen
 import 'package:flutter/material.dart';
 import '../models/request_type.dart';
+import 'package:specon/db.dart';
+
 import '../widgets/request_item.dart';
 import 'package:specon/models/subject_model.dart';
 
@@ -16,7 +18,8 @@ class AssessmentManager extends StatefulWidget {
   ///
   /// [subject] is the subject for which assessments are managed.
   /// [refreshFn] is a function to refresh the UI after updates.
-  const AssessmentManager({Key? key, required this.subject, required this.refreshFn})
+  const AssessmentManager(
+      {Key? key, required this.subject, required this.refreshFn})
       : super(key: key);
 
   @override
@@ -30,6 +33,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   /// [_foundRequestType] is used to update the SubjectModel.
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
+
+  final List<RequestType> _addToDb = [];
+  final List<String> _deleteToDb = [];
+  final Map<String, String> _updateToDb = {};
+
+  static final _db = DataBase();
 
   @override
   void initState() {
@@ -93,6 +102,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                         RequestType.importTypes();
                     setState(() {
                       _foundRequestType.addAll(importedTypes);
+                      _addToDb.addAll(importedTypes);
                     });
                   },
                   child: const Text('Import from Canvas'),
@@ -177,8 +187,9 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                       widget.subject.assessments.clear();
                       widget.subject.assessments
                           .addAll(List.from(_foundRequestType));
-                      // .setAll(0, List.from(_foundRequestType));
                     });
+
+                    _pushToDB();
                   }
                   widget.refreshFn(() {});
                   Navigator.pop(context);
@@ -194,12 +205,31 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     );
   }
 
+  /// helper function that push changes of assessment to DB
+  Future<void> _pushToDB() async {
+    // add
+    for (final assessment in _addToDb) {
+      await _db.createAssessment(widget.subject.databasePath, assessment);
+    }
+
+    // update
+    _updateToDb.forEach((subjectPath, newName) async {
+      await _db.updateAssessmentName(subjectPath, newName);
+    });
+
+    // delete
+    for (final assessmentPath in _deleteToDb) {
+      await _db.deleteAssessment(assessmentPath);
+    }
+  }
+
   /// Helper function that updates the request name in real-time after an update.
   void updateRequestTypeName(String id, String newName) {
     setState(() {
       // Find the RequestType by ID and update its name.
       _foundRequestType.firstWhere((type) => type.id == id).name = newName;
     });
+    _updateToDb[id] = newName;
   }
 
   Future<void> _showAddNewItemDialog() async {
@@ -284,16 +314,21 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     setState(() {
       _foundRequestType.removeWhere((item) => item.id == id);
     });
+    _deleteToDb.add(id);
   }
 
   void _addRequestTypeItem(String name, String requestType) {
+    final assessment = RequestType(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      type: requestType,
+    );
     setState(() {
-      _foundRequestType.add(RequestType(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: name,
-        type: requestType,
-      ));
+      _foundRequestType.add(assessment);
     });
+
+    // add to temp stack
+    _addToDb.add(assessment);
   }
 
   void _runFilter(String enteredKeyword) {
