@@ -42,9 +42,14 @@ Future<FilePickerResult?> selectSingleFile() async{
 }
 
 /// get aap file's name using folder name (folder should have only 1 file)
-Future<String> getAapFileName(String dataPath) async{
-  final list = await _documentsRef.child(dataPath).listAll();
-  return list.items.first.name;
+Future<String> getAapFileName(String dataPath) async {
+  try{
+    var temp = await _documentsRef.child(dataPath).listAll();
+    return temp.items.first.name;
+  } on FirebaseException catch (e2) {
+    print("Failed with error '${e2.code}': ${e2.message}");
+    return "no AAP";
+  }
 }
 
 /// upload the selected file to cloud storage in the path 'documents/{requestID/userID}'
@@ -75,13 +80,11 @@ void downloadFilesToMemory (String dataPath) async{
 }
 
 /// download all file that is in 'documents/{requestID} to Disc using URL'
-void downloadFilesToDisc (String dataPath, String? aapPath) async{
+void downloadFilesToDisc (String dataPath, String aapPath) async{
   final downloadList = await _documentsRef.child(dataPath).listAll();
-  //final dir = await FilePicker.platform.getDirectoryPath();
-  //File file;
 
   // if user has aap, download their aap as well
-  if(aapPath != null && aapPath != "") {
+  try{
     final aapList = await _documentsRef.child(aapPath).listAll();
     for (var item in aapList.items) {
       try {
@@ -92,10 +95,12 @@ void downloadFilesToDisc (String dataPath, String? aapPath) async{
           throw Exception('Could not launch $url');
         }
 
-      } on FirebaseException catch (e) {
-        print("Failed with error '${e.code}': ${e.message}");
+      } on FirebaseException catch (e2) {
+        print("Failed with error '${e2.code}': ${e2.message}");
       }
     }
+  }on FirebaseException catch(e1){
+    print("Failed with error '${e1.code}': ${e1.message}");
   }
 
   // download everything in the attachments folder (exclude aap)
