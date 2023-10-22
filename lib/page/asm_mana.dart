@@ -4,6 +4,7 @@
 ///
 /// Author: Drey Nguyen
 import 'package:flutter/material.dart';
+import 'package:specon/page/db.dart';
 import '../models/request_type.dart';
 import '../widgets/request_item.dart';
 import 'package:specon/models/subject_model.dart';
@@ -30,6 +31,10 @@ class _AsmManagerState extends State<AsmManager> {
   /// [_foundRequestType] is used to update the SubjectModel.
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
+  final List<String> _addToDb = [];
+  final Map<String, String> _updateToDb = {};
+
+  static final _db = DataBase();
 
   @override
   void initState() {
@@ -177,8 +182,9 @@ class _AsmManagerState extends State<AsmManager> {
                       widget.subject.assessments.clear();
                       widget.subject.assessments
                           .addAll(List.from(_foundRequestType));
-                      // .setAll(0, List.from(_foundRequestType));
                     });
+
+                    pushToDB();
                   }
                   widget.refreshFn(() {});
                   Navigator.pop(context);
@@ -194,12 +200,24 @@ class _AsmManagerState extends State<AsmManager> {
     );
   }
 
+  Future<void> pushToDB() async {
+    for (final assessment in _addToDb) {
+      await _db.createAssessment(widget.subject.databasePath, assessment);
+    }
+
+    _updateToDb.forEach((subjectPath, newName) async {
+      await _db.updateAssessmentName(subjectPath, newName);
+    });
+  }
+
   /// Helper function that updates the request name in real-time after an update.
   void updateRequestTypeName(String id, String newName) {
     setState(() {
       // Find the RequestType by ID and update its name.
       _foundRequestType.firstWhere((type) => type.id == id).name = newName;
     });
+
+    _updateToDb[id] = newName;
   }
 
   Future<void> _showAddNewItemDialog() async {
@@ -294,6 +312,9 @@ class _AsmManagerState extends State<AsmManager> {
         type: requestType,
       ));
     });
+
+    // add to temp stack
+    _addToDb.add(name);
   }
 
   void _runFilter(String enteredKeyword) {
