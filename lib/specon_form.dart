@@ -40,7 +40,6 @@ class SpeconForm extends StatefulWidget {
 }
 
 class _SpeconFormState extends State<SpeconForm> {
-
   static final List<String> _preFilledFieldTitles = [
     'Full Name',
     'Email',
@@ -69,14 +68,22 @@ class _SpeconFormState extends State<SpeconForm> {
 
   late Future<Map<String, dynamic>> basicForm;
 
-  final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
+  final _dueDateSelectorController =
+      TextEditingController(text: 'Use slider below');
   final _additionalInformationController = TextEditingController();
   final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
-  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
-  final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
+  final _mockAssessmentDueDate = DateTime(
+      2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  final _mockMaxExtendDays =
+      10; // TODO: Set by subject coordinator, + 2 days maybe?
   final businessDaysOnly = true; // TODO: Decided by subject coordinator
-  static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
+  static final List<String> requestTypes = [
+    'Extension',
+    'Regrade',
+    'Waiver',
+    'Others'
+  ];
   static final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
@@ -88,7 +95,8 @@ class _SpeconFormState extends State<SpeconForm> {
   };
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final dataBase = DataBase();
-  final Future<UserModel> currentUser = dataBase.getUserFromEmail(auth.currentUser!.email!);
+  final Future<UserModel> currentUser =
+      dataBase.getUserFromEmail(auth.currentUser!.email!);
   SubjectModel selectedSubject = SubjectModel.emptySubject;
   RequestType selectedAssessment = RequestType.emptyAssessment;
   String selectedRequestType = '';
@@ -107,42 +115,48 @@ class _SpeconFormState extends State<SpeconForm> {
   FilePickerResult? _selectedFiles;
   FilePickerResult? _selectedAap;
   String _displayFileNames = "no file selected";
-  String _displayAapName = "original aap"; // should change to existed one if exist
+  String _displayAapName =
+      "original aap"; // should change to existed one if exist
   UploadTask? _uploadTask;
 
-  void _setDisplayFileName(String name){
+  void _setDisplayFileName(String name) {
     setState(() {
       _displayFileNames = name;
     });
   }
-  void _setDisplayAapName(String name){
+
+  void _setDisplayAapName(String name) {
     setState(() {
       _displayAapName = name;
     });
   }
-  void _setAapUpdated(bool value){
+
+  void _setAapUpdated(bool value) {
     setState(() {
       _aapUpdated = value;
     });
   }
-  void _setShowClearButton(bool value){
+
+  void _setShowClearButton(bool value) {
     setState(() {
       _showClearButton = value;
     });
   }
-  void _updateUserAapPath(String aapPath){
+
+  void _updateUserAapPath(String aapPath) {
     // TODO: u know
   }
 
   /// clear all file selections and related variables
-  void _clearFileVariables(){
+  void _clearFileVariables() {
     setState(() {
       _selectedFiles = null;
       _displayFileNames = "no file selected";
     });
   }
+
   /// reset selected aap file and show original aap file name
-  void _undoAapSelection(){
+  void _undoAapSelection() {
     _selectedAap = null;
     setState(() {
       _displayAapName = "original.pdf or none";
@@ -154,22 +168,21 @@ class _SpeconFormState extends State<SpeconForm> {
     var displayString = '';
     var extendedDate = dateAfterExtension(daysExtended);
 
-    displayString +=
-      '${_mockAssessmentDueDate.day}-'
-      '${_mockAssessmentDueDate.month}-'
-      '${_mockAssessmentDueDate.year} '
-      '${_mockAssessmentDueDate.hour}'
-      ':'
-      '${_mockAssessmentDueDate.minute}'
-      ' [${dayName[_mockAssessmentDueDate.weekday]}]'
-      '  -->  '
-      '${extendedDate.day}-'
-      '${extendedDate.month}-'
-      '${extendedDate.year} '
-      '${extendedDate.hour}'
-      ':'
-      '${extendedDate.minute}'
-      ' [${dayName[extendedDate.weekday]}]';
+    displayString += '${_mockAssessmentDueDate.day}-'
+        '${_mockAssessmentDueDate.month}-'
+        '${_mockAssessmentDueDate.year} '
+        '${_mockAssessmentDueDate.hour}'
+        ':'
+        '${_mockAssessmentDueDate.minute}'
+        ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+        '  -->  '
+        '${extendedDate.day}-'
+        '${extendedDate.month}-'
+        '${extendedDate.year} '
+        '${extendedDate.hour}'
+        ':'
+        '${extendedDate.minute}'
+        ' [${dayName[extendedDate.weekday]}]';
 
     return displayString;
   }
@@ -183,14 +196,13 @@ class _SpeconFormState extends State<SpeconForm> {
     final day = _mockAssessmentDueDate.day;
 
     while (daysExcludingWeekend < daysExtended) {
-
       if (DateTime(year, month, day + daysIncludingWeekend + 1).weekday <= 5) {
         daysExcludingWeekend++;
       }
       daysIncludingWeekend++;
     }
 
-    if(!businessDaysOnly) {
+    if (!businessDaysOnly) {
       daysIncludingWeekend = daysExtended;
     }
 
@@ -199,12 +211,11 @@ class _SpeconFormState extends State<SpeconForm> {
     });
 
     return DateTime(
-      _mockAssessmentDueDate.year,
-      _mockAssessmentDueDate.month,
-      _mockAssessmentDueDate.day + daysIncludingWeekend,
-      _mockAssessmentDueDate.hour,
-      _mockAssessmentDueDate.minute
-    );
+        _mockAssessmentDueDate.year,
+        _mockAssessmentDueDate.month,
+        _mockAssessmentDueDate.day + daysIncludingWeekend,
+        _mockAssessmentDueDate.hour,
+        _mockAssessmentDueDate.minute);
   }
 
   /// Function that builds dropdowns for subject, assessment and request type
@@ -216,70 +227,9 @@ class _SpeconFormState extends State<SpeconForm> {
         child: Form(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-            value: widget.currentSubject.code,
-            items: subjectCodeList
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  value,
-                  style: const TextStyle(color: Colors.white)
-                ),
-              );
-            }).toList(),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  width: 0.5,
-                ),
-              ),
-              labelText: field,
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFD78521),
-                  width: 1,
-                ),
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
-                assessmentList = selectedSubject.assessments;
-                assessmentNameList = RequestType.getAssessmentNames(assessmentList);
-              });
-            }
-          ),
-        ),
-      );
-    }
-
-    // Assessment field
-    else if (field == 'Assessment') {
-      return SizedBox(
-        width: 420.0,
-        child: Form(
-          key: _assessmentFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: DropdownButtonFormField(
-              validator: (value) {
-                if (value == null) {
-                  return 'Please selected an assessment';
-                }
-                return null;
-              },
-              value: null, // TODO: need to change to match selected subject
+              value: widget.currentSubject.code,
               items:
-                  assessmentNameList.map<DropdownMenuItem<String>>((String value) {
+                  subjectCodeList.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child:
@@ -310,7 +260,66 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               onChanged: (value) {
                 setState(() {
-                  selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
+                  selectedSubject =
+                      subjectList[subjectCodeList.indexOf(value!)];
+                  assessmentList = selectedSubject.assessments;
+                  assessmentNameList =
+                      RequestType.getAssessmentNames(assessmentList);
+                });
+              }),
+        ),
+      );
+    }
+
+    // Assessment field
+    else if (field == 'Assessment') {
+      return SizedBox(
+        width: 420.0,
+        child: Form(
+          key: _assessmentFormKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: DropdownButtonFormField(
+              validator: (value) {
+                if (value == null) {
+                  return 'Please selected an assessment';
+                }
+                return null;
+              },
+              value: null, // TODO: need to change to match selected subject
+              items: assessmentNameList
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:
+                      Text(value, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    width: 0.5,
+                  ),
+                ),
+                labelText: field,
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFD78521),
+                    width: 1,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  selectedAssessment =
+                      assessmentList[assessmentNameList.indexOf(value!)];
                 });
               }),
         ),
@@ -325,52 +334,47 @@ class _SpeconFormState extends State<SpeconForm> {
           key: _requestTypeFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
-            validator: (value) {
-              if (value == null) {
-                return 'Please selected a request type';
-              }
-              return null;
-            },
-            value: null,
-            items: requestTypes.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  value,
-                  style: const TextStyle(color: Colors.white)
+              validator: (value) {
+                if (value == null) {
+                  return 'Please selected a request type';
+                }
+                return null;
+              },
+              value: null,
+              items: requestTypes.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:
+                      Text(value, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    width: 0.5,
+                  ),
                 ),
-              );
-            }).toList(),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  width: 0.5,
-                ),
-              ),
-              labelText: field,
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 18
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFD78521),
-                  width: 1,
+                labelText: field,
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFD78521),
+                    width: 1,
+                  ),
                 ),
               ),
-            ),
-            onChanged: (value) {
-              setState(() {
-                selectedRequestType = value!;
-              });
-            }
-          ),
+              onChanged: (value) {
+                setState(() {
+                  selectedRequestType = value!;
+                });
+              }),
         ),
       );
     }
@@ -387,14 +391,13 @@ class _SpeconFormState extends State<SpeconForm> {
     for (final field in _fieldTitles) {
       // Prefilled fields
       if (_preFilledFieldTitles.contains(field)) {
-
         TextEditingController controller;
 
-        if(field == 'Student ID') {
-          controller = TextEditingController(text:currentUser.studentID);
-        }
-        else {
-          controller = TextEditingController(text: jsonUser[_databaseFields[field]]);
+        if (field == 'Student ID') {
+          controller = TextEditingController(text: currentUser.studentID);
+        } else {
+          controller =
+              TextEditingController(text: jsonUser[_databaseFields[field]]);
         }
 
         textFormFields.add(
@@ -403,7 +406,8 @@ class _SpeconFormState extends State<SpeconForm> {
             child: TextField(
               readOnly: true,
               controller: controller,
-              style: const TextStyle(color: Colors.white54), // TODO: Color theme
+              style:
+                  const TextStyle(color: Colors.white54), // TODO: Color theme
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -414,13 +418,11 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18
-                ),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
                 floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18
-                ),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -436,13 +438,16 @@ class _SpeconFormState extends State<SpeconForm> {
       }
 
       // Subject, Assessment & Request Type field
-      else if (field == 'Subject' || field == 'Assessment' || field == 'Request Type') {
+      else if (field == 'Subject' ||
+          field == 'Assessment' ||
+          field == 'Request Type') {
         textFormFields.add(buildDropdownField(field));
         textFormFields.add(const SizedBox(height: 15.0));
       }
 
       // Extension date field
-      else if (field == 'Extend due date to (For extension request type only)') {
+      else if (field ==
+          'Extend due date to (For extension request type only)') {
         // Display dates
         textFormFields.add(
           SizedBox(
@@ -451,8 +456,7 @@ class _SpeconFormState extends State<SpeconForm> {
               readOnly: true,
               controller: _dueDateSelectorController,
               style: const TextStyle(
-                color: Colors.white54
-              ), // TODO: set color scheme
+                  color: Colors.white54), // TODO: set color scheme
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -462,9 +466,8 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 20
-                ),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 20),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -486,24 +489,27 @@ class _SpeconFormState extends State<SpeconForm> {
               max: _mockMaxExtendDays.toDouble(),
               divisions: _mockMaxExtendDays,
               label: '${_currentSliderValue.round().toString()} days',
-              onChanged: selectedAssessment.name.isNotEmpty && selectedRequestType == 'Extension' ? (double value) {
-                setState(() {
-                  _currentSliderValue = value;
-                  if (value == 0.0) {
-                    _dueDateSelectorController.text = 'Use slider below';
-                  } else {
-                    _dueDateSelectorController.text =
-                        dateConversionString(value.toInt());
-                  }
-                });
-              } : null,
+              onChanged: selectedAssessment.name.isNotEmpty &&
+                      selectedRequestType == 'Extension'
+                  ? (double value) {
+                      setState(() {
+                        _currentSliderValue = value;
+                        if (value == 0.0) {
+                          _dueDateSelectorController.text = 'Use slider below';
+                        } else {
+                          _dueDateSelectorController.text =
+                              dateConversionString(value.toInt());
+                        }
+                      });
+                    }
+                  : null,
             ),
           ),
         );
       }
 
       // select supporting files
-      else if (field == 'Attachments'){
+      else if (field == 'Attachments') {
         attachments = SizedBox(
           width: 420,
           child: Column(
@@ -512,11 +518,9 @@ class _SpeconFormState extends State<SpeconForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Select supporting documents (use CTRL to select more files)",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary
-                    )
-                  ),
+                      "Select supporting documents (use CTRL to select more files)",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary)),
                 ],
               ),
               Row(
@@ -524,20 +528,19 @@ class _SpeconFormState extends State<SpeconForm> {
                 children: [
                   TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                          side: BorderSide(color: Theme.of(context).colorScheme.secondary
-                          )
-                        )
-                      )
-                    ),
+                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                            side: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.secondary)))),
                     onPressed: () async {
                       _selectedFiles = await selectFile();
                       _setDisplayFileName(_selectedFiles!.names.join("\n"));
                       _setShowClearButton(true);
                     },
-                    child: Text('Select Files', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary)
-                    ),
+                    child: Text('Select Files',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.secondary)),
                   ),
                   // display selected file names
                   Expanded(
@@ -548,8 +551,7 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayFileNames,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary
-                          ),
+                              color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
                     ),
@@ -559,7 +561,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   Visibility(
                     visible: _showClearButton,
                     child: TextButton(
-                      onPressed: (){
+                      onPressed: () {
                         _clearFileVariables();
                         _setShowClearButton(false);
                       }, //downloadAttachment,
@@ -569,9 +571,8 @@ class _SpeconFormState extends State<SpeconForm> {
                       child: Text(
                         'Clear',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.onPrimary
-                        ),
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ),
@@ -583,7 +584,7 @@ class _SpeconFormState extends State<SpeconForm> {
       }
 
       // select aap file
-      else if (field == 'AAP'){
+      else if (field == 'AAP') {
         aap = SizedBox(
           width: 420,
           // used to have expanded widget
@@ -593,11 +594,9 @@ class _SpeconFormState extends State<SpeconForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "If you have an AAP or want to update the existed one\nplease provide it down below",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary
-                    )
-                  ),
+                      "If you have an AAP or want to update the existed one\nplease provide it down below",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary)),
                 ],
               ),
               Row(
@@ -605,27 +604,20 @@ class _SpeconFormState extends State<SpeconForm> {
                 children: [
                   TextButton(
                     style: ButtonStyle(
-                      shape: MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary
-                          )
-                        )
-                      )
-                    ),
+                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                            side: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.secondary)))),
                     onPressed: () async {
                       // AAP document should only be one
                       _selectedAap = await selectSingleFile();
                       _setDisplayAapName(_selectedAap!.names.join());
                       _setAapUpdated(true);
                     },
-                    child: Text(
-                      'Select AAP',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.secondary
-                      )
-                    ),
+                    child: Text('Select AAP',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.secondary)),
                   ),
                   // display selected file names
                   Expanded(
@@ -636,8 +628,7 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayAapName,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary
-                          ),
+                              color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
                     ),
@@ -645,7 +636,7 @@ class _SpeconFormState extends State<SpeconForm> {
                   Visibility(
                     visible: _aapUpdated,
                     child: TextButton(
-                      onPressed: (){
+                      onPressed: () {
                         _undoAapSelection();
                         _setShowClearButton(false);
                       }, //downloadAttachment,
@@ -655,9 +646,8 @@ class _SpeconFormState extends State<SpeconForm> {
                       child: Text(
                         'Undo',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.onPrimary
-                        ),
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ),
@@ -673,8 +663,7 @@ class _SpeconFormState extends State<SpeconForm> {
         TextEditingController controller;
         if (field == 'Additional Information') {
           controller = _additionalInformationController;
-        }
-        else {
+        } else {
           controller = _reasonController;
         }
 
@@ -685,7 +674,8 @@ class _SpeconFormState extends State<SpeconForm> {
               enabled: true,
               maxLines: null,
               controller: controller,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
@@ -696,13 +686,11 @@ class _SpeconFormState extends State<SpeconForm> {
                 ),
                 labelText: field,
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 18
-                ),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 18),
                 floatingLabelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 22
-                ),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 22),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
@@ -760,11 +748,8 @@ class _SpeconFormState extends State<SpeconForm> {
                         widget.closeNewRequestForm();
                       });
                     },
-                    icon: const Icon(
-                      Icons.close,
-                      size: 40.0,
-                      color: Colors.white
-                    ),
+                    icon: const Icon(Icons.close,
+                        size: 40.0, color: Colors.white),
                   ),
                 ),
                 // Form title
@@ -823,20 +808,20 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
 
                 final request = RequestModel(
-                  requestedBy: widget.currentUser.name,
-                  requestedByStudentID: widget.currentUser.studentID,
-                  assessedBy: '',
-                  assessment: selectedAssessment,
-                  reason: _reasonController.text,
-                  additionalInfo: _additionalInformationController.text,
-                  state: 'Open',
-                  databasePath: '',
-                  timeSubmitted: DateTime.now(),
-                  requestType: selectedRequestType,
-                  daysExtending: daysExtending
-                );
+                    requestedBy: widget.currentUser.name,
+                    requestedByStudentID: widget.currentUser.studentID!,
+                    assessedBy: '',
+                    assessment: selectedAssessment,
+                    reason: _reasonController.text,
+                    additionalInfo: _additionalInformationController.text,
+                    state: 'Open',
+                    databasePath: '',
+                    timeSubmitted: DateTime.now(),
+                    requestType: selectedRequestType,
+                    daysExtending: daysExtending);
 
-                final docRef = await dataBase.submitRequest(widget.currentUser, selectedSubject, request);
+                final docRef = await dataBase.submitRequest(
+                    widget.currentUser, selectedSubject, request);
                 request.databasePath = docRef.path;
                 request.timeSubmitted = DateTime.now();
                 widget.closeNewRequestForm();
@@ -845,10 +830,10 @@ class _SpeconFormState extends State<SpeconForm> {
                 widget.incrementCounter();
 
                 // upload selected files
-                if(_selectedFiles != null){
+                if (_selectedFiles != null) {
                   _uploadTask = uploadFile(docRef.id, _selectedFiles!);
                 }
-                if(_aapUpdated){
+                if (_aapUpdated) {
                   // right now hard coded to user jerrya 12345678
                   uploadFile("aRTMyP7HK7HV7RgOkMw6", _selectedAap!);
 

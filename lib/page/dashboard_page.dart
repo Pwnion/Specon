@@ -23,13 +23,8 @@ class Dashboard extends StatefulWidget {
   final UserType userType;
 
   const Dashboard(
-    {
-      Key? key,
-      this.canvasEmail,
-      this.canvasLogout,
-      required this.userType
-    }
-  ) : super(key: key);
+      {Key? key, this.canvasEmail, this.canvasLogout, required this.userType})
+      : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -134,7 +129,8 @@ class _DashboardState extends State<Dashboard> {
     });
 
     // If user is a student, and no student ID is found, prompt a popup
-    if(UserTypeUtils.convertString(role) == UserType.student && currentUser.studentID.isEmpty) {
+    if (UserTypeUtils.convertString(role) == UserType.student &&
+        currentUser.id.isEmpty) {
       askForStudentIDPopUp().then((value) {
         _database.setStudentID(value!);
         setState(() {
@@ -142,133 +138,131 @@ class _DashboardState extends State<Dashboard> {
         });
       });
     }
-
   }
 
   /// Function that builds a dialog to prompt a student to enter student ID
   Future<String?> askForStudentIDPopUp() {
-
     return showDialog<String>(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (_, setState) => AlertDialog(
-          title: Text(
-            "Please enter your Student ID",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.surface
-            )
-          ),
-          content: SizedBox(
-            width: 100.0,
-            height: 170.0,
-            child: Column(
-              children: [
-                // Enter StudentID
-                Form(
-                  key: studentIDFormKey,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your student id';
-                      } else if (value.length < minStudentIdLen) {
-                        return 'Please enter a valid student id';
-                      }
-                      return null;
-                    },
-                    enableInteractiveSelection: false,
-                    controller: studentIDController,
-                    style: const TextStyle(color: Colors.white54), // TODO: Color theme
-                    cursorColor: Theme.of(context).colorScheme.onSecondary,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          width: 0.5,
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => StatefulBuilder(
+              builder: (_, setState) => AlertDialog(
+                title: Text("Please enter your Student ID",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface)),
+                content: SizedBox(
+                  width: 100.0,
+                  height: 170.0,
+                  child: Column(
+                    children: [
+                      // Enter StudentID
+                      Form(
+                        key: studentIDFormKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your student id';
+                            } else if (value.length < minStudentIdLen) {
+                              return 'Please enter a valid student id';
+                            }
+                            return null;
+                          },
+                          enableInteractiveSelection: false,
+                          controller: studentIDController,
+                          style: const TextStyle(
+                              color: Colors.white54), // TODO: Color theme
+                          cursorColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                width: 0.5,
+                              ),
+                            ),
+                            labelText: 'Student ID',
+                            labelStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                fontSize: 18),
+                            floatingLabelStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                fontSize: 18),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xFFD78521),
+                                width: 1,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      labelText: 'Student ID',
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 18
-                      ),
-                      floatingLabelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 18
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFFD78521),
-                          width: 1,
+                      const SizedBox(height: 15.0),
+                      // Confirm StudentID
+                      Form(
+                        key: confirmStudentIDFormKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your student id again';
+                            } else if (value != studentIDController.text) {
+                              return 'Student id does not match the one entered above,\n please enter again';
+                            }
+                            return null;
+                          },
+                          enableInteractiveSelection: false,
+                          style: const TextStyle(
+                              color: Colors.white54), // TODO: Color theme
+                          cursorColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                width: 0.5,
+                              ),
+                            ),
+                            labelText: 'Confirm Student ID',
+                            labelStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                fontSize: 18),
+                            floatingLabelStyle: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                fontSize: 18),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xFFD78521),
+                                width: 1,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 15.0),
-                // Confirm StudentID
-                Form(
-                  key: confirmStudentIDFormKey,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your student id again';
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      if (!studentIDFormKey.currentState!.validate() ||
+                          !confirmStudentIDFormKey.currentState!.validate()) {
+                        return;
                       }
-                      else if (value != studentIDController.text) {
-                        return 'Student id does not match the one entered above,\n please enter again';
-                      }
-                      return null;
+                      Navigator.pop(context, studentIDController.text);
+                      studentIDController.clear();
                     },
-                    enableInteractiveSelection: false,
-                    style: const TextStyle(color: Colors.white54), // TODO: Color theme
-                    cursorColor: Theme.of(context).colorScheme.onSecondary,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          width: 0.5,
-                        ),
-                      ),
-                      labelText: 'Confirm Student ID',
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 18
-                      ),
-                      floatingLabelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                        fontSize: 18
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFFD78521),
-                          width: 1,
-                        ),
-                      ),
-                    ),
+                    child: const Text('Save'),
                   ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-
-                if (!studentIDFormKey.currentState!.validate() ||
-                    !confirmStudentIDFormKey.currentState!.validate()) {
-                  return;
-                }
-                Navigator.pop(context, studentIDController.text);
-                studentIDController.clear();
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        ),
-      )
-    );
+                ],
+              ),
+            ));
   }
 
   /// Function that determines which widget should be display in column 3
@@ -302,22 +296,21 @@ class _DashboardState extends State<Dashboard> {
     else {
       return Center(
         child: Text('Select a request',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.surface, fontSize: 25
-          )
-        ),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.surface, fontSize: 25)),
       );
     }
   }
 
-
   @override
   void initState() {
-    _database.getUserFromEmail(
-      _auth.currentUser != null ? _auth.currentUser!.email! : widget.canvasEmail!
-    ).then((user) {
+    _database
+        .getUserFromEmail(_auth.currentUser != null
+            ? _auth.currentUser!.email!
+            : widget.canvasEmail!)
+        .then((user) {
       _database.getEnrolledSubjects().then((subjects) {
-        if(!mounted) return;
+        if (!mounted) return;
         setState(() {
           subjectList = subjects;
           currentUser = user;
@@ -330,34 +323,24 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (!fetchingFromDB){
+    if (!fetchingFromDB) {
       return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 0.0,
             // Logo
             leading: InkWell(
-              onTap: () {},
-              child: const Center(
-                child: Text(
-                  'Specon',
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold
-                  )
-                )
-              )
-            ),
+                onTap: () {},
+                child: const Center(
+                    child: Text('Specon',
+                        style: TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.bold)))),
             leadingWidth: 110.0,
             // Subject code and name title
-            title: Text(
-              '${currentSubject.code} - ${currentSubject.name}',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-                fontSize: 20.0
-              )
-            ),
+            title: Text('${currentSubject.code} - ${currentSubject.name}',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
+                    fontSize: 20.0)),
             centerTitle: true,
             actions: [
               // Home Button
@@ -378,14 +361,12 @@ class _DashboardState extends State<Dashboard> {
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AssessmentManager(
-                            subject: currentSubject,
-                            refreshFn: setState,
-                          )
-                        )
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => AssessmentManager(
+                                    subject: currentSubject,
+                                    refreshFn: setState,
+                                  )));
                     },
                     child: const Icon(
                       Icons.document_scanner,
@@ -403,13 +384,10 @@ class _DashboardState extends State<Dashboard> {
                       onTap: () {
                         setState(() {
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => PermissionManager(
-                                currentSubject: currentSubject
-                              )
-                            )
-                          );
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => PermissionManager(
+                                      currentSubject: currentSubject)));
                         });
                       },
                       child: const Icon(
@@ -442,16 +420,14 @@ class _DashboardState extends State<Dashboard> {
                       child: Text(
                         currentUser.email,
                         style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                        ),
+                            color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Logout button
                     PopupMenuItem(
                       child: const Text('Logout'),
                       onTap: () {
-                        if(widget.canvasEmail != null) {
+                        if (widget.canvasEmail != null) {
                           widget.canvasLogout!();
                         } else {
                           _auth.signOut();
@@ -462,24 +438,19 @@ class _DashboardState extends State<Dashboard> {
                   tooltip: 'User Options',
                   iconSize: 50,
                   icon: CircleAvatar(
-                    backgroundColor:
-                    Theme.of(context).colorScheme.secondary,
-                    child: Text(
-                      currentUser.name[0],
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface
-                      )
-                    ),
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    child: Text(currentUser.name[0],
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface)),
                   ),
                 ),
               ),
             ],
           ),
           body: Stack(children: [
-            Row(
-              children: [
-                // Dashboard column 1
-                SizedBox(
+            Row(children: [
+              // Dashboard column 1
+              SizedBox(
                   width: 150.0,
                   child: Navigation(
                     openNewRequestForm: openNewRequestForm,
@@ -491,16 +462,15 @@ class _DashboardState extends State<Dashboard> {
                     getSelectedAssessment: getSelectedAssessment,
                     role: role,
                     setRole: setRole,
-                  )
-                ),
-                // Divider
-                VerticalDivider(
-                  color: Theme.of(context).colorScheme.surface,
-                  thickness: 1,
-                  width: 1,
-                ),
-                // Dashboard column 2
-                SizedBox(
+                  )),
+              // Divider
+              VerticalDivider(
+                color: Theme.of(context).colorScheme.surface,
+                thickness: 1,
+                width: 1,
+              ),
+              // Dashboard column 2
+              SizedBox(
                   width: 300.0,
                   child: requestWidget = Requests(
                     getCurrentSubject: getCurrentSubject,
@@ -510,25 +480,20 @@ class _DashboardState extends State<Dashboard> {
                     role: UserTypeUtils.convertString(role),
                     counter: counter,
                     selectedRequest: currentRequest,
-                  )
-                ),
-                // Divider
-                VerticalDivider(
-                  color: Theme.of(context).colorScheme.surface,
-                  thickness: 1,
-                  width: 1,
-                ),
-                // Dashboard column 3
-                Expanded(
-                  child: displayThirdColumn(currentUser),
-                )
-              ]
-            ),
-          ]
-        )
-      );
-    }
-    else {
+                  )),
+              // Divider
+              VerticalDivider(
+                color: Theme.of(context).colorScheme.surface,
+                thickness: 1,
+                width: 1,
+              ),
+              // Dashboard column 3
+              Expanded(
+                child: displayThirdColumn(currentUser),
+              )
+            ]),
+          ]));
+    } else {
       return const SizedBox(
         height: 100.0,
         width: 100.0,

@@ -37,7 +37,6 @@ class Requests extends StatefulWidget {
 }
 
 class _RequestsState extends State<Requests> {
-
   final List<String> filterSelectionsState = allRequestStateReadableValues();
   final _scrollController = ScrollController();
   final _nameSearchController = TextEditingController();
@@ -69,7 +68,7 @@ class _RequestsState extends State<Requests> {
 
     final List<RequestModel> filteredByState;
 
-    if (_dropdownValueState != 'All state') {
+    if (_dropdownValueState != RequestState.all.toReadable()) {
       filteredByState = _foundRequests.where((request) {
         return request.state == _dropdownValueState;
       }).toList();
@@ -89,8 +88,8 @@ class _RequestsState extends State<Requests> {
       // apply search logic, should change later or not?
       searchResult = _foundRequests.where((request) {
         return request.requestedBy
-          .toLowerCase()
-          .contains(_searchString.toLowerCase());
+            .toLowerCase()
+            .contains(_searchString.toLowerCase());
       }).toList();
     }
     _foundRequests = searchResult;
@@ -112,13 +111,17 @@ class _RequestsState extends State<Requests> {
     // Reset filter stuff after new subject is clicked
     if (widget.getCurrentSubject() != _currentSubject) {
       _currentSubject = widget.getCurrentSubject();
-      _dropdownValueState = widget.role == UserType.student ? 'All state' : filterSelectionsState.first;
+      _dropdownValueState = widget.role == UserType.student
+          ? RequestState.all.toReadable()
+          : filterSelectionsState.first;
       _nameSearchController.clear();
       _searchString = '';
 
       // Fetch requests from database
       fetchingRequests = true;
-      dataBase.getRequests(widget.currentUser, _currentSubject) .then((requests) {
+      dataBase
+          .getRequests(widget.currentUser, _currentSubject)
+          .then((requests) {
         setState(() {
           fetchingRequests = false;
           _allRequests = requests;
@@ -126,14 +129,16 @@ class _RequestsState extends State<Requests> {
       });
     }
     // New Request has been added
-    else if (counter != widget.counter){
+    else if (counter != widget.counter) {
       // Fetch requests from database
       fetchingRequests = true;
-      dataBase.getRequests(widget.currentUser, _currentSubject).then((requests) {
+      dataBase
+          .getRequests(widget.currentUser, _currentSubject)
+          .then((requests) {
         setState(() {
           fetchingRequests = false;
           _allRequests = requests;
-          counter ++;
+          counter++;
         });
       });
     }
@@ -144,7 +149,7 @@ class _RequestsState extends State<Requests> {
       _filterBySearch();
 
       return Scaffold(
-        body: Padding(
+          body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: Column(
           children: [
@@ -161,17 +166,17 @@ class _RequestsState extends State<Requests> {
                       _searchString = value;
                     });
                   },
-                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.surface),
                   cursorColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     labelText: 'Name',
                     floatingLabelBehavior: FloatingLabelBehavior.auto,
-                    labelStyle: TextStyle(color: Theme.of(context).colorScheme.surface),
-                    suffixIcon: Icon(
-                      Icons.search,
-                      color: Theme.of(context).colorScheme.surface
-                    ),
+                    labelStyle:
+                        TextStyle(color: Theme.of(context).colorScheme.surface),
+                    suffixIcon: Icon(Icons.search,
+                        color: Theme.of(context).colorScheme.surface),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -203,15 +208,14 @@ class _RequestsState extends State<Requests> {
                     iconDisabledColor: Theme.of(context).colorScheme.background,
                     focusColor: Theme.of(context).colorScheme.background,
                     style: TextStyle(
-                      color: statusFilterClicked
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.onBackground,
-                      fontSize: 12
-                    ),
+                        color: statusFilterClicked
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 12),
                     padding: const EdgeInsets.all(1),
                     value: _dropdownValueState,
                     items: filterSelectionsState
-                      .map<DropdownMenuItem<String>>((String state) {
+                        .map<DropdownMenuItem<String>>((String state) {
                       return DropdownMenuItem<String>(
                         value: state,
                         child: Text(state),
@@ -250,85 +254,92 @@ class _RequestsState extends State<Requests> {
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.only(right: 6.0),
                     child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          widget.openSubmittedRequest(_foundRequests[index]);
-                        });
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)
-                        ),
-                        color: widget.selectedRequest.databasePath == _foundRequests[index].databasePath ? Colors.white70 : Colors.white,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              // request first row
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const SizedBox(width: 4),
-                                  const Icon(Icons.album, size: 20.0),
-                                  const SizedBox(width: 12),
-                                  Text(_foundRequests[index].requestedBy),
-                                  // State Icons
-                                  Expanded(
-                                    child: Container(
-                                      padding: const EdgeInsets.only(right: 7.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          // Approved icon
-                                          Visibility(
-                                            visible: _foundRequests[index].state == 'Approved',
-                                            child: const Icon(
-                                              Icons.gpp_good_sharp,
-                                              color: Colors.green
+                        onTap: () {
+                          setState(() {
+                            widget.openSubmittedRequest(_foundRequests[index]);
+                          });
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          color: widget.selectedRequest.databasePath ==
+                                  _foundRequests[index].databasePath
+                              ? Colors.white70
+                              : Colors.white,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                // request first row
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.album, size: 20.0),
+                                    const SizedBox(width: 12),
+                                    Text(_foundRequests[index].requestedBy),
+                                    // State Icons
+                                    Expanded(
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.only(right: 7.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            // Approved icon
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
+                                                      'Approved',
+                                              child: const Icon(
+                                                  Icons.gpp_good_sharp,
+                                                  color: Colors.green),
                                             ),
-                                          ),
-                                          // Flagged icon
-                                          Visibility(
-                                            visible:_foundRequests[index].state == 'Flagged',
-                                            child: const Icon(
-                                              Icons.flag,
-                                              color: Colors.orange
+                                            // Flagged icon
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
+                                                      'Flagged',
+                                              child: const Icon(Icons.flag,
+                                                  color: Colors.orange),
                                             ),
-                                          ),
-                                          // Declined icon
-                                          Visibility(
-                                            visible: _foundRequests[index].state == 'Declined',
-                                            child: const Icon(
-                                              Icons.not_interested,
-                                              color: Colors.red
+                                            // Declined icon
+                                            Visibility(
+                                              visible:
+                                                  _foundRequests[index].state ==
+                                                      'Declined',
+                                              child: const Icon(
+                                                  Icons.not_interested,
+                                                  color: Colors.red),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10, bottom: 10),
-                              // bottom row
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(width: 8),
-                                  Text(_foundRequests[index].assessment.name),
-                                  const SizedBox(width: 8),
-                                  Text(_foundRequests[index].timeSinceSubmission()),
-                                  const SizedBox(width: 8),
-                                ],
+                              Container(
+                                margin:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
+                                // bottom row
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index].assessment.name),
+                                    const SizedBox(width: 8),
+                                    Text(_foundRequests[index]
+                                        .timeSinceSubmission()),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ),
+                            ],
+                          ),
+                        )),
                   ),
                 ),
               ),
@@ -340,13 +351,9 @@ class _RequestsState extends State<Requests> {
     // No subject is selected
     else if (_currentSubject.code.isEmpty) {
       return Center(
-        child: Text('Select a subject',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.surface,
-            fontSize: 25
-          )
-        )
-      );
+          child: Text('Select a subject',
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface, fontSize: 25)));
     }
     // Fetching requests from database
     else {
