@@ -31,7 +31,7 @@ class _AsmManagerState extends State<AsmManager> {
   /// [_foundRequestType] is used to update the SubjectModel.
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
-  final List<String> _addToDb = [];
+  final List<RequestType> _addToDb = [];
   final Map<String, String> _updateToDb = {};
 
   static final _db = DataBase();
@@ -98,6 +98,7 @@ class _AsmManagerState extends State<AsmManager> {
                         RequestType.importTypes();
                     setState(() {
                       _foundRequestType.addAll(importedTypes);
+                      _addToDb.addAll(importedTypes);
                     });
                   },
                   child: const Text('Import from Canvas'),
@@ -305,16 +306,17 @@ class _AsmManagerState extends State<AsmManager> {
   }
 
   void _addRequestTypeItem(String name, String requestType) {
+    final assessment = RequestType(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      type: requestType,
+    );
     setState(() {
-      _foundRequestType.add(RequestType(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: name,
-        type: requestType,
-      ));
+      _foundRequestType.add(assessment);
     });
 
     // add to temp stack
-    _addToDb.add(name);
+    _addToDb.add(assessment);
   }
 
   void _runFilter(String enteredKeyword) {

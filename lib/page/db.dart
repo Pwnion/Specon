@@ -153,13 +153,15 @@ class DataBase {
   }
 
   Future<void> createAssessment(
-      String subjectPath, String assessmentName) async {
+      String subjectPath, RequestType assessment) async {
     CollectionReference subjectRef =
         _db.doc(subjectPath).collection('assessments');
 
-    await subjectRef.add({
-      'assessments': assessmentName,
+    DocumentReference documentRef = await subjectRef.add({
+      'assessments': assessment.name,
     });
+
+    assessment.id = documentRef.id;
   }
 
   // Future<void> updateAssessmentName(String subjectID, String newName) async {

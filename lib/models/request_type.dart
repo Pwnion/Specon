@@ -8,7 +8,7 @@
 class RequestType {
   String name; // not final because we can change name
   final String type;
-  final String id;
+  String id;
   // final String databasePath;
 
   RequestType({
