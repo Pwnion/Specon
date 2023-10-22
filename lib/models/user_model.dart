@@ -1,5 +1,3 @@
-import 'package:specon/user_type.dart';
-
 class UserModel {
   final String id;
   final String name;

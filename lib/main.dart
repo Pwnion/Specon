@@ -16,6 +16,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'page/utility/landing_page.dart';
 import 'page/utility/loading_page.dart';
 import 'page/utility/error_page.dart';
+import 'page/onboarder.dart';
 
 late final String? email;
 
@@ -74,6 +75,7 @@ class _AppState extends State<App> {
 
   /// Determine which page to display based on the state of the initialisation.
   Widget _getPage() {
+
     if (_error) {
       return const Error();
     }
