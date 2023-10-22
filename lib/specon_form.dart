@@ -39,6 +39,7 @@ class SpeconForm extends StatefulWidget {
   State<SpeconForm> createState() => _SpeconFormState();
 }
 
+
 class _SpeconFormState extends State<SpeconForm> {
 
   static final List<String> _preFilledFieldTitles = [
@@ -107,8 +108,10 @@ class _SpeconFormState extends State<SpeconForm> {
   FilePickerResult? _selectedFiles;
   FilePickerResult? _selectedAap;
   String _displayFileNames = "no file selected";
-  String _displayAapName = "original aap"; // should change to existed one if exist
+  //String _originalAapName = "";
+  String _displayAapName = "";
   UploadTask? _uploadTask;
+  late final _originalAapName;
 
   void _setDisplayFileName(String name){
     setState(() {
@@ -120,11 +123,11 @@ class _SpeconFormState extends State<SpeconForm> {
       _displayAapName = name;
     });
   }
-  void _setAapUpdated(bool value){
-    setState(() {
-      _aapUpdated = value;
-    });
-  }
+  // void _setAapUpdated(bool value){
+  //   setState(() {
+  //     _aapUpdated = value;
+  //   });
+  // }
   void _setShowClearButton(bool value){
     setState(() {
       _showClearButton = value;
@@ -145,7 +148,7 @@ class _SpeconFormState extends State<SpeconForm> {
   void _undoAapSelection(){
     _selectedAap = null;
     setState(() {
-      _displayAapName = "original.pdf or none";
+      _displayAapName = "";
     });
   }
 
@@ -617,7 +620,7 @@ class _SpeconFormState extends State<SpeconForm> {
                       // AAP document should only be one
                       _selectedAap = await selectSingleFile();
                       _setDisplayAapName(_selectedAap!.names.join());
-                      _setAapUpdated(true);
+                      //_setAapUpdated(true);
                     },
                     child: Text(
                       'Select AAP',
@@ -636,14 +639,14 @@ class _SpeconFormState extends State<SpeconForm> {
                         child: Text(
                           _displayAapName,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary
+                              color: Theme.of(context).colorScheme.onPrimary
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   Visibility(
-                    visible: _aapUpdated,
+                    visible: _selectedAap != null,
                     child: TextButton(
                       onPressed: (){
                         _undoAapSelection();
@@ -658,6 +661,46 @@ class _SpeconFormState extends State<SpeconForm> {
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onPrimary
                         ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                          padding: const EdgeInsets.all(17.0),
+                          child: FutureBuilder<String>(
+                              future: _originalAapName,
+                              builder: (BuildContext context, AsyncSnapshot<String> snapshot){
+                                if(snapshot.hasData){
+                                  return Text(
+                                    "original AAP: ${snapshot.data!}",
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary
+                                    ),
+                                  );
+                                }else if(snapshot.hasError){
+                                  return Text(
+                                    "original AAP: no AAP found",
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary
+                                    ),
+                                  );
+                                } else{
+                                  return Text(
+                                    "Loading",
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onPrimary
+                                    ),
+                                  );
+                                }
+                              }
+                          )
                       ),
                     ),
                   ),
@@ -720,9 +763,16 @@ class _SpeconFormState extends State<SpeconForm> {
     return {'Form': textFormFields, 'Attachments': attachments, 'AAP': aap};
   }
 
+  void initAapNames()async{
+    _originalAapName = await getAapFileName(widget.currentUser.studentID);
+    print("after init $_originalAapName");
+  }
+
   @override
   void initState() {
-    subjectList = widget.getSubjectList();
+    super.initState();
+    _originalAapName = getAapFileName(widget.currentUser.studentID);
+  subjectList = widget.getSubjectList();
 
     for (final subject in subjectList) {
       subjectCodeList.add(subject.code);
@@ -731,8 +781,7 @@ class _SpeconFormState extends State<SpeconForm> {
     selectedSubject = widget.currentSubject;
     assessmentList = widget.currentSubject.assessments;
     assessmentNameList = RequestType.getAssessmentNames(assessmentList);
-
-    super.initState();
+    //initAapNames();
   }
 
   @override
@@ -741,6 +790,8 @@ class _SpeconFormState extends State<SpeconForm> {
     final List<Widget> textFields = form['Form'];
     final Widget attachments = form['Attachments'];
     final Widget aap = form['AAP'];
+    _displayAapName = "";
+
 
     return Scrollbar(
       thumbVisibility: true,
@@ -848,12 +899,13 @@ class _SpeconFormState extends State<SpeconForm> {
                 if(_selectedFiles != null){
                   _uploadTask = uploadFile(docRef.id, _selectedFiles!);
                 }
-                if(_aapUpdated){
-                  // right now hard coded to user jerrya 12345678
-                  uploadFile("aRTMyP7HK7HV7RgOkMw6", _selectedAap!);
+                if(_selectedAap != null){
+                  // delete old AAP then upload new AAP
+                  clearFolder(widget.currentUser.studentID);
+                  uploadFile(widget.currentUser.studentID, _selectedAap!);
 
                   // TODO: update aapPath for user after uploading aap
-                  _updateUserAapPath("aRTMyP7HK7HV7RgOkMw6");
+                  //_updateUserAapPath("aRTMyP7HK7HV7RgOkMw6");
                 }
                 // clear all variables\
                 _clearFileVariables();

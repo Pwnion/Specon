@@ -26,7 +26,11 @@ SERVER.get("/code", async (req, res) => {
     new Array<DocumentReference>()
   );
   await initUser(canvasUid, user);
-  await putUserInfoForLaunch(canvasUid, await getCourses(accessToken));
+  await putUserInfoForLaunch(
+    canvasUid,
+    res.locals.context!.context.label,
+    await getCourses(accountId, accessToken)
+  );
   return res.redirect(`/app?email=${email}`);
 });
 
