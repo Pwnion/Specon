@@ -8,7 +8,8 @@ import {
 } from "./constants";
 import {Assessments} from "./models/assessment";
 import {Courses} from "./models/course";
-import {Role, roleFromString} from "./models/role";
+import {Term} from "./models/term";
+import {cleanseRole} from "./role";
 
 const JSON_HEADERS = {"Content-Type": "application/json"};
 
@@ -98,15 +99,15 @@ async function getUserRoleInCourse(
   userId: number,
   courseId: number,
   accessToken: string
-): Promise<Role> {
+): Promise<string> {
   const data = await getEndpoint(`users/${userId}/courses`, accessToken);
   for (let i = 0; i < data.length; i++) {
     const courseData: any = data[i];
     if (courseData["id"] == courseId) {
-      return roleFromString(courseData["enrollments"][0]["type"]);
+      return courseData["enrollments"][0]["role"];
     }
   }
-  return Role.UNKNOWN;
+  return "Unknown";
 }
 
 async function getAssessmentsInCourse(
@@ -120,23 +121,51 @@ async function getAssessmentsInCourse(
   return Assessments.fromAPI(data);
 }
 
+async function getTermForAccount(
+  accountId: number,
+  termId: number,
+  accessToken: string
+): Promise<Term | null> {
+  const data = await getEndpoint(
+    `accounts/${accountId}/terms`,
+    accessToken
+  );
+  for (const termData of data["enrollment_terms"]) {
+    if (termData["id"] == termId) {
+      return Term.fromAPI(termData);
+    }
+  }
+  return null;
+}
+
 async function injectDataIntoCourses(
   courseData: any,
+  userId: string,
   accessToken: string
 ): Promise<void> {
   for (const data of courseData) {
+    const rootAccountId = data["root_account_id"];
+    let term: Term | null = null;
+    if (userId == "1" || userId == rootAccountId.toString()) {
+      term = await getTermForAccount(
+        rootAccountId,
+        data["enrollment_term_id"],
+        accessToken
+      );
+    }
+
     const roles: Map<string, string> = new Map<string, string>();
     const courseId = data["id"];
     const courseUserIds = await getUserIdsInCourse(courseId, accessToken);
     for (const userId of courseUserIds) {
-      const role: Role = await getUserRoleInCourse(
+      const role: string = await getUserRoleInCourse(
         userId,
         courseId,
         accessToken
       );
       roles.set(
         userId.toString(),
-        role.toString()
+        cleanseRole(role)
       );
     }
     const assessments: Assessments = await getAssessmentsInCourse(
@@ -145,12 +174,16 @@ async function injectDataIntoCourses(
     );
     data.assessments = assessments.data();
     data.roles = Object.fromEntries(roles);
+    data.term = term != null ? term.data() : null;
   }
 }
 
-async function getCourses(accessToken: string): Promise<Courses> {
+async function getCourses(
+  userId: string,
+  accessToken: string
+): Promise<Courses> {
   const data = await getEndpoint("courses", accessToken);
-  await injectDataIntoCourses(data, accessToken);
+  await injectDataIntoCourses(data, userId, accessToken);
   return Courses.fromAPI(data);
 }
 
