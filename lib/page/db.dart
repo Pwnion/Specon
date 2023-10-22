@@ -152,32 +152,23 @@ class DataBase {
     await assessmentsRef.update({'name': newName});
   }
 
+  Future<void> deleteAssessment(String assessmentPath) async {
+    DocumentReference assessmentsRef = _db.doc(assessmentPath);
+
+    await assessmentsRef.delete();
+  }
+
   Future<void> createAssessment(
       String subjectPath, RequestType assessment) async {
     CollectionReference subjectRef =
         _db.doc(subjectPath).collection('assessments');
 
     DocumentReference documentRef = await subjectRef.add({
-      'assessments': assessment.name,
+      'name': assessment.name,
     });
 
     assessment.id = documentRef.id;
   }
-
-  // Future<void> updateAssessmentName(String subjectID, String newName) async {
-//     try {
-//       await Firebase.initializeApp();
-//       FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-//       await firestore.collection('subjects').doc(subjectID).collection('assessments').doc(assessmentID).update({
-//         'name': newName,
-//       });
-
-//       notifyListeners();
-//     } catch (e) {
-//       print('Error updating assessment name: $e');
-//     }
-//   }
 
   Future<DocumentReference> submitRequest(
       UserModel user, SubjectModel subject, RequestModel request) async {

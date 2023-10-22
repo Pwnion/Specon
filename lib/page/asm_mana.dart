@@ -32,6 +32,7 @@ class _AsmManagerState extends State<AsmManager> {
   final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
   final List<RequestType> _addToDb = [];
+  final List<String> _deleteToDb = [];
   final Map<String, String> _updateToDb = {};
 
   static final _db = DataBase();
@@ -202,13 +203,20 @@ class _AsmManagerState extends State<AsmManager> {
   }
 
   Future<void> pushToDB() async {
+    // add
     for (final assessment in _addToDb) {
       await _db.createAssessment(widget.subject.databasePath, assessment);
     }
 
+    // update
     _updateToDb.forEach((subjectPath, newName) async {
       await _db.updateAssessmentName(subjectPath, newName);
     });
+
+    // delete
+    for (final assessmentPath in _deleteToDb) {
+      await _db.deleteAssessment(assessmentPath);
+    }
   }
 
   /// Helper function that updates the request name in real-time after an update.
@@ -303,6 +311,7 @@ class _AsmManagerState extends State<AsmManager> {
     setState(() {
       _foundRequestType.removeWhere((item) => item.id == id);
     });
+    _deleteToDb.add(id);
   }
 
   void _addRequestTypeItem(String name, String requestType) {
