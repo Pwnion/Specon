@@ -464,10 +464,21 @@ class DataBase {
     await Future.delayed(const Duration(seconds: 3)); // TODO
   }
 
-  ///
+  /// Function that initialises basic information for a subject onto the database
   Future<void> initialiseSubject(Map<String, dynamic> subjectInformation) async {
 
     final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get();
+
+    Map<String, String> roles = {};
+
+    for (final user in subjectInformation['roles'].keys.toList()){
+      if (subjectInformation['roles'][user] == 'Subject Coordinator') {
+        roles[user] = 'subject_coordinator';
+      }
+      else {
+        roles[user] = subjectInformation['roles'][user];
+      }
+    }
 
     if (findSubjectRef.docs.isNotEmpty) return;
 
@@ -475,10 +486,9 @@ class DataBase {
     final subjectID = await subjectsRef.add(
       {'name': subjectInformation['name'],
        'code': subjectInformation['code'],
-       'semester': '2', // TODO
-       'year': '2023', // TODO
-       'roles': subjectInformation['roles']}
-
+       'semester': subjectInformation['term']['name'],
+       'year': subjectInformation['term']['year'],
+       'roles': roles}
     );
 
     for(final userID in subjectInformation['roles'].keys.toList()) {
