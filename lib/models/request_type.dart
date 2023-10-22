@@ -8,7 +8,7 @@
 class RequestType {
   String name; // not final because we can change name
   final String type;
-  final String id;
+  String id;
 
   RequestType({
     required this.name,
@@ -16,17 +16,12 @@ class RequestType {
     required this.id,
   });
 
-  static final emptyAssessment = RequestType(
-    name: '',
-    type: '',
-    id: ''
-  );
+  static final emptyAssessment = RequestType(name: '', type: '', id: '');
 
   static List<String> getAssessmentNames(List<RequestType> assessments) {
-
     List<String> names = [];
 
-    for(final assessment in assessments){
+    for (final assessment in assessments) {
       names.add(assessment.name);
     }
 
