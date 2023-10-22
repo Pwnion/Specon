@@ -440,6 +440,10 @@ class DataBase {
 
   }
 
+  Future<void> syncDatabaseWithCanvas() async {
+    await Future.delayed(const Duration(seconds: 3));
+  }
+
 }
 
 ///
