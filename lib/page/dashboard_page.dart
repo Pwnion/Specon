@@ -6,13 +6,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
-import 'package:specon/page/db.dart';
+import 'package:specon/db.dart';
 import 'package:specon/specon_form.dart';
-import 'package:specon/page/asm_mana.dart';
-import 'package:specon/page/dashboard/navigation.dart';
-import 'package:specon/page/dashboard/requests.dart';
-import 'package:specon/page/dashboard/discussion.dart';
-import 'package:specon/page/permission.dart';
+import 'package:specon/page/assessment_manager_page.dart';
+import 'package:specon/page/dashboard/navigation_page.dart';
+import 'package:specon/page/dashboard/requests_page.dart';
+import 'package:specon/page/dashboard/discussion_page.dart';
+import 'package:specon/page/permission_manager_page.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
@@ -380,7 +380,7 @@ class _DashboardState extends State<Dashboard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AsmManager(
+                          builder: (_) => AssessmentManager(
                             subject: currentSubject,
                             refreshFn: setState,
                           )
@@ -405,7 +405,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => Permission(
+                              builder: (_) => PermissionManager(
                                 currentSubject: currentSubject
                               )
                             )

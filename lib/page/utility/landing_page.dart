@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:specon/page/verify_email_page.dart';
 
-import 'dashboard_page.dart';
+import '../dashboard_page.dart';
 import 'loading_page.dart';
-import 'login_page.dart';
+import '../login_page.dart';
 
-import '../user_type.dart';
+import '../../user_type.dart';
 
 class Landing extends StatefulWidget {
   final String? email;

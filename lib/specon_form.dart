@@ -12,7 +12,7 @@ import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'models/user_model.dart';
 
-import 'page/db.dart';
+import 'db.dart';
 import 'models/request_model.dart';
 import 'package:specon/storage.dart';
 

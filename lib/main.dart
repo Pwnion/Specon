@@ -13,9 +13,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
-import 'page/landing_page.dart';
-import 'page/loading_page.dart';
-import 'page/error_page.dart';
+import 'page/utility/landing_page.dart';
+import 'page/utility/loading_page.dart';
+import 'page/utility/error_page.dart';
 
 late final String? email;
 
@@ -30,11 +30,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
   runApp(const App());
-  doWidgetTests();
-}
-
-void doWidgetTests(){
-
 }
 
 class App extends StatefulWidget {
@@ -99,23 +94,26 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Specon',
-        theme: ThemeData.from(
-            useMaterial3: true,
-            colorScheme: const ColorScheme(
-                brightness: Brightness.dark,
-                primary: Color(0xFF385F71),
-                onPrimary: Color(0xFFD4D4D4),
-                secondary: Color(0xFFDF6C00),
-                onSecondary: Color(0xFFD4D4D4),
-                error: Color(0xFFB00020),
-                onError: Color(0xFFD4D4D4),
-                //background: Color(0xFF333333),
-                background: Color(0xFF222222),
-                onBackground: Color(0xFFD4D4D4),
-                surface: Color(0xFFD4D4D4),
-                onSurface: Color(0xFF000000))),
-        home: _getPage());
+      debugShowCheckedModeBanner: false,
+      title: 'Specon',
+      theme: ThemeData.from(
+        useMaterial3: true,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.dark,
+          primary: Color(0xFF385F71),
+          onPrimary: Color(0xFFD4D4D4),
+          secondary: Color(0xFFDF6C00),
+          onSecondary: Color(0xFFD4D4D4),
+          error: Color(0xFFB00020),
+          onError: Color(0xFFD4D4D4),
+          //background: Color(0xFF333333),
+          background: Color(0xFF222222),
+          onBackground: Color(0xFFD4D4D4),
+          surface: Color(0xFFD4D4D4),
+          onSurface: Color(0xFF000000)
+        )
+      ),
+      home: _getPage()
+    );
   }
 }

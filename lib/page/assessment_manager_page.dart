@@ -8,7 +8,7 @@ import '../models/request_type.dart';
 import '../widgets/request_item.dart';
 import 'package:specon/models/subject_model.dart';
 
-class AsmManager extends StatefulWidget {
+class AssessmentManager extends StatefulWidget {
   final SubjectModel subject;
   final Function refreshFn;
 
@@ -16,14 +16,14 @@ class AsmManager extends StatefulWidget {
   ///
   /// [subject] is the subject for which assessments are managed.
   /// [refreshFn] is a function to refresh the UI after updates.
-  const AsmManager({Key? key, required this.subject, required this.refreshFn})
+  const AssessmentManager({Key? key, required this.subject, required this.refreshFn})
       : super(key: key);
 
   @override
-  State<AsmManager> createState() => _AsmManagerState();
+  State<AssessmentManager> createState() => _AssessmentManagerState();
 }
 
-class _AsmManagerState extends State<AsmManager> {
+class _AssessmentManagerState extends State<AssessmentManager> {
   /// Lists to manage request types.
   ///
   /// [_requestTypesList] is for display purposes.
