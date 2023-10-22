@@ -404,6 +404,10 @@ class DataBase {
       await _db.doc(group.reference.path).delete();
     }
 
+    final subjectFields = await subjectRef.get();
+    Map<String, dynamic> roles = subjectFields['roles'];
+    roles.removeWhere((key, value) => value != 'subject_coordinator' && value != 'student');
+
     // Add new groups
     for (final group in groups) {
 
@@ -413,30 +417,26 @@ class DataBase {
         'users': FieldValue.arrayUnion(group['users']) // TODO:
       });
 
-      final subjectFields = await subjectRef.get();
-      Map<String, dynamic> roles = subjectFields['roles'];
-      roles.removeWhere((key, value) => value != 'subject_coordinator' && value != 'student');
-
       for(final user in group['users']){
 
         final userRef = await _db.collection('users').where('name', isEqualTo: user).get();
-        
+
         if (userRef.docs.isNotEmpty) {
 
           final userID = userRef.docs[0]['id'];
-
           roles[userID] = group['name'];
-          subjectRef.update({'roles': roles});
         }
       }
 
       for(final assessment in group['assessments'].keys.toList()){
         final assessmentID = assessmentsToID[assessment];
-        _db.doc(groupRef.path).collection('assessments').doc(assessmentID).set(
-          group['assessments'][assessment]
+        await _db.doc(groupRef.path).collection('assessments').doc(assessmentID).set(
+            group['assessments'][assessment]
         );
       }
     }
+
+    await subjectRef.update({'roles': roles});
 
   }
 
