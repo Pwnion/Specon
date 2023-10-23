@@ -175,7 +175,7 @@ class _NavigationState extends State<Navigation> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Display new request button only if user is a student
-          if (UserTypeUtils.convertString(widget.role) == UserType.student)
+          if (UserTypeUtils.convertString(widget.role) == UserType.student && widget.currentSubject.assessments.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
               child: OutlinedButton(

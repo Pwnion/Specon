@@ -301,6 +301,20 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         ),
       );
     }
+    else if (currentSubject.code.isNotEmpty && currentSubject.assessments.isEmpty) {
+      return Center(
+        child: SizedBox(
+          width: 460,
+          child: Text('This subject has not been initialised by the Subject Coordinator, you can submit a new request once it has been initialised',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+              fontSize: 20,
+            )
+          ),
+        ),
+      );
+    }
     // Nothing is selected, show 'select a request'
     else {
       return Center(

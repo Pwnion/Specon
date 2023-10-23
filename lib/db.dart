@@ -477,7 +477,7 @@ class DataBase {
   /// Function that initialises basic information for a subject onto the database
   Future<void> initialiseSubject(Map<String, dynamic> subjectInformation) async {
 
-    final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get();
+    final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get(); // TODO: semester and year
 
     Map<String, String> roles = {};
 
