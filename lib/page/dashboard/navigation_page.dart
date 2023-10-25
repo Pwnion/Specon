@@ -69,9 +69,10 @@ class _NavigationState extends State<Navigation> {
                 elevation: 0.0,
                 onPressed: () {
                   setState(() {
-
+                    // subject coordinator initialise -> trigger onboarder
                     if (subject.assessments.isEmpty &&
-                        UserTypeUtils.convertString(subject.roles[widget.currentUser.id]) ==
+                        UserTypeUtils.convertString(
+                                subject.roles[widget.currentUser.id]) ==
                             UserType.subjectCoordinator) {
                       Navigator.push(
                         context,
@@ -82,7 +83,43 @@ class _NavigationState extends State<Navigation> {
                           ),
                         ),
                       );
-                    } else {
+                    }
+
+                    // Other user type try to access subject not initialised -> trigger error page
+                    else if (subject.assessments.isEmpty &&
+                        UserTypeUtils.convertString(
+                                subject.roles[widget.currentUser.id]) !=
+                            UserType.subjectCoordinator) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .error)), // Set the title color to red
+                            content: Text(
+                                'Error accessing the subject, please contact subject coordinator',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onError)), // Set the content color to red
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+
+                    // accessing regularly
+                    else {
                       selectSubject(subject);
                       widget.setCurrentSubject(subject);
                       widget.setRole(subject, widget.currentUser);
@@ -121,7 +158,9 @@ class _NavigationState extends State<Navigation> {
                 child: Text(
                   "All",
                   style: TextStyle(
-                    color: widget.getSelectedAssessment() == 'All' ? Colors.orange : Theme.of(context).colorScheme.onPrimary,
+                    color: widget.getSelectedAssessment() == 'All'
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -143,7 +182,9 @@ class _NavigationState extends State<Navigation> {
                   child: Text(
                     assessment.name,
                     style: TextStyle(
-                      color: widget.getSelectedAssessment() == assessment.name ? Colors.orange : Theme.of(context).colorScheme.onPrimary,
+                      color: widget.getSelectedAssessment() == assessment.name
+                          ? Colors.orange
+                          : Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -165,7 +206,6 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!fetchingFromDB) {
       if (widget.currentSubject != selectedSubject) {
         selectedSubject = widget.currentSubject;
@@ -175,7 +215,8 @@ class _NavigationState extends State<Navigation> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Display new request button only if user is a student
-          if (UserTypeUtils.convertString(widget.role) == UserType.student && widget.currentSubject.assessments.isNotEmpty)
+          if (UserTypeUtils.convertString(widget.role) == UserType.student &&
+              widget.currentSubject.assessments.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
               child: OutlinedButton(
