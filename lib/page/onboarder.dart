@@ -11,11 +11,24 @@ class Onboarder extends StatefulWidget {
     required this.subject,
   }) : super(key: key);
 
+
   @override
   State<Onboarder> createState() => _OnboarderState();
 }
 
 class _OnboarderState extends State<Onboarder> {
+
+  var permanButtonEnabled = false;
+  var finishButtonEnabled = false;
+
+  bool isPermanButtonEnabled() {
+    return permanButtonEnabled;
+  }
+
+  bool isFinishButtonEnabled() {
+    return finishButtonEnabled;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +48,7 @@ class _OnboarderState extends State<Onboarder> {
             TextButton(
               onPressed: () {
                 setState(() {
+                  permanButtonEnabled = true;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -55,8 +69,9 @@ class _OnboarderState extends State<Onboarder> {
               child: const Text('Assessment Manager'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: !isPermanButtonEnabled() ? null : () => {
                 setState(() {
+                  finishButtonEnabled = true;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -65,8 +80,7 @@ class _OnboarderState extends State<Onboarder> {
                       ),
                     ),
                   );
-                });
-              },
+                })},
               style: ButtonStyle(
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
@@ -75,8 +89,30 @@ class _OnboarderState extends State<Onboarder> {
               ),
               child: const Text('Permissions Manager'),
             ),
+
+        TextButton(
+          onPressed: !isFinishButtonEnabled() ? null : () => {
+            setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PermissionManager(
+                    currentSubject: widget.subject,
+                  ),
+                ),
+              );
+            })},
+
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: const BorderSide(color: Colors.blue, width: 1),
+            )),
+          ),
+          child: const Text('Finish'),)
           ],
         ),
+
       ),
     );
   }
