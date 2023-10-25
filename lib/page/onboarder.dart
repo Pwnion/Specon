@@ -66,11 +66,14 @@ class _OnboarderState extends State<Onboarder> {
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: const BorderSide(color: Colors.blue, width: 1),
+                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
                       )),
                     ),
-                    child: const Text('Assessment Manager'),
+                    child: const Text('Assessment Manager',
+                    style: TextStyle(color: Colors.white),
+                    ),
                   ),
+                  const SizedBox(width: 5),
                   TextButton(
                     onPressed: !isPermanButtonEnabled()
                         ? null
@@ -90,11 +93,16 @@ class _OnboarderState extends State<Onboarder> {
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: const BorderSide(color: Colors.blue, width: 1),
+                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
                       )),
+                      textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
                     ),
-                    child: const Text('Permissions Manager'),
+                    child: Text('Permissions Manager',
+                      style: isPermanButtonEnabled() ? TextStyle(color: Colors.white) : TextStyle(color: Colors.grey),
+                    ),
+
                   ),
+                  const SizedBox(width: 5),
                   TextButton(
                     onPressed: !isFinishButtonEnabled()
                         ? null
@@ -106,10 +114,13 @@ class _OnboarderState extends State<Onboarder> {
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: const BorderSide(color: Colors.blue, width: 1),
-                      )),
+                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
+                      ),),
+                      textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.lime)),
                     ),
-                    child: const Text('Finish'),
+                    child: Text('Finish',
+                      style: isFinishButtonEnabled() ? TextStyle(color: Colors.white) : TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ],
               ),
