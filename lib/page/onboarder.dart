@@ -93,14 +93,7 @@ class _OnboarderState extends State<Onboarder> {
         TextButton(
           onPressed: !isFinishButtonEnabled() ? null : () => {
             setState(() {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PermissionManager(
-                    currentSubject: widget.subject,
-                  ),
-                ),
-              );
+              Navigator.pop(context);
             })},
 
           style: ButtonStyle(

@@ -16,7 +16,7 @@ class SubjectModel {
     assessments: [],
     semester: '',
     year: '',
-    databasePath: ''
+    databasePath: '',
   );
 
   SubjectModel(
