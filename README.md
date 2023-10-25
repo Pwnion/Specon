@@ -43,10 +43,7 @@ Specon can be fully integrated with Canvas LMS to provide a seamless experience 
 
 Acknowledgements:
 We would like to acknowledge the following technologies and frameworks that were used in the development of Specon:
-Firebase - Backend as a service
-Flutter|Dart - Framework and language
-Canvas LMS - Integration to Canvas
-
+Firebase, Flutter|Dart, Canvas LMS.
 
 
 
