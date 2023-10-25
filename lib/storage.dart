@@ -8,6 +8,9 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:requests/requests.dart';
+import 'package:file_saver/file_saver.dart';
+import 'dart:html' as html;
 
 
 final _storage = FirebaseStorage.instance;
@@ -52,6 +55,12 @@ Future<String> getAapFileName(String dataPath) async {
   }
 }
 
+void _downloadFile(String url) {
+  html.AnchorElement anchorElement =  new html.AnchorElement(href: url);
+  anchorElement.download = url;
+  anchorElement.click();
+}
+
 void clearFolder(String dataPath) async{
   try{
     var folder = await _documentsRef.child(dataPath).listAll();
@@ -89,7 +98,7 @@ void downloadFilesToMemory (String dataPath) async{
   for (var item in downloadList.items) {
     try {
       const oneHundredMegabyte = 100 * 1024 * 1024;
-      final Uint8List? data = await item.getData(oneHundredMegabyte);
+        final Uint8List? data = await item.getData(oneHundredMegabyte);
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
     }
@@ -106,11 +115,19 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
     for (var item in aapList.items) {
       try {
         //File downloadPath = File("$dir/${item.name}");
-        Uri url = Uri.parse(await item.getDownloadURL());
+        //Uri url = Uri.parse(await item.getDownloadURL());
 
-        if (!await launchUrl(url)) {
-          throw Exception('Could not launch $url');
-        }
+        // if (!await launchUrl(url)) {
+        //   throw Exception('Could not launch $url');
+        // }
+
+        String url = await item.getDownloadURL();
+        //Requests.get(url, verify: false);
+
+        // Uint8List? data = await item.getData();
+        // await FileSaver.instance.saveFile(name: item.name, bytes: data);
+
+        _downloadFile(url);
 
       } on FirebaseException catch (e2) {
         print("Failed with error '${e2.code}': ${e2.message}");
@@ -124,11 +141,19 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
   for (var item in downloadList.items) {
     try {
       //File downloadPath = File("$dir/${item.name}");
-      Uri url = Uri.parse(await item.getDownloadURL());
+      // Uri url = Uri.parse(await item.getDownloadURL());
+      //
+      // if (!await launchUrl(url)) {
+      //   throw Exception('Could not launch $url');
+      // }
+      String url = await item.getDownloadURL();
+      //Requests.get(url, verify: false);
 
-      if (!await launchUrl(url)) {
-        throw Exception('Could not launch $url');
-      }
+      // Uint8List? data = await item.getData();
+      // await FileSaver.instance.saveFile(name: item.name, bytes: data);
+      // launchUrl(url)
+
+      _downloadFile(url);
 
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
