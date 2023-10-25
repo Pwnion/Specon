@@ -51,6 +51,7 @@ class _DiscussionState extends State<Discussion> {
   bool _showClearButton = false;
   FilePickerResult? _selectedFiles;
   String _displayFileNames = "";
+  RequestModel? _lastRequest;
 
   void _setDisplayFileName(String name){
     setState(() {
@@ -194,15 +195,25 @@ class _DiscussionState extends State<Discussion> {
     );
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    _initializeThread();
+    _lastRequest = widget.currentRequest;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
 
     DocumentReference requestRef = FirebaseFirestore.instance.doc(widget.currentRequest.databasePath);
+    if(_lastRequest != widget.currentRequest){
+      _initializeThread();
+      _lastRequest = widget.currentRequest;
+    }
 
     // Fetch discussions from the database
     //discussionThread = [];
-    _initializeThread();
 
     if (!fetchingFromDB) {
       return Scaffold(
