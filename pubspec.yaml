@@ -40,6 +40,8 @@ dependencies:
   file_picker: ^5.5.0
   url_launcher: ^6.1.14
   firebase_app_check: ^0.2.1
+  requests: ^4.7.0
+  file_saver: ^0.2.6
 
 dev_dependencies:
   flutter_test:
