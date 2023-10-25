@@ -219,7 +219,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
     // delete
     for (final assessmentPath in _deleteToDb) {
-      await _db.deleteAssessment(assessmentPath);
+      await _db.deleteAssessment(widget.subject.databasePath, assessmentPath);
     }
   }
 
