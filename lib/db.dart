@@ -8,6 +8,7 @@ import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
 import 'package:specon/models/request_model.dart';
+import 'package:collection/collection.dart';
 
 import 'models/canvas_data_model.dart';
 
@@ -529,6 +530,11 @@ class DataBase {
           canvasStudentsOnly.removeWhere((key, value) => value != 'student');
 
           Map<String, dynamic> updatedStudents = {...databaseStudentsRemoved, ...canvasStudentsOnly};
+
+          // If no changes, don't have to check anymore
+          if (const DeepCollectionEquality().equals(databaseRoles, updatedStudents)) {
+            continue;
+          }
 
           // Update subjects array in each user
           for(final userID in updatedStudents.keys.toList()){
