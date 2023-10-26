@@ -5,12 +5,13 @@
 /// Author: Kuo Wei Wu
 
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 import 'package:requests/requests.dart';
 import 'package:file_saver/file_saver.dart';
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 
 final _storage = FirebaseStorage.instance;
@@ -114,6 +115,15 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
     final aapList = await _documentsRef.child(aapPath).listAll();
     for (var item in aapList.items) {
       try {
+        // Uint8List? data = await item.getData();
+        // if(data != null){
+        //   Blob blob = Blob(data);
+        //   String urlString = html.Url.createObjectUrl(blob);
+        //   Uri urlUri = Uri.parse(urlString.toString());
+        //   launchUrl(urlUri);
+        // }
+
+
         //File downloadPath = File("$dir/${item.name}");
         //Uri url = Uri.parse(await item.getDownloadURL());
 
@@ -121,13 +131,14 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
         //   throw Exception('Could not launch $url');
         // }
 
-        String url = await item.getDownloadURL();
+        //String url = await item.getDownloadURL();
         //Requests.get(url, verify: false);
 
         // Uint8List? data = await item.getData();
         // await FileSaver.instance.saveFile(name: item.name, bytes: data);
 
-        _downloadFile(url);
+        // String url = await item.getDownloadURL();
+        // _downloadFile(url);
 
       } on FirebaseException catch (e2) {
         print("Failed with error '${e2.code}': ${e2.message}");
@@ -140,19 +151,39 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
   // download everything in the attachments folder (exclude aap)
   for (var item in downloadList.items) {
     try {
-      //File downloadPath = File("$dir/${item.name}");
+      Uint8List? data = await item.getData();
+      if(data != null){
+        //html.Blob blob = html.Blob(data);
+        //var urlString = html.Url.createObjectUrlFromBlob(blob);
+
+        //html.window.open(urlString, item.name); doesnt work
+
+        // doesnt work but shouldve?
+        // final anchor = html.AnchorElement(href: urlString)
+        //   ..target = 'blank' // To open in a new tab
+        //   ..click();
+
+        //html.Url.revokeObjectUrl(urlString);
+      }
+
+      // 1st working method but currently disabling url launcher cuz of bug
       // Uri url = Uri.parse(await item.getDownloadURL());
       //
       // if (!await launchUrl(url)) {
       //   throw Exception('Could not launch $url');
       // }
-      String url = await item.getDownloadURL();
+
+
+      //String url = await item.getDownloadURL();
       //Requests.get(url, verify: false);
 
+      // doesnt work
       // Uint8List? data = await item.getData();
       // await FileSaver.instance.saveFile(name: item.name, bytes: data);
       // launchUrl(url)
 
+      //works
+      String url = await item.getDownloadURL();
       _downloadFile(url);
 
     } on FirebaseException catch (e) {
