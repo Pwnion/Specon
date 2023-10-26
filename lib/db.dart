@@ -251,12 +251,20 @@ class DataBase {
   Future<List<SubjectModel>> getEnrolledSubjects() async {
     List<SubjectModel> subjects = [];
 
+    final userRef = _db.collection('users').doc(user!.uuid);
+
     for (final subject in user!.subjects) {
       DocumentReference docRef = FirebaseFirestore.instance.doc(subject.path);
 
       final assessments = await getAssessments(subject.path);
 
-      await docRef.get().then((DocumentSnapshot documentSnapshot) {
+      await docRef.get().then((DocumentSnapshot documentSnapshot) async {
+
+        // If user is no longer enrolled in a subject, remove from array
+        if (!documentSnapshot['roles'].keys.toList().contains(user!.id)) {
+          await userRef.update({'subjects': FieldValue.arrayRemove([docRef])});
+        }
+
         subjects.add(SubjectModel(
             name: documentSnapshot['name'],
             code: documentSnapshot['code'],
