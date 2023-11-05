@@ -30,6 +30,25 @@ class _OnboarderState extends State<Onboarder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          leading: BackButton(
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () {
+              // Navigate back to the previous screen.
+              Navigator.pop(context);
+            },
+          ),
+          title: Center(
+            child: Text(
+              "Welcome 🎉",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface,
+                fontSize: 50,
+              ),
+            ),
+          ),
+        ),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Center(
           child: Column(
@@ -66,11 +85,14 @@ class _OnboarderState extends State<Onboarder> {
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
+                        side: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 1),
                       )),
                     ),
-                    child: const Text('Assessment Manager',
-                    style: TextStyle(color: Colors.white),
+                    child: const Text(
+                      'Assessment Manager',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   const SizedBox(width: 5),
@@ -93,14 +115,19 @@ class _OnboarderState extends State<Onboarder> {
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
+                        side: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 1),
                       )),
-                      textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
+                      textStyle: MaterialStateProperty.all(
+                          const TextStyle(color: Colors.white)),
                     ),
-                    child: Text('Permissions Manager',
-                      style: isPermanButtonEnabled() ? TextStyle(color: Colors.white) : TextStyle(color: Colors.grey),
+                    child: Text(
+                      'Permissions Manager',
+                      style: isPermanButtonEnabled()
+                          ? TextStyle(color: Colors.white)
+                          : TextStyle(color: Colors.grey),
                     ),
-
                   ),
                   const SizedBox(width: 5),
                   TextButton(
@@ -112,14 +139,22 @@ class _OnboarderState extends State<Onboarder> {
                               })
                             },
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 1),
-                      ),),
-                      textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.lime)),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 1),
+                        ),
+                      ),
+                      textStyle: MaterialStateProperty.all(
+                          const TextStyle(color: Colors.lime)),
                     ),
-                    child: Text('Finish',
-                      style: isFinishButtonEnabled() ? TextStyle(color: Colors.white) : TextStyle(color: Colors.grey),
+                    child: Text(
+                      'Finish',
+                      style: isFinishButtonEnabled()
+                          ? TextStyle(color: Colors.white)
+                          : TextStyle(color: Colors.grey),
                     ),
                   ),
                 ],
