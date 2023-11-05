@@ -16,8 +16,8 @@ class Onboarder extends StatefulWidget {
 }
 
 class _OnboarderState extends State<Onboarder> {
-  var permanButtonEnabled = false;
-  var finishButtonEnabled = false;
+  late bool permanButtonEnabled = false; // Declare as class variable
+  late bool finishButtonEnabled = false; // Declare as class variable
 
   bool isPermanButtonEnabled() {
     return permanButtonEnabled;
@@ -70,7 +70,6 @@ class _OnboarderState extends State<Onboarder> {
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        permanButtonEnabled = true;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -80,6 +79,9 @@ class _OnboarderState extends State<Onboarder> {
                             ),
                           ),
                         );
+                        if (widget.subject.assessments.isNotEmpty) {
+                          permanButtonEnabled = true;
+                        }
                       });
                     },
                     style: ButtonStyle(
