@@ -5,6 +5,7 @@ class UserModel {
   final String id;
   final String name;
   final String email;
+  final String accessToken;
   final List<dynamic> subjects;
   String studentID;
   final CanvasData canvasData;
@@ -14,6 +15,7 @@ class UserModel {
     required this.id,
     required this.name,
     required this.email,
+    required this.accessToken,
     required this.subjects,
     required this.studentID,
     required this.canvasData

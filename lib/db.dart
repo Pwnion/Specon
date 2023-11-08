@@ -35,6 +35,7 @@ class DataBase {
         uuid: fetchedUser.id,
         id: fetchedUser["id"],
         email: fetchedUser["email"],
+        accessToken: fetchedUser["access_token"],
         name: fetchedUser["name"],
         subjects: fetchedUser["subjects"],
         studentID: fetchedUser["student_id"],

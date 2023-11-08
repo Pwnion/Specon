@@ -209,17 +209,19 @@ async function getCourses(
 }
 
 async function createAssignmentOverride(
-  userId: number,
+  accountId: number,
   courseId: number,
   assignmentId: number,
-  newDate: Date,
+  newDate: string,
   accessToken: string
-): Promise<void> {
-  await postEndpoint(
+): Promise<Response> {
+  return await postEndpoint(
     `courses/${courseId}/assignments/${assignmentId}/overrides`,
     {
-      "assignment_override[student_ids][]": userId.toString(),
-      "assignment_override[due_at]": newDate.toISOString(),
+      assignment_override: {
+        student_ids: [accountId],
+        due_at: newDate,
+      },
     },
     accessToken
   );
