@@ -42,6 +42,7 @@ dependencies:
   firebase_app_check: ^0.2.1
   requests: ^4.7.0
   file_saver: ^0.2.6
+  cloud_functions: ^4.5.3
 
 dev_dependencies:
   flutter_test:

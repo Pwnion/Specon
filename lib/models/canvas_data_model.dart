@@ -5,7 +5,7 @@ class CanvasData {
 
   static CanvasData fromDB(final List<dynamic> subjects) {
     return CanvasData._(
-        subjects.map((subject) => subject as Map<String, dynamic>).toList()
+      subjects.map((subject) => subject as Map<String, dynamic>).toList()
     );
   }
 }

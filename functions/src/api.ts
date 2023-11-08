@@ -22,18 +22,52 @@ function getCodeUrl(canvasUid: string): string {
   ].join("");
 }
 
-async function requestAccessToken(code: string): Promise<Map<string, string>> {
-  const tokenResponse: Response = await fetch(ACCESS_TOKEN_ENDPOINT, {
+async function getEndpoint(
+  endpointUrl: string,
+  accessToken: string
+): Promise<any> {
+  const response: Response = await fetch(
+    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
+      headers: {Authorization: `Bearer ${accessToken}`},
+    }
+  );
+
+  return await response.json();
+}
+
+function getAuthJsonHeaders(accessToken: string): HeadersInit {
+  const headers: HeadersInit = new Headers(JSON_HEADERS);
+  headers.set("Authorization", `Bearer ${accessToken}`);
+  return headers;
+}
+
+async function postEndpoint(
+  endpointUrl: string,
+  params: object,
+  accessToken: string | null
+): Promise<Response> {
+  const headers = accessToken == null ?
+    JSON_HEADERS : getAuthJsonHeaders(accessToken);
+
+  return await fetch(`${CANVAS_URL}/api/v1/${endpointUrl}`, {
     method: "POST",
-    headers: JSON_HEADERS,
-    body: JSON.stringify({
+    headers: headers,
+    body: JSON.stringify(params),
+  });
+}
+
+async function requestAccessToken(code: string): Promise<Map<string, string>> {
+  const tokenResponse: Response = await postEndpoint(
+    ACCESS_TOKEN_ENDPOINT.substring(CANVAS_URL.length),
+    {
       grant_type: "authorization_code",
       client_id: API_CLIENT_ID,
       client_secret: process.env.API_KEY,
       redirect_uri: API_REDIRECT_URL,
       code: code,
-    }),
-  });
+    },
+    null
+  );
 
   const tokenData = await tokenResponse.json();
   return new Map<string, string>(Object.entries({
@@ -57,19 +91,6 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 
   const data = await response.json();
   return data["access_token"];
-}
-
-async function getEndpoint(
-  endpointUrl: string,
-  accessToken: string
-): Promise<any> {
-  const response: Response = await fetch(
-    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
-      headers: {Authorization: `Bearer ${accessToken}`},
-    }
-  );
-
-  return await response.json();
 }
 
 async function getProfile(
@@ -187,6 +208,25 @@ async function getCourses(
   return Courses.fromAPI(data);
 }
 
+async function createAssignmentOverride(
+  accountId: number,
+  courseId: number,
+  assignmentId: number,
+  newDate: string,
+  accessToken: string
+): Promise<Response> {
+  return await postEndpoint(
+    `courses/${courseId}/assignments/${assignmentId}/overrides`,
+    {
+      assignment_override: {
+        student_ids: [accountId],
+        due_at: newDate,
+      },
+    },
+    accessToken
+  );
+}
+
 export {
   getCodeUrl,
   requestAccessToken,
@@ -195,4 +235,5 @@ export {
   getUserIdsInCourse,
   getUserRoleInCourse,
   getCourses,
+  createAssignmentOverride,
 };

@@ -9,7 +9,6 @@ import {
 import {User} from "./models/user";
 import {Courses} from "./models/course";
 
-
 const app: App = initializeApp();
 const db: Firestore = getFirestore(app);
 
