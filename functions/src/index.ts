@@ -1,4 +1,5 @@
 import {onRequest} from "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import {LTI} from "./lti";
 import {SERVER} from "./server";
 import {createAssignmentOverride} from "./api";
@@ -30,5 +31,11 @@ export const assignmentOverride = onRequest(
     res.status(200).send({
       data: await response.json(),
     });
+  }
+);
+
+export const sendEmailSummaries = onSchedule(
+  "every day 18:00", async (event) => {
+    console.log(event);
   }
 );

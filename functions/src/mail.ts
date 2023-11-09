@@ -1,5 +1,35 @@
 /* eslint-disable max-len */
 
+import {User} from "./models/user";
+import {Course} from "./models/course";
+
+enum UserType {
+  STUDENT,
+  STAFF
+}
+
+function mapUsersToCoursesAndRoles(
+  users: Array<User>,
+  courses: Array<Course>
+): Array<Map<User, Course>> {
+  const data: Array<Map<User, Course>> = [
+    new Map<User, Course>(),
+    new Map<User, Course>(),
+  ];
+
+  for (const user of users) {
+    for (const course of courses) {
+      const roles: Map<string, string> = course.roles;
+      const role: string | undefined = roles.get(user.id);
+      if (role == null) continue;
+      const index: number = role == "student" ? UserType.STUDENT : UserType.STAFF;
+      data[index].set(user, course);
+    }
+  }
+
+  return data;
+}
+
 // getSummary(final String test) async{
 //     String number_open = await _subjectRequestSummary(['COMP10001'], true);
 //     String individualSubjectSummary = await _subjectRequestSummary(['COMP10001'], false);

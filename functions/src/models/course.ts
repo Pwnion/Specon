@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import {DocumentData, DocumentSnapshot} from "firebase-admin/firestore";
+
 class Course {
   uuid: string;
   id: number;
@@ -36,6 +38,19 @@ class Course {
       data["term"] as Map<string, string>,
       data["roles"] as Map<string, string>,
       data["assessments"] as Array<Map<string, string>>
+    );
+  }
+
+  static fromDB(snapshot: DocumentSnapshot): Course {
+    const data: DocumentData = snapshot.data()!;
+    return new Course(
+      snapshot.id,
+      data["id"],
+      data["name"],
+      data["code"],
+      data["term"],
+      data["roles"],
+      data["assessments"]
     );
   }
 

@@ -5,14 +5,17 @@ import {
   CollectionReference,
   DocumentReference,
   DocumentSnapshot,
+  QuerySnapshot,
 } from "firebase-admin/firestore";
 import {User} from "./models/user";
-import {Courses} from "./models/course";
+import {Course, Courses} from "./models/course";
+import {Request} from "./models/request";
 
 const app: App = initializeApp();
 const db: Firestore = getFirestore(app);
 
 const usersRef: CollectionReference = db.collection("users");
+const coursesRef: CollectionReference = db.collection("subjects");
 
 async function doesUserExist(uid: string): Promise<boolean> {
   const userSnapshot: DocumentSnapshot = await usersRef.doc(uid).get();
@@ -25,7 +28,28 @@ async function initUser(uid: string, user: User): Promise<void> {
 
 async function getUser(uid: string): Promise<User> {
   const userSnapshot: DocumentSnapshot = await usersRef.doc(uid).get();
-  return User.fromDB(userSnapshot.data()!);
+  return User.fromDB(userSnapshot);
+}
+
+async function getUsers(): Promise<Array<User>> {
+  const usersSnapshot: QuerySnapshot = await usersRef.get();
+  return usersSnapshot.docs.map((userSnapshot) => {
+    return User.fromDB(userSnapshot);
+  });
+}
+
+async function getCourses(): Promise<Array<Course>> {
+  const coursesSnapshot: QuerySnapshot = await coursesRef.get();
+  return coursesSnapshot.docs.map((courseSnapshot) => {
+    return Course.fromDB(courseSnapshot);
+  });
+}
+
+async function countOpenRequests(courseUUID: string): Promise<number> {
+  const requestsSnapshot: QuerySnapshot =
+    await coursesRef.doc(courseUUID).collection("requests").get();
+
+  return requestsSnapshot.size;
 }
 
 async function updateAccessToken(
