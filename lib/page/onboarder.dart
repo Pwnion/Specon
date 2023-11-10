@@ -16,8 +16,8 @@ class Onboarder extends StatefulWidget {
 }
 
 class _OnboarderState extends State<Onboarder> {
-  late bool permanButtonEnabled = false; // Declare as class variable
-  late bool finishButtonEnabled = false; // Declare as class variable
+  late bool permanButtonEnabled = false;
+  late bool finishButtonEnabled = false;
 
   bool isPermanButtonEnabled() {
     return permanButtonEnabled;
@@ -30,39 +30,145 @@ class _OnboarderState extends State<Onboarder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          leading: BackButton(
-            color: Theme.of(context).colorScheme.surface,
-            onPressed: () {
-              // Navigate back to the previous screen.
-              Navigator.pop(context);
-            },
-          ),
-          title: Center(
-            child: Text(
-              "Welcome 🎉",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-                fontSize: 50,
-              ),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        leading: BackButton(
+          color: Theme.of(context).colorScheme.surface,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Center(
+          child: Text(
+            "Subject Onboarding",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+              fontSize: 18,
             ),
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
-        body: Center(
+      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.subject.name,
-                  style: const TextStyle(color: Colors.green)),
-              Text(widget.subject.code,
-                  style: const TextStyle(color: Colors.green)),
-              Text(widget.subject.semester,
-                  style: const TextStyle(color: Colors.green)),
-              Text(widget.subject.year,
-                  style: const TextStyle(color: Colors.green)),
+              Text(
+                "Welcome, Subject Coordinator!",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Subject Initialization:",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "To ensure a smooth start for the upcoming semester, please complete the following steps to initialize assessments and roles for the subject.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "1. Confirm Subject detail:",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Please make sure the following details are correct. If not, please contact the support team.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Subject Name: ${widget.subject.name}",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                "Subject Code: ${widget.subject.code}",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                "Subject Semester: ${widget.subject.semester}",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                "Subject Year: ${widget.subject.year}",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "2. Initialize Assessments:",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "To set up assessments for this subject, click the \"Assessment Manager\" button. Inside the manager, define assessments and click import.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "3. Assign Roles:",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "To define roles associated with this subject, click the \"Role Manager\" button. Inside the manager, specify role names and click the \"+\" button after each entry.",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Thank you for your cooperation in preparing for the upcoming semester!",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -85,19 +191,22 @@ class _OnboarderState extends State<Onboarder> {
                       });
                     },
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(
                             color: Theme.of(context).colorScheme.secondary,
-                            width: 1),
-                      )),
+                            width: 1,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Assessment Manager',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  SizedBox(width: 5),
                   TextButton(
                     onPressed: !isPermanButtonEnabled()
                         ? null
@@ -115,14 +224,18 @@ class _OnboarderState extends State<Onboarder> {
                               })
                             },
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(
                             color: Theme.of(context).colorScheme.secondary,
-                            width: 1),
-                      )),
+                            width: 1,
+                          ),
+                        ),
+                      ),
                       textStyle: MaterialStateProperty.all(
-                          const TextStyle(color: Colors.white)),
+                        TextStyle(color: Colors.white),
+                      ),
                     ),
                     child: Text(
                       'Permissions Manager',
@@ -131,7 +244,7 @@ class _OnboarderState extends State<Onboarder> {
                           : TextStyle(color: Colors.grey),
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  SizedBox(width: 5),
                   TextButton(
                     onPressed: !isFinishButtonEnabled()
                         ? null
@@ -145,12 +258,14 @@ class _OnboarderState extends State<Onboarder> {
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                           side: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                              width: 1),
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 1,
+                          ),
                         ),
                       ),
                       textStyle: MaterialStateProperty.all(
-                          const TextStyle(color: Colors.lime)),
+                        TextStyle(color: Colors.lime),
+                      ),
                     ),
                     child: Text(
                       'Finish',
@@ -163,6 +278,8 @@ class _OnboarderState extends State<Onboarder> {
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
