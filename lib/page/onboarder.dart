@@ -16,15 +16,25 @@ class Onboarder extends StatefulWidget {
 }
 
 class _OnboarderState extends State<Onboarder> {
-  late bool permanButtonEnabled = false;
-  late bool finishButtonEnabled = false;
+  bool _permanButtonEnabled = false;
+  bool _finishButtonEnabled = false;
 
-  bool isPermanButtonEnabled() {
-    return permanButtonEnabled;
+  bool _isPermanButtonEnabled() {
+    return _permanButtonEnabled;
   }
 
-  bool isFinishButtonEnabled() {
-    return finishButtonEnabled;
+  bool _isFinishButtonEnabled() {
+    return _finishButtonEnabled;
+  }
+
+  void _refreshFnAsmMan() {
+    _permanButtonEnabled = true;
+    setState(() {});
+  }
+
+  void _refreshFnPerMan() {
+    _finishButtonEnabled = true;
+    setState(() {});
   }
 
   @override
@@ -63,7 +73,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Subject Initialization:",
                 style: TextStyle(
@@ -72,7 +82,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "To ensure a smooth start for the upcoming semester, please complete the following steps to initialize assessments and roles for the subject.",
                 style: TextStyle(
@@ -80,7 +90,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 "1. Confirm Subject detail:",
                 style: TextStyle(
@@ -89,7 +99,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Please make sure the following details are correct. If not, please contact the support team.",
                 style: TextStyle(
@@ -97,36 +107,36 @@ class _OnboarderState extends State<Onboarder> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Subject Name: ${widget.subject.name}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.green,
                   fontSize: 16,
                 ),
               ),
               Text(
                 "Subject Code: ${widget.subject.code}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.green,
                   fontSize: 16,
                 ),
               ),
               Text(
                 "Subject Semester: ${widget.subject.semester}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.green,
                   fontSize: 16,
                 ),
               ),
               Text(
                 "Subject Year: ${widget.subject.year}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.green,
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 "2. Initialize Assessments:",
                 style: TextStyle(
@@ -135,7 +145,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "To set up assessments for this subject, click the \"Assessment Manager\" button. Inside the manager, define assessments and click import.",
                 style: TextStyle(
@@ -143,7 +153,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 "3. Assign Roles:",
                 style: TextStyle(
@@ -152,7 +162,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "To define roles associated with this subject, click the \"Role Manager\" button. Inside the manager, specify role names and click the \"+\" button after each entry.",
                 style: TextStyle(
@@ -160,7 +170,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 "Thank you for your cooperation in preparing for the upcoming semester!",
                 style: TextStyle(
@@ -168,7 +178,7 @@ class _OnboarderState extends State<Onboarder> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -182,12 +192,10 @@ class _OnboarderState extends State<Onboarder> {
                             builder: (_) => AssessmentManager(
                               subject: widget.subject,
                               refreshFn: setState,
+                              onboardRefreshFn: _refreshFnAsmMan,
                             ),
                           ),
                         );
-                        if (widget.subject.assessments.isNotEmpty) {
-                          permanButtonEnabled = true;
-                        }
                       });
                     },
                     style: ButtonStyle(
@@ -201,23 +209,23 @@ class _OnboarderState extends State<Onboarder> {
                         ),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Assessment Manager',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   TextButton(
-                    onPressed: !isPermanButtonEnabled()
+                    onPressed: !_isPermanButtonEnabled()
                         ? null
                         : () => {
                               setState(() {
-                                finishButtonEnabled = true;
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => PermissionManager(
                                       currentSubject: widget.subject,
+                                      onBoarderRefreshFn: _refreshFnPerMan,
                                     ),
                                   ),
                                 );
@@ -234,19 +242,19 @@ class _OnboarderState extends State<Onboarder> {
                         ),
                       ),
                       textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.white),
+                        const TextStyle(color: Colors.white),
                       ),
                     ),
                     child: Text(
                       'Permissions Manager',
-                      style: isPermanButtonEnabled()
-                          ? TextStyle(color: Colors.white)
-                          : TextStyle(color: Colors.grey),
+                      style: _isPermanButtonEnabled()
+                          ? const TextStyle(color: Colors.white)
+                          : const TextStyle(color: Colors.grey),
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   TextButton(
-                    onPressed: !isFinishButtonEnabled()
+                    onPressed: !_isFinishButtonEnabled()
                         ? null
                         : () => {
                               setState(() {
@@ -264,14 +272,14 @@ class _OnboarderState extends State<Onboarder> {
                         ),
                       ),
                       textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.lime),
+                        const TextStyle(color: Colors.lime),
                       ),
                     ),
                     child: Text(
                       'Finish',
-                      style: isFinishButtonEnabled()
-                          ? TextStyle(color: Colors.white)
-                          : TextStyle(color: Colors.grey),
+                      style: _isFinishButtonEnabled()
+                          ? const TextStyle(color: Colors.white)
+                          : const TextStyle(color: Colors.grey),
                     ),
                   ),
                 ],

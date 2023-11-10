@@ -13,13 +13,17 @@ import 'package:specon/models/subject_model.dart';
 class AssessmentManager extends StatefulWidget {
   final SubjectModel subject;
   final Function refreshFn;
+  final Function? onboardRefreshFn;
 
   /// Constructor for AsmManager widget.
   ///
   /// [subject] is the subject for which assessments are managed.
   /// [refreshFn] is a function to refresh the UI after updates.
   const AssessmentManager(
-      {Key? key, required this.subject, required this.refreshFn})
+      {Key? key,
+      required this.subject,
+      required this.refreshFn,
+      this.onboardRefreshFn})
       : super(key: key);
 
   @override
@@ -192,6 +196,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     _pushToDB();
                   }
                   widget.refreshFn(() {});
+
+                  // if check
+                  if (widget.onboardRefreshFn != null) {
+                    widget.onboardRefreshFn!();
+                  }
+
                   Navigator.pop(context);
                 }
               },
