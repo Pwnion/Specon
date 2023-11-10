@@ -77,10 +77,21 @@ class DataBase {
   }
 
   /// Function delete assessment through Assessment Manager to DB
-  Future<void> deleteAssessment(String assessmentPath) async {
+  Future<void> deleteAssessment(
+      String subjectPath, String assessmentPath) async {
     DocumentReference assessmentsRef = _db.doc(assessmentPath);
 
     await assessmentsRef.delete();
+
+    CollectionReference requestsRef =
+        _db.doc(subjectPath).collection('requests');
+
+    QuerySnapshot querySnapshot =
+        await requestsRef.where('assessment', isEqualTo: assessmentPath).get();
+
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
   }
 
   /// Function that fetches the requests for a subject based on a user's role
