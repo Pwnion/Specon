@@ -489,14 +489,21 @@ class DataBase {
 
     Map<String, String> roles = convertRoles(subjectInformation);
 
+    Map<String, String> studentAndCoordinator = {...roles};
+    Map<String, String> staff = {...roles};
+
+    studentAndCoordinator.removeWhere((key, value) => value != 'student' && value != 'subject_coordinator');
+    staff.removeWhere((key, value) => value == 'student' || value == 'subject_coordinator');
+
     final subjectsRef = _db.collection('subjects');
-    final subjectID = await subjectsRef.add(
-      {'name': subjectInformation['name'],
-       'code': subjectInformation['code'],
-       'semester': subjectInformation['term']['name'],
-       'year': subjectInformation['term']['year'],
-       'roles': roles}
-    );
+    final subjectID = await subjectsRef.add({
+      'name': subjectInformation['name'],
+      'code': subjectInformation['code'],
+      'semester': subjectInformation['term']['name'],
+      'year': subjectInformation['term']['year'],
+      'roles': roles,
+      'staff': staff
+    });
 
     for(final userID in subjectInformation['roles'].keys.toList()) {
 
@@ -651,7 +658,7 @@ class DataBase {
 
     return staff;
   }
-  
+
 }
 
 ///
