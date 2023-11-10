@@ -266,13 +266,14 @@ class DataBase {
         }
 
         subjects.add(SubjectModel(
-            name: documentSnapshot['name'],
-            code: documentSnapshot['code'],
-            roles: documentSnapshot['roles'],
-            assessments: assessments,
-            semester: documentSnapshot['semester'],
-            year: documentSnapshot['year'],
-            databasePath: subject.path));
+          id: documentSnapshot['id'],
+          name: documentSnapshot['name'],
+          code: documentSnapshot['code'],
+          roles: documentSnapshot['roles'],
+          assessments: assessments,
+          semester: documentSnapshot['semester'],
+          year: documentSnapshot['year'],
+          databasePath: subject.path));
       });
     }
 
@@ -510,9 +511,7 @@ class DataBase {
 
   /// Function to update subject's role (In case new student has enrolled in this subject),
   /// also updates each user's subjects array
-  Future<bool> updateSubjectRoles(List<SubjectModel> subjects) async {
-
-    bool changes = false;
+  Future<void> updateSubjectRoles(List<SubjectModel> subjects) async {
 
     for (final subject in subjects) {
 
@@ -526,9 +525,7 @@ class DataBase {
 
         for (final canvasSubject in user!.canvasData.subjects) {
 
-          if (canvasSubject['code'] == subject.code &&
-              canvasSubject['term']['name'] == subject.semester &&
-              canvasSubject['term']['year'] == subject.year) {
+          if (canvasSubject['id'] == subject.id) {
 
             final Map<String, dynamic> canvasRoles = canvasSubject['roles'];
 
@@ -620,50 +617,7 @@ class DataBase {
 
 
       }
-
-      // If staff or student is already in subject's database, skip
-      else if (databaseRoles.keys.toList().contains(user!.id) || databaseStaff.keys.toList().contains(user!.id)) {
-        continue;
-      }
-
-      // // If user is not in subject's database yet, add them into the roles map or staff map
-      // else {
-      //
-      //   changes = true;
-      //
-      //   for (final canvasSubject in user!.canvasData.subjects) {
-      //
-      //     if (subject.code == canvasSubject['code'] &&
-      //         subject.year == canvasSubject['term']['year'] &&
-      //         subject.semester == canvasSubject['term']['name']) {
-      //
-      //       final Map<String, String> canvasRoles = convertRoles(canvasSubject);
-      //       final String userRoleOnCanvas = canvasRoles[user!.id]!;
-      //
-      //       // If user is a student or subject coordinator, add them into roles map directly
-      //       if (userRoleOnCanvas == 'student' || userRoleOnCanvas == 'subject_coordinator') {
-      //         databaseRoles[user!.id] = userRoleOnCanvas;
-      //         await subjectRef.update({'roles': databaseRoles});
-      //         print('not staff');
-      //       }
-      //
-      //       // If user is a staff, add them into the staff map instead
-      //       else {
-      //         print('staff');
-      //         databaseStaff[user!.id] = userRoleOnCanvas;
-      //         await subjectRef.update({'staff': databaseStaff});
-      //       }
-      //     }
-      //     // _db.collection('users').doc(user!.uuid).update({'subjects': FieldValue.arrayUnion(sub)}) TODO
-      //   }
-      //
-      //   // Update subjects array in user
-      //   await _db.collection('users')
-      //     .doc(user!.uuid)
-      //     .update({'subjects': FieldValue.arrayUnion([subjectDoc.reference])});
-      // }
     }
-    return changes;
   }
 
   /// Function to convert Subject Coordinator and Student roles to subject_coordinator and student
@@ -697,8 +651,7 @@ class DataBase {
 
     return staff;
   }
-
-
+  
 }
 
 ///

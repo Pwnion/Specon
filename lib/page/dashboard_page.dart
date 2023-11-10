@@ -34,14 +34,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
-  SubjectModel currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '',
-      roles: {});
+  SubjectModel currentSubject = SubjectModel.emptySubject;
 
   RequestModel currentRequest = RequestModel.emptyRequest;
   bool newRequest = false;
