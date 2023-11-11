@@ -377,6 +377,24 @@ class _DiscussionState extends State<Discussion> {
     );
   }
 
+  ///
+  int? getAssessmentID() {
+
+    for(final subject in widget.currentUser.canvasData.subjects) {
+
+      if(subject['id'] == widget.currentSubject.id) {
+
+        for (final assessment in subject['assessments']) {
+
+          if (assessment['name'] == widget.currentRequest.assessment.name) {
+            return assessment['id'];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   @override
   void initState() {
     _initializeThread();
@@ -438,6 +456,11 @@ class _DiscussionState extends State<Discussion> {
                             visible: widget.currentRequest.state != "Approved",
                             child: TextButton(
                               onPressed: () {
+
+                                final int? assessmentID = getAssessmentID();
+
+                                if (assessmentID == null) return;
+
                                 // Show due date extension pop up
                                 if (widget.currentRequest.requestType == 'Extension') {
                                   _sliderValue = widget.currentRequest.daysExtending.toDouble();
@@ -452,7 +475,7 @@ class _DiscussionState extends State<Discussion> {
                                       createAssignmentOverride(
                                         await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
                                         widget.currentSubject.id,
-                                        2, // TODO: Waiting for drey
+                                        assessmentID,
                                         dateAfterExtension(_sliderValue.toInt()),
                                         widget.currentUser.accessToken
                                       );
