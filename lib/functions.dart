@@ -11,7 +11,7 @@ Future<String> createAssignmentOverride(
   final DateTime newDate,
   final String accessToken
 ) async {
-  final HttpsCallableResult response = await _fn.httpsCallable('assignmentOverride').call({
+  final HttpsCallableResult response = await _fn.httpsCallable('override').call({
     'userId': int.parse(userId),
     'courseId': courseId,
     'assignmentId': assignmentId,
@@ -19,4 +19,8 @@ Future<String> createAssignmentOverride(
     'accessToken': accessToken
   });
   return response.data.toString();
+}
+
+Future<void> sendStudentRequestConsideredEmail(final String to) async {
+  await _fn.httpsCallable('student').call({'to': to});
 }
