@@ -513,7 +513,7 @@ class DataBase {
       'code': subjectInformation['code'],
       'semester': subjectInformation['term']['name'],
       'year': subjectInformation['term']['year'],
-      'roles': roles,
+      'roles': studentAndCoordinator,
       'staff': staff
     });
 
