@@ -9,7 +9,6 @@ import {
 } from "firebase-admin/firestore";
 import {User} from "./models/user";
 import {Course, Courses} from "./models/course";
-import {Request} from "./models/request";
 
 const app: App = initializeApp();
 const db: Firestore = getFirestore(app);
@@ -47,7 +46,11 @@ async function getCourses(): Promise<Array<Course>> {
 
 async function countOpenRequests(courseUUID: string): Promise<number> {
   const requestsSnapshot: QuerySnapshot =
-    await coursesRef.doc(courseUUID).collection("requests").get();
+    await coursesRef
+      .doc(courseUUID)
+      .collection("requests")
+      .where("state", "==", "Open")
+      .get();
 
   return requestsSnapshot.size;
 }
@@ -75,10 +78,28 @@ async function putUserInfoForLaunch(
   });
 }
 
+async function sendEmail(
+  to: string,
+  subject: string,
+  body: string
+): Promise<void> {
+  await db.collection("mail").add({
+    to: [to],
+    message: {
+      subject: subject,
+      html: body,
+    },
+  });
+}
+
 export {
   doesUserExist,
   initUser,
   getUser,
+  getUsers,
+  getCourses,
+  countOpenRequests,
   updateAccessToken,
   putUserInfoForLaunch,
+  sendEmail,
 };

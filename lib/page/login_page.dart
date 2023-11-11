@@ -7,7 +7,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:specon/canvas.dart';
+import 'package:specon/functions.dart';
 
 import '../dialog/dialog_helper.dart';
 
@@ -51,6 +51,8 @@ class _LoginState extends State<Login> {
   /// address before being allowed to login, so as to not hijack another
   /// user's Canvas account.
   Future<void> _authenticate(String email, String password) async {
+    sendStudentRequestConsideredEmail('aden.m.mccusker@gmail.com');
+
     try {
       // Attempt to sign in with an already existing account.
       await _auth.signInWithEmailAndPassword(
