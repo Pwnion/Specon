@@ -10,7 +10,6 @@ const SERVER = express();
 
 SERVER.get("/code", async (req, res) => {
   const state: string = req.query.state as string;
-  console.log(state);
   const splitState: Array<string> = state.split(":");
   const canvasUid: string = splitState[0];
   const selectedCourseCode: string = splitState[1];
