@@ -28,8 +28,8 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-
-class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
+class _DashboardState extends State<Dashboard>
+    with SingleTickerProviderStateMixin {
   SubjectModel currentSubject = SubjectModel.emptySubject;
 
   RequestModel currentRequest = RequestModel.emptyRequest;
@@ -369,28 +369,30 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                 ),
               ),
 
-            ),
-            // Sync Button
-            // Assessment Manager Button
-            if (role == 'subject_coordinator')
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AssessmentManager(
-                        subject: currentSubject,
-                        refreshFn: setState,
-                      )
-                    )
-                  );
-                },
-                child: const Icon(
-                  Icons.document_scanner,
-                  size: 30.0,
+              // Sync Button
+              // Assessment Manager Button
+              if (role == 'subject_coordinator')
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AssessmentManager(
+                            subject: currentSubject,
+                            refreshFn: setState,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.document_scanner,
+                      size: 30.0,
+                    ),
+                  ),
                 ),
+
               // Permission Settings Button
               if (role == 'subject_coordinator')
                 Padding(
@@ -401,10 +403,13 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       onTap: () {
                         setState(() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => PermissionManager(
-                                      currentSubject: currentSubject)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PermissionManager(
+                                currentSubject: currentSubject,
+                              ),
+                            ),
+                          );
                         });
                       },
                       child: const Icon(
@@ -414,6 +419,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                     ),
                   ),
                 ),
+
               // Notification Button
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
@@ -425,6 +431,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                   ),
                 ),
               ),
+
               // Avatar Button
               Padding(
                 padding: const EdgeInsets.only(right: 10),
@@ -437,7 +444,9 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                       child: Text(
                         currentUser.email,
                         style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     // Logout button
@@ -456,9 +465,12 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
                   iconSize: 50,
                   icon: CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
-                    child: Text(currentUser.name[0],
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface)),
+                    child: Text(
+                      currentUser.name[0],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                    ),
                   ),
                 ),
               ),
