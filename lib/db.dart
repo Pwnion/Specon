@@ -671,6 +671,17 @@ class DataBase {
     return staff;
   }
 
+  ///
+  Future<String> getUserID(String name, String studentID) async {
+    
+    final userRef = await _db.collection('users')
+      .where('student_id', isEqualTo: studentID)
+      .where('name', isEqualTo: name)
+      .get();
+    
+    return userRef.docs[0]['id'];
+  }
+
 }
 
 ///
