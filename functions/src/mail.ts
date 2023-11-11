@@ -2,6 +2,13 @@ import {User} from "./models/user";
 import {Course} from "./models/course";
 import {countOpenRequests, getCourses, getUsers, sendEmail} from "./db";
 
+/**
+ * Maps staff users to the number of open requests they have for each course.
+ *
+ * @param users - An array of users.
+ * @param courses - An array of courses.
+ * @returns A mapping of users to courses and their open request counts.
+ */
 async function getStaffRequestCounts(
   users: Array<User>,
   courses: Array<Course>
@@ -23,6 +30,13 @@ async function getStaffRequestCounts(
   return data;
 }
 
+/**
+ * Generates a HTML summary of the number of open requests
+ * per course there are.
+ *
+ * @param courseRequestCounts - A mapping of courses to open request counts.
+ * @returns The HTML summary.
+ */
 function generateStaffSummary(
   courseRequestCounts: Map<Course, number>
 ): string {
@@ -37,6 +51,10 @@ function generateStaffSummary(
   ).join("<br><br>");
 }
 
+/**
+ * Send summaries of open requests for each course
+ * to every staff member.
+ */
 async function sendStaffEmails(): Promise<void> {
   const users: Array<User> = await getUsers();
   const courses: Array<Course> = await getCourses();
@@ -56,6 +74,12 @@ async function sendStaffEmails(): Promise<void> {
   }
 }
 
+/**
+ * Send an email to a student to notify them that
+ * one of their requests has been considered.
+ *
+ * @param to - The email address of the student.
+ */
 async function sendStudentEmail(to: string): Promise<void> {
   await sendEmail(
     to,

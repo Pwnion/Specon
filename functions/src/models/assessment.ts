@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/** Represents a Canvas assessment. */
 class Assessment {
   id: number;
   name: string;
   dueDate: string;
+
+  /**
+   * @param id - The assessment ID.
+   * @param name - The assessment name.
+   * @param dueDate - The assessment due date.
+   */
   constructor(
     id: number,
     name: string,
@@ -14,6 +21,12 @@ class Assessment {
     this.dueDate = dueDate;
   }
 
+  /**
+   * Creates an Assessment object from data retrieved from the Canvas API.
+   *
+   * @param data - Data from the Canvas API.
+   * @returns The resulting assessment object.
+   */
   static fromAPI(data: any): Assessment {
     return new Assessment(
       data["id"] as number,
@@ -22,6 +35,11 @@ class Assessment {
     );
   }
 
+  /**
+   * Converts the data in this assessment object to a plain object.
+   *
+   * @returns The assessment data in object form.
+   */
   data(): object {
     return {
       id: this.id,
@@ -31,13 +49,23 @@ class Assessment {
   }
 }
 
+/** Represents a collection of Canvas assessments. */
 class Assessments {
   contents: Array<Assessment>;
 
+  /**
+   * @param contents - An array of Canvas assessments.
+   */
   constructor(contents: Array<Assessment>) {
     this.contents = contents;
   }
 
+  /**
+   * Creates an Assessments object from data retrieved from the Canvas API.
+   *
+   * @param data - Data from the Canvas API.
+   * @returns The resulting assessments object.
+   */
   static fromAPI(data: any): Assessments {
     const assessments: Array<Assessment> = [];
     for (let i = 0; i < data.length; i++) {
@@ -46,6 +74,11 @@ class Assessments {
     return new Assessments(assessments);
   }
 
+  /**
+   * Converts the data in this assessments object to a plain object.
+   *
+   * @returns The assessments data in object form.
+   */
   data(): object[] {
     return this.contents.map(
       (assessment) => assessment.data()

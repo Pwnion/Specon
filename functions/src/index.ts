@@ -12,11 +12,15 @@ const REGION = "australia-southeast2";
 SERVER.use(LTI.app);
 
 // Deploy the Express server as a HTTP cloud function.
+// This is called by Canvas.
 export const lti = onRequest(
   {region: REGION, cors: true},
   SERVER
 );
 
+// Deploy a HTTP cloud function that overrides an
+// assignment due date for a specific user. This is
+// called by the Specon app.
 export const override = onRequest(
   {region: REGION, cors: true},
   async (req, res) => {
@@ -39,6 +43,9 @@ export const override = onRequest(
   }
 );
 
+// Deploy a HTTP cloud function that sends an email to
+// a student that one of their requests has been considered.
+// This is called by the Specon app.
 export const student = onRequest(
   {region: REGION, cors: true},
   async (req, res) => {
@@ -48,6 +55,9 @@ export const student = onRequest(
   }
 );
 
+// Run a cloud function every day at 6pm to
+// send staff a summary email if they have
+// open requests.
 export const staff = onSchedule(
   "every day 18:00", async () => {
     await sendStaffEmails();

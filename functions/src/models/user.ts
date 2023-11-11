@@ -4,6 +4,7 @@ import {
   DocumentSnapshot,
 } from "firebase-admin/firestore";
 
+/** Represents a Canvas user. */
 class User {
   id: string;
   name: string;
@@ -13,6 +14,15 @@ class User {
   refreshToken: string;
   subjects: Array<DocumentReference>;
 
+  /**
+   * @param id - The user account ID.
+   * @param name - The user's full name.
+   * @param email - The user's email address.
+   * @param studentID - The user's student ID.
+   * @param accessToken - The user's Canvas access token.
+   * @param refreshToken - The user's Canvas refresh token.
+   * @param subjects - The user's enrolled subjects.
+   */
   constructor(
     id: string,
     name: string,
@@ -31,6 +41,12 @@ class User {
     this.subjects = subjects;
   }
 
+  /**
+   * Creates a User object from data retrieved from the database.
+   *
+   * @param snapshot - Data from the database.
+   * @returns The resulting user object.
+   */
   static fromDB(snapshot: DocumentSnapshot): User {
     const data: DocumentData = snapshot.data()!;
     return new User(
@@ -44,6 +60,11 @@ class User {
     );
   }
 
+  /**
+   * Converts the data in this user object to a plain object.
+   *
+   * @returns The user data in object form.
+   */
   data(): object {
     return {
       id: this.id,
