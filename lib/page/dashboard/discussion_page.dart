@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
+import 'package:specon/request_state.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';
@@ -253,29 +254,38 @@ class _DiscussionState extends State<Discussion> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              acceptRequest(widget.currentRequest);
-                              updateLocalRequestState("Approved");
-                              widget.incrementCounter();
-                            },
-                            child: const Text('Accept'),
+                          Visibility(
+                            visible: widget.currentRequest.state != "Approved",
+                            child: TextButton(
+                              onPressed: () {
+                                acceptRequest(widget.currentRequest);
+                                updateLocalRequestState("Approved");
+                                widget.incrementCounter();
+                              },
+                              child: const Text('Accept', style: TextStyle(color: Colors.lightGreen),),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              declineRequest(widget.currentRequest);
-                              updateLocalRequestState("Declined");
-                              widget.incrementCounter();
-                            },
-                            child: const Text('Decline'),
+                          Visibility(
+                            visible: widget.currentRequest.state != "Declined",
+                            child: TextButton(
+                              onPressed: () {
+                                declineRequest(widget.currentRequest);
+                                updateLocalRequestState("Declined");
+                                widget.incrementCounter();
+                              },
+                              child: const Text('Decline', style: TextStyle(color: Colors.red)),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              flagRequest(widget.currentRequest);
-                              updateLocalRequestState("Flagged");
-                              widget.incrementCounter();
-                            },
-                            child: const Text('Flag'),
+                          Visibility(
+                            visible: widget.currentRequest.state != "Flagged",
+                            child: TextButton(
+                              onPressed: () {
+                                flagRequest(widget.currentRequest);
+                                updateLocalRequestState("Flagged");
+                                widget.incrementCounter();
+                              },
+                              child: const Text('Flag', style: TextStyle(color: Colors.orange)),
+                            ),
                           ),
                         ],
                       ),

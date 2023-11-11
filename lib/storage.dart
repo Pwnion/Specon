@@ -7,22 +7,18 @@
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:requests/requests.dart';
-import 'package:file_saver/file_saver.dart';
 import 'dart:html' as html;
 
 
 final _storage = FirebaseStorage.instance;
 final _storageRef = _storage.ref();
 final _documentsRef = _storageRef.child("documents");
-//PlatformFile? pickedFile;
 
 /// Make user's computer pop up a file window to select file
 Future<FilePickerResult?> selectFile() async{
   final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'txt'], // need change later
+      allowedExtensions: ['jpg', 'pdf', 'txt', 'png'],
       allowMultiple: true
   );
   if(result == null){
@@ -35,7 +31,7 @@ Future<FilePickerResult?> selectFile() async{
 Future<FilePickerResult?> selectSingleFile() async{
   final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'txt'],
+      allowedExtensions: ['jpg', 'pdf', 'txt', 'png'],
       allowMultiple: false
   );
   if(result == null){
@@ -48,6 +44,7 @@ Future<FilePickerResult?> selectSingleFile() async{
 Future<String> getAapFileName(String dataPath) async {
   try{
     var temp = await _documentsRef.child(dataPath).listAll();
+    // aap should only have 1 file
     return temp.items.first.name;
   } on FirebaseException catch (e2) {
     print("Failed with error '${e2.code}': ${e2.message}");
@@ -55,12 +52,14 @@ Future<String> getAapFileName(String dataPath) async {
   }
 }
 
+/// apply actual download mechanism
 void _downloadFile(String url) {
   html.AnchorElement anchorElement =  new html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
 }
 
+/// delete every file in the folder specify by [dataPath]
 void clearFolder(String dataPath) async{
   try{
     var folder = await _documentsRef.child(dataPath).listAll();
@@ -114,21 +113,8 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
     final aapList = await _documentsRef.child(aapPath).listAll();
     for (var item in aapList.items) {
       try {
-        //File downloadPath = File("$dir/${item.name}");
-        //Uri url = Uri.parse(await item.getDownloadURL());
-
-        // if (!await launchUrl(url)) {
-        //   throw Exception('Could not launch $url');
-        // }
-
         String url = await item.getDownloadURL();
-        //Requests.get(url, verify: false);
-
-        // Uint8List? data = await item.getData();
-        // await FileSaver.instance.saveFile(name: item.name, bytes: data);
-
         _downloadFile(url);
-
       } on FirebaseException catch (e2) {
         print("Failed with error '${e2.code}': ${e2.message}");
       }
@@ -137,24 +123,11 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
     print("Failed with error '${e1.code}': ${e1.message}");
   }
 
-  // download everything in the attachments folder (exclude aap)
+  // download everything in the attachments folder (not the aap folder)
   for (var item in downloadList.items) {
     try {
-      //File downloadPath = File("$dir/${item.name}");
-      // Uri url = Uri.parse(await item.getDownloadURL());
-      //
-      // if (!await launchUrl(url)) {
-      //   throw Exception('Could not launch $url');
-      // }
       String url = await item.getDownloadURL();
-      //Requests.get(url, verify: false);
-
-      // Uint8List? data = await item.getData();
-      // await FileSaver.instance.saveFile(name: item.name, bytes: data);
-      // launchUrl(url)
-
       _downloadFile(url);
-
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
     }
