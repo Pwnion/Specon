@@ -133,7 +133,7 @@ class DataBase {
           return subject['code'] == subjectCode;
         }, orElse: () => null);
 
-        if (matchingSubject != null || matchingSubject['assessments'] == []) {
+        if (matchingSubject != null) {
           // Cast the 'assessments' field to List<String>
           List<RequestType> returnList = [];
           List<dynamic> assessments = matchingSubject['assessments'];
@@ -146,33 +146,15 @@ class DataBase {
           return returnList;
         } else {
           // Print a message if the subject with the provided code is not found
-          print('Subject with code $subjectCode not found.');
-          return [
-            RequestType(id: '01', name: 'Project 1'),
-            RequestType(id: '02', name: 'Project 2'),
-            RequestType(id: '03', name: 'Mid Semester Test'),
-            RequestType(id: '04', name: 'Project 3'),
-          ];
+          return [];
         }
       } else {
         // Print a message if the document does not exist
-        print('User Launch Data Document does not exist.');
-        return [
-          RequestType(id: '01', name: 'Project 1'),
-          RequestType(id: '02', name: 'Project 2'),
-          RequestType(id: '03', name: 'Mid Semester Test'),
-          RequestType(id: '04', name: 'Project 3'),
-        ];
+        return [];
       }
     } catch (e) {
       // Handle any errors that may occur during the process
-      print('Error getting user launch data: $e');
-      return [
-        RequestType(id: '01', name: 'Project 1'),
-        RequestType(id: '02', name: 'Project 2'),
-        RequestType(id: '03', name: 'Mid Semester Test'),
-        RequestType(id: '04', name: 'Project 3'),
-      ];
+      return [];
     }
   }
 

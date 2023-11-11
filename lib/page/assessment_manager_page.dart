@@ -101,10 +101,24 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () async {
-                    List<RequestType> importedTypes = await test();
-                    // Import assessments from Canvas.
-                    // final List<RequestType> importedTypes =
-                    //     RequestType.importTypes();
+                    List<RequestType> importedTypes =
+                        await _db.importFromCanvas(widget.subject.code);
+
+                    if (importedTypes.isEmpty) {
+                      // Show error message if no assessments to import.
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Error: No assessments to found on Canvas.',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {}
                     setState(() {
                       _foundRequestType.addAll(importedTypes);
                       _addToDb.addAll(importedTypes);
@@ -232,11 +246,6 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     for (final assessmentPath in _deleteToDb) {
       await _db.deleteAssessment(widget.subject.databasePath, assessmentPath);
     }
-  }
-
-  Future<List<RequestType>> test() async {
-    List<RequestType> a = await _db.importFromCanvas(widget.subject.code);
-    return a;
   }
 
   /// Helper function that updates the request name in real-time after an update.
