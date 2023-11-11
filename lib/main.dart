@@ -46,8 +46,7 @@ class _AppState extends State<App> {
   /// Initialise and configure the Firebase backend for this app.
   Future<void> _initialiseFirebase() async {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-    );
+        options: DefaultFirebaseOptions.currentPlatform);
     // await FirebaseAppCheck.instance.activate(
     //   webProvider: ReCaptchaV3Provider(
     //     '6Lf9K60oAAAAADxORdfrt3A3p4IW3SuvgxC9H39N'
@@ -94,26 +93,23 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Specon',
-      theme: ThemeData.from(
-        useMaterial3: true,
-        colorScheme: const ColorScheme(
-          brightness: Brightness.dark,
-          primary: Color(0xFF385F71),
-          onPrimary: Color(0xFFD4D4D4),
-          secondary: Color(0xFFDF6C00),
-          onSecondary: Color(0xFFD4D4D4),
-          error: Color(0xFFB00020),
-          onError: Color(0xFFD4D4D4),
-          //background: Color(0xFF333333),
-          background: Color(0xFF222222),
-          onBackground: Color(0xFFD4D4D4),
-          surface: Color(0xFFD4D4D4),
-          onSurface: Color(0xFF000000)
-        )
-      ),
-      home: _getPage()
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Specon',
+        theme: ThemeData.from(
+            useMaterial3: true,
+            colorScheme: const ColorScheme(
+                brightness: Brightness.dark,
+                primary: Color(0xFF385F71),
+                onPrimary: Color(0xFFD4D4D4),
+                secondary: Color(0xFFDF6C00),
+                onSecondary: Color(0xFFD4D4D4),
+                error: Color(0xFFB00020),
+                onError: Color(0xFFD4D4D4),
+                //background: Color(0xFF333333),
+                background: Color(0xFF222222),
+                onBackground: Color(0xFFD4D4D4),
+                surface: Color(0xFFD4D4D4),
+                onSurface: Color(0xFF000000))),
+        home: _getPage());
   }
 }
