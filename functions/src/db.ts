@@ -45,12 +45,11 @@ async function getCourses(): Promise<Array<Course>> {
 }
 
 async function countOpenRequests(courseUUID: string): Promise<number> {
-  const requestsSnapshot: QuerySnapshot =
-    await coursesRef
-      .doc(courseUUID)
-      .collection("requests")
-      .where("state", "==", "Open")
-      .get();
+  const requestsSnapshot: QuerySnapshot = await coursesRef
+    .doc(courseUUID)
+    .collection("requests")
+    .where("state", "==", "Open")
+    .get();
 
   return requestsSnapshot.size;
 }

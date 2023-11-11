@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import {User} from "./models/user";
 import {Course} from "./models/course";
 import {countOpenRequests, getCourses, getUsers, sendEmail} from "./db";
@@ -8,14 +6,17 @@ async function getStaffRequestCounts(
   users: Array<User>,
   courses: Array<Course>
 ): Promise<Map<User, Map<Course, number>>> {
-  const data: Map<User, Map<Course, number>> = new Map<User, Map<Course, number>>();
+  const data: Map<User, Map<Course, number>> =
+    new Map<User, Map<Course, number>>();
+
   for (const user of users) {
-    data.set(user, new Map<Course, number>());
     for (const course of courses) {
       const roles: Map<string, string> = course.roles;
       const role: string | undefined = roles.get(user.id);
       if (role == null || role == "student") continue;
       const requestCount: number = await countOpenRequests(course.uuid);
+      if (requestCount == 0) continue;
+      if (!data.has(user)) data.set(user, new Map<Course, number>());
       data.get(user)!.set(course, requestCount);
     }
   }
@@ -46,11 +47,11 @@ async function sendStaffEmails(): Promise<void> {
     await sendEmail(
       user.email,
       "Specon Summary",
+      "<body><h2>Specon Summary</h2><br>" +
       [
-        "<body><h2>Specon Summary</h2><br><br>",
-        `${generateStaffSummary(courseRequestCounts)}<br><br>`,
-        "https://special-consideration.web.app/<body>",
-      ].join("")
+        `${generateStaffSummary(courseRequestCounts)}`,
+        "Visit https://special-consideration.web.app/ to review your open requests.</body>",
+      ].join("<br><br>")
     );
   }
 }

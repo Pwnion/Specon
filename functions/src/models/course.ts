@@ -49,7 +49,7 @@ class Course {
       data["name"],
       data["code"],
       data["term"],
-      data["roles"],
+      new Map<string, string>(Object.entries(data["roles"])),
       data["assessments"]
     );
   }
