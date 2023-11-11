@@ -33,14 +33,9 @@ class _PermissionManagerState extends State<PermissionManager> {
     'Waiver',
     'Others'
   ];
-  static final List<String> canvasUser = [
-    'Tawfiq Islam',
-    'Alex Zable',
-    'Brian Wu',
-    'Drey Nguyen',
-    'Lucas Chan',
-    'Geela Chee'
-  ]; // TODO: Should get from API
+  Map<String, String> canvasUserNames = {};
+  List<String> canvasUserIDs = [];
+  static late final Map<String, String> canvasUser;
   List<Map<String, dynamic>> permissionGroups = [];
   List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
@@ -48,7 +43,7 @@ class _PermissionManagerState extends State<PermissionManager> {
 
   /// Function that builds the group column (Column 2)
   List<Widget> buildUserColumn(final List users) {
-    return users.map((user) => Text(user)).toList();
+    return users.map((user) => Text(canvasUserNames[user]!)).toList();
   }
 
   /// Function that builds the checkboxes in column 3
@@ -227,7 +222,7 @@ class _PermissionManagerState extends State<PermissionManager> {
   }
 
   /// Function that builds the user management dialog for a user group
-  Future<List<String>?> buildUserManagementDialog(int currentGroupIndex) {
+  Future<List<dynamic>?> buildUserManagementDialog(int currentGroupIndex) {
     if (temporaryUserList.isEmpty) {
       setState(() {
         temporaryUserList =
@@ -235,7 +230,7 @@ class _PermissionManagerState extends State<PermissionManager> {
       });
     }
 
-    return showDialog<List<String>>(
+    return showDialog<List<dynamic>>(
       barrierDismissible: false,
       context: context,
       builder: (_) => StatefulBuilder(
@@ -250,24 +245,24 @@ class _PermissionManagerState extends State<PermissionManager> {
               controller: _addUserScrollController,
               child: ListView.builder(
                   controller: _addUserScrollController,
-                  itemCount: canvasUser.length,
+                  itemCount: canvasUserIDs.length,
                   shrinkWrap: true,
                   itemBuilder: (_, index) => ListTile(
-                      title: Text(canvasUser[index],
+                      title: Text(canvasUserNames[canvasUserIDs[index]]!,
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.surface)),
-                      subtitle: Text('Role on canvas : ???',
+                      subtitle: Text('Role on canvas : ${canvasUser[canvasUserIDs[index]]}',
                           style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
                                   .surface)), // TODO:
-                      trailing: temporaryUserList.contains(canvasUser[index])
+                      trailing: temporaryUserList.contains(canvasUserIDs[index])
                           ? IconButton(
                               icon: Icon(Icons.check_circle,
                                   color: Colors.green[700]),
                               onPressed: () {
                                 setState(() {
-                                  temporaryUserList.remove(canvasUser[index]);
+                                  temporaryUserList.remove(canvasUserIDs[index]);
                                 });
                               })
                           : IconButton(
@@ -275,7 +270,7 @@ class _PermissionManagerState extends State<PermissionManager> {
                                   color: Colors.grey),
                               onPressed: () {
                                 setState(() {
-                                  temporaryUserList.add(canvasUser[index]);
+                                  temporaryUserList.add(canvasUserIDs[index]);
                                 });
                               }))),
             ),
@@ -470,10 +465,17 @@ class _PermissionManagerState extends State<PermissionManager> {
   @override
   void initState() {
     _db.getPermissionGroups(widget.currentSubject).then((value) {
-      setState(() {
-        permissionGroups = deepCopy(value);
-        temporaryPermissionGroups = deepCopy(permissionGroups);
-        fetchingFromDB = false;
+      _db.getSubjectStaff(widget.currentSubject).then((staff) {
+        _db.getStaffNames(staff.keys.toList()).then((names) {
+          setState(() {
+            canvasUserNames = {...names};
+            canvasUser = {...staff};
+            canvasUser.forEach((key, value) {canvasUserIDs.add(key.toString());});
+            permissionGroups = deepCopy(value);
+            temporaryPermissionGroups = deepCopy(permissionGroups);
+            fetchingFromDB = false;
+          });
+        });
       });
     });
     super.initState();
