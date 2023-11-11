@@ -108,7 +108,7 @@ class DataBase {
     }
   }
 
-  Future<void> importFromCanvas(String subjectCode) async {
+  Future<List<String>?> importFromCanvas(String subjectCode) async {
     try {
       // Get the current user's email
       String? userEmail = await getCurrentUserEmail();
@@ -136,9 +136,13 @@ class DataBase {
           }, orElse: () => null);
 
           if (matchingSubject != null) {
+            // Cast the 'assessments' field to List<String>
+            List<String> assessments =
+                List<String>.from(matchingSubject['assessments']);
+
             // Print the assessments for the matching subject
-            List<dynamic> assessments = matchingSubject['assessments'];
-            print('Assessments for $subjectCode: $assessments');
+            print(assessments);
+            return assessments;
           } else {
             // Print a message if the subject with the provided code is not found
             print('Subject with code $subjectCode not found.');

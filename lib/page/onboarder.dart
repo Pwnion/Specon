@@ -30,7 +30,8 @@ class _OnboarderState extends State<Onboarder> {
   }
 
   void test() async {
-    await _db.importFromCanvas(widget.subject.code);
+    List<String>? a = await _db.importFromCanvas(widget.subject.code);
+    print(a);
   }
 
   void _refreshFnAsmMan() {
