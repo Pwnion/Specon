@@ -16,7 +16,6 @@ import 'package:specon/page/permission_manager_page.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/widgets/spinning_syncing_icon.dart';
 
 class Dashboard extends StatefulWidget {
   final String? canvasEmail;
@@ -29,16 +28,9 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard>
-    with SingleTickerProviderStateMixin {
-  SubjectModel currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '',
-      roles: {});
+
+class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
+  SubjectModel currentSubject = SubjectModel.emptySubject;
 
   RequestModel currentRequest = RequestModel.emptyRequest;
   bool newRequest = false;
@@ -290,7 +282,7 @@ class _DashboardState extends State<Dashboard>
           currentRequest: currentRequest,
           currentUser: currentUser,
           role: role,
-          subjectCode: currentSubject.code,
+          currentSubject: currentSubject,
           incrementCounter: incrementCounter,
           closeSubmittedRequest: closeSubmittedRequest,
         ),
@@ -376,42 +368,28 @@ class _DashboardState extends State<Dashboard>
                   ),
                 ),
               ),
-              // Sync Button
-              if (role == 'subject_coordinator')
-                Padding(
-                  padding: const EdgeInsets.only(right: 15.0),
-                  child: Tooltip(
-                    message: 'Sync with Canvas',
-                    child: AnimatedSync(
-                      animation: rotateAnimation,
-                      callback: () async {
-                        controller.forward();
-                        await _database.syncDatabaseWithCanvas();
-                        controller.stop();
-                        controller.reset();
-                      },
-                    ),
-                  ),
-                ),
-              // Assessment Manager Button
-              if (role == 'subject_coordinator')
-                Padding(
-                  padding: const EdgeInsets.only(right: 15.0),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => AssessmentManager(
-                                    subject: currentSubject,
-                                    refreshFn: setState,
-                                  )));
-                    },
-                    child: const Icon(
-                      Icons.document_scanner,
-                      size: 30.0,
-                    ),
-                  ),
+
+            ),
+            // Sync Button
+            // Assessment Manager Button
+            if (role == 'subject_coordinator')
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssessmentManager(
+                        subject: currentSubject,
+                        refreshFn: setState,
+                      )
+                    )
+                  );
+                },
+                child: const Icon(
+                  Icons.document_scanner,
+                  size: 30.0,
                 ),
               // Permission Settings Button
               if (role == 'subject_coordinator')

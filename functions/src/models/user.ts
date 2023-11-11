@@ -1,4 +1,8 @@
-import {DocumentReference, DocumentData} from "firebase-admin/firestore";
+import {
+  DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
+} from "firebase-admin/firestore";
 
 class User {
   id: string;
@@ -27,7 +31,8 @@ class User {
     this.subjects = subjects;
   }
 
-  static fromDB(data: DocumentData): User {
+  static fromDB(snapshot: DocumentSnapshot): User {
+    const data: DocumentData = snapshot.data()!;
     return new User(
       data["id"],
       data["name"],

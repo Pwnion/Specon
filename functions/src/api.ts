@@ -13,26 +13,13 @@ import {cleanseRole} from "./role";
 
 const JSON_HEADERS = {"Content-Type": "application/json"};
 
-function getCodeUrl(canvasUid: string): string {
+function getCodeUrl(canvasUid: string, selectedCourseCode: string): string {
   return [
     `${CANVAS_URL}/login/oauth2/auth?`,
     `client_id=${API_CLIENT_ID}&`,
-    `response_type=code&state=${canvasUid}&`,
+    `response_type=code&state=${canvasUid}:${selectedCourseCode}&`,
     `redirect_uri=${API_REDIRECT_URL}`,
   ].join("");
-}
-
-async function getEndpoint(
-  endpointUrl: string,
-  accessToken: string
-): Promise<any> {
-  const response: Response = await fetch(
-    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
-      headers: {Authorization: `Bearer ${accessToken}`},
-    }
-  );
-
-  return await response.json();
 }
 
 function getAuthJsonHeaders(accessToken: string): HeadersInit {
@@ -41,35 +28,50 @@ function getAuthJsonHeaders(accessToken: string): HeadersInit {
   return headers;
 }
 
+async function getEndpoint(
+  endpointUrl: string,
+  accessToken: string
+): Promise<any> {
+  const response: Response = await fetch(
+    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
+      headers: getAuthJsonHeaders(accessToken),
+    }
+  );
+  return await response.json();
+}
+
 async function postEndpoint(
   endpointUrl: string,
   params: object,
   accessToken: string | null
-): Promise<Response> {
+): Promise<any> {
   const headers = accessToken == null ?
     JSON_HEADERS : getAuthJsonHeaders(accessToken);
 
-  return await fetch(`${CANVAS_URL}/api/v1/${endpointUrl}`, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(params),
-  });
+  const response: Response = await fetch(
+    endpointUrl, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(params),
+    }
+  );
+
+  return await response.json();
 }
 
 async function requestAccessToken(code: string): Promise<Map<string, string>> {
-  const tokenResponse: Response = await postEndpoint(
-    ACCESS_TOKEN_ENDPOINT.substring(CANVAS_URL.length),
+  const tokenData = await postEndpoint(
+    ACCESS_TOKEN_ENDPOINT,
     {
       grant_type: "authorization_code",
       client_id: API_CLIENT_ID,
-      client_secret: process.env.API_KEY,
+      client_secret: process.env.API_KEY!,
       redirect_uri: API_REDIRECT_URL,
       code: code,
     },
     null
   );
 
-  const tokenData = await tokenResponse.json();
   return new Map<string, string>(Object.entries({
     accountId: tokenData["user"]["id"].toString(),
     accessToken: tokenData["access_token"],
@@ -214,9 +216,12 @@ async function createAssignmentOverride(
   assignmentId: number,
   newDate: string,
   accessToken: string
-): Promise<Response> {
+): Promise<any> {
   return await postEndpoint(
-    `courses/${courseId}/assignments/${assignmentId}/overrides`,
+    [
+      `${CANVAS_URL}/api/v1/courses/${courseId}/`,
+      `assignments/${assignmentId}/overrides`,
+    ].join(""),
     {
       assignment_override: {
         student_ids: [accountId],
