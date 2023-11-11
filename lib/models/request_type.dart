@@ -28,6 +28,10 @@ class RequestType {
     return names;
   }
 
+  // // fake request types
+  // static Future<List<String>?> importTypes(String subjectCode) async{
+  //   return await _db.importFromCanvas(subjectCode);
+  // }
   // fake request types
   static List<RequestType> importTypes() {
     return [

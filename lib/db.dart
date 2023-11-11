@@ -11,6 +11,8 @@ import 'package:specon/models/request_model.dart';
 
 import 'models/canvas_data_model.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class DataBase {
   final _db = FirebaseFirestore.instance;
 
@@ -43,6 +45,116 @@ class DataBase {
 
     user = userModel;
     return userModel;
+  }
+
+  Future<String?> getCurrentUserEmail() async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    return user?.email;
+  }
+
+  Future<String?> getDocumentIdByEmail(String email) async {
+    try {
+      // Reference to the Firestore collection
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+
+      // Query for the document with the specified email
+      QuerySnapshot querySnapshot =
+          await users.where('email', isEqualTo: email).get();
+
+      // Check if a document with the given email exists
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the document ID of the first matching document
+        return querySnapshot.docs.first.id;
+      } else {
+        // Return null if no document is found
+        return null;
+      }
+    } catch (e) {
+      // Handle any errors that may occur during the process
+      print('Error getting document ID by email: $e');
+      return null;
+    }
+  }
+
+  Future<String?> getUserLaunchDataPath() async {
+    try {
+      // Get the current user's email
+      String? userEmail = await getCurrentUserEmail();
+
+      // Check if user email is available
+      if (userEmail != null) {
+        // Get the document ID corresponding to the user's email
+        String? documentId = await getDocumentIdByEmail(userEmail);
+
+        // Check if document ID is available
+        if (documentId != null) {
+          // Return the combined path
+          return '/users/$documentId/launch/data';
+        } else {
+          // Return null if document ID is not found
+          return null;
+        }
+      } else {
+        // Return null if user email is not found
+        return null;
+      }
+    } catch (e) {
+      // Handle any errors that may occur during the process
+      print('Error getting user launch data path: $e');
+      return null;
+    }
+  }
+
+  Future<void> importFromCanvas(String subjectCode) async {
+    try {
+      // Get the current user's email
+      String? userEmail = await getCurrentUserEmail();
+      String? userID = await getDocumentIdByEmail(userEmail!);
+
+      // Check if user email is available
+      if (userEmail != null) {
+        // Get the document corresponding to the user's email in the "launch" collection
+        DocumentSnapshot userDocument = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userID)
+            .collection('launch')
+            .doc('data')
+            .get();
+
+        // Check if the document exists
+        if (userDocument.exists) {
+          // Extract the 'subjects' field
+          List<dynamic> subjects = userDocument['subjects'];
+
+          // Find the subject with the provided subject code
+          Map<String, dynamic>? matchingSubject =
+              subjects.firstWhere((subject) {
+            return subject['code'] == subjectCode;
+          }, orElse: () => null);
+
+          if (matchingSubject != null) {
+            // Print the assessments for the matching subject
+            List<dynamic> assessments = matchingSubject['assessments'];
+            print('Assessments for $subjectCode: $assessments');
+          } else {
+            // Print a message if the subject with the provided code is not found
+            print('Subject with code $subjectCode not found.');
+          }
+        } else {
+          // Print a message if the document does not exist
+          print('User Launch Data Document does not exist.');
+        }
+      } else {
+        // Print a message if user email is not found
+        print('User email not found.');
+      }
+    } catch (e) {
+      // Handle any errors that may occur during the process
+      print('Error getting user launch data: $e');
+    }
   }
 
   /// Function that sets the student id on a student's document
@@ -281,15 +393,17 @@ class DataBase {
 
     // Checks if any subject is not initialised yet
     if (subjects.length != user!.canvasData.subjects.length) {
+      final subjectCodesInDatabase =
+          subjects.map((subject) => subject.code).toList();
+      final subjectCodesInCanvas =
+          user!.canvasData.subjects.map((subject) => subject['code']).toList();
 
-      final subjectCodesInDatabase = subjects.map((subject) => subject.code).toList();
-      final subjectCodesInCanvas = user!.canvasData.subjects.map((subject) => subject['code']).toList();
-
-      subjectCodesInCanvas.removeWhere((subject) => subjectCodesInDatabase.contains(subject));
+      subjectCodesInCanvas
+          .removeWhere((subject) => subjectCodesInDatabase.contains(subject));
 
       for (final subjectCode in subjectCodesInCanvas) {
-
-        final subjectInformation = user!.canvasData.subjects.where((element) => element['code'] == subjectCode);
+        final subjectInformation = user!.canvasData.subjects
+            .where((element) => element['code'] == subjectCode);
         await initialiseSubject(subjectInformation.first);
       }
       user = await getUserFromEmail(user!.email);
@@ -482,25 +596,25 @@ class DataBase {
 
   /// Function that syncs the database with Canvas (Updates the database)
   Future<void> syncDatabaseWithCanvas() async {
-
     await Future.delayed(const Duration(seconds: 3)); // TODO
   }
 
   /// Function that initialises basic information for a subject onto the database
-  Future<void> initialiseSubject(Map<String, dynamic> subjectInformation) async {
-
-    final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get(); // TODO: semester and year
+  Future<void> initialiseSubject(
+      Map<String, dynamic> subjectInformation) async {
+    final findSubjectRef = await _db
+        .collection('subjects')
+        .where('code', isEqualTo: subjectInformation['code'])
+        .get(); // TODO: semester and year
 
     Map<String, String> roles = {};
 
-    for (final user in subjectInformation['roles'].keys.toList()){
+    for (final user in subjectInformation['roles'].keys.toList()) {
       if (subjectInformation['roles'][user] == 'Subject Coordinator') {
         roles[user] = 'subject_coordinator';
-      }
-      else if (subjectInformation['roles'][user] == 'Student') {
+      } else if (subjectInformation['roles'][user] == 'Student') {
         roles[user] = 'student';
-      }
-      else {
+      } else {
         roles[user] = subjectInformation['roles'][user];
       }
     }
@@ -508,23 +622,24 @@ class DataBase {
     if (findSubjectRef.docs.isNotEmpty) return;
 
     final subjectsRef = _db.collection('subjects');
-    final subjectID = await subjectsRef.add(
-      {'name': subjectInformation['name'],
-       'code': subjectInformation['code'],
-       'semester': subjectInformation['term']['name'],
-       'year': subjectInformation['term']['year'],
-       'roles': roles}
-    );
+    final subjectID = await subjectsRef.add({
+      'name': subjectInformation['name'],
+      'code': subjectInformation['code'],
+      'semester': subjectInformation['term']['name'],
+      'year': subjectInformation['term']['year'],
+      'roles': roles
+    });
 
-    for(final userID in subjectInformation['roles'].keys.toList()) {
-
-      final userRef = await _db.collection('users').where('id', isEqualTo: userID).get();
+    for (final userID in subjectInformation['roles'].keys.toList()) {
+      final userRef =
+          await _db.collection('users').where('id', isEqualTo: userID).get();
 
       final userDatabasePath = userRef.docs[0].reference.path;
 
-      await _db.doc(userDatabasePath).update({'subjects': FieldValue.arrayUnion([subjectID])});
+      await _db.doc(userDatabasePath).update({
+        'subjects': FieldValue.arrayUnion([subjectID])
+      });
     }
-    
   }
 }
 
