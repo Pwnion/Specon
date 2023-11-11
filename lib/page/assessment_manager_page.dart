@@ -352,33 +352,4 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     }
     setState(() => _foundRequestType.addAll(results));
   }
-
-  /// Widget for the search box.
-  Widget searchBox() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: TextField(
-        onChanged: (value) => _runFilter(value),
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(0),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 20,
-          ),
-          prefixIconConstraints: const BoxConstraints(
-            maxHeight: 20,
-            minWidth: 25,
-          ),
-          border: InputBorder.none,
-          hintText: 'Search',
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-        ),
-      ),
-    );
-  }
 }
