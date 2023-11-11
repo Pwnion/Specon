@@ -10,7 +10,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
-import 'package:specon/request_state.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';
@@ -58,9 +57,9 @@ class _DiscussionState extends State<Discussion> {
 
   double _sliderValue = 0.0;
   int daysExtending = 0;
+  bool businessDaysOnly = true; // TODO: Decided by subject coordinator
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
-  final businessDaysOnly = true; // TODO: Decided by subject coordinator
   static final Map<int, String> dayName = {
     1: 'MON',
     2: 'TUE',
@@ -224,14 +223,14 @@ class _DiscussionState extends State<Discussion> {
           builder: (_, setState) => AlertDialog(
             title: Center(
               child: Text(
-                  "Please select a new due date",
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface
-                  )
+                'Please select a new due date',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface
+                )
               ),
             ),
             content: SizedBox(
-              height: 130.0,
+              height: 150.0,
               width: 650.0,
               child: Column(
                 children: [
@@ -273,6 +272,28 @@ class _DiscussionState extends State<Discussion> {
                         )
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 5.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Business Days Only: ',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        )
+                      ),
+                      Checkbox(
+                        value: businessDaysOnly,
+                        onChanged: (value) {
+                          setState(() {
+                            businessDaysOnly = value!;
+                            _finalDueDateTextController.text = dateConversionString(_sliderValue.toInt());
+                          });
+                        }
+                      )
+                    ]
                   )
                 ],
               ),
