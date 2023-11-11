@@ -244,35 +244,51 @@ class _PermissionManagerState extends State<PermissionManager> {
             child: SingleChildScrollView(
               controller: _addUserScrollController,
               child: ListView.builder(
-                  controller: _addUserScrollController,
-                  itemCount: canvasUserIDs.length,
-                  shrinkWrap: true,
-                  itemBuilder: (_, index) => ListTile(
-                      title: Text(canvasUserNames[canvasUserIDs[index]]!,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface)),
-                      subtitle: Text('Role on canvas : ${canvasUser[canvasUserIDs[index]]}',
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surface)), // TODO:
-                      trailing: temporaryUserList.contains(canvasUserIDs[index])
-                          ? IconButton(
-                              icon: Icon(Icons.check_circle,
-                                  color: Colors.green[700]),
-                              onPressed: () {
-                                setState(() {
-                                  temporaryUserList.remove(canvasUserIDs[index]);
-                                });
-                              })
-                          : IconButton(
-                              icon: const Icon(Icons.check_circle_outline,
-                                  color: Colors.grey),
-                              onPressed: () {
-                                setState(() {
-                                  temporaryUserList.add(canvasUserIDs[index]);
-                                });
-                              }))),
+                controller: _addUserScrollController,
+                itemCount: canvasUserIDs.length,
+                shrinkWrap: true,
+                itemBuilder: (_, index) => ListTile(
+                  title: Text(canvasUserNames[canvasUserIDs[index]]!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface)
+                  ),
+                  subtitle: Text('Role on canvas : ${canvasUser[canvasUserIDs[index]]}',
+                    style: TextStyle(
+                      color: Theme.of(context) .colorScheme.surface
+                    )
+                  ),
+                  trailing: temporaryUserList.contains(canvasUserIDs[index])
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.check_circle,
+                          color: Colors.green[700]
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            temporaryUserList.remove(canvasUserIDs[index]);
+                          });
+                        }
+                      )
+                    : IconButton(
+                        icon: const Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.grey
+                        ),
+                        onPressed: () async {
+                          final search = searchUserInOtherGroups(canvasUserIDs[index], currentGroupIndex);
+
+                          if (search != null) {
+                            await userInAnotherGroupDialog(canvasUserIDs[index], search, temporaryPermissionGroups[currentGroupIndex]['name']);
+                            return;
+                          }
+
+                          setState(() {
+                            temporaryUserList.add(canvasUserIDs[index]);
+                          });
+                        }
+                      )
+                )
+              ),
             ),
           ),
           actions: <Widget>[
@@ -460,6 +476,54 @@ class _PermissionManagerState extends State<PermissionManager> {
     }
 
     return newGroup;
+  }
+
+  ///
+  String? searchUserInOtherGroups(String userID, int currentGroupIndex) {
+
+    for (final group in temporaryPermissionGroups) {
+
+      if (temporaryPermissionGroups.indexOf(group) == currentGroupIndex) continue;
+
+      final List<dynamic> users = group['users'];
+
+      if (users.contains(userID)) return group['name'];
+
+    }
+    return null;
+  }
+
+  ///
+  Future<void> userInAnotherGroupDialog(String userID, String groupName, String currentGroupName) async {
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          "Can't add user into \"$currentGroupName\"",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        content: Text(
+          '${canvasUserNames[userID]} is already in "$groupName"',
+          style: const TextStyle(
+            color: Colors.white
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ]
+      )
+    );
   }
 
   @override
