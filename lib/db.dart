@@ -681,10 +681,6 @@ class DataBase {
             final List staffInCanvasButNotInDatabase = canvasStaffsOnly.keys.toList();
             staffInCanvasButNotInDatabase.removeWhere((element) => databaseStaff.keys.toList().contains(element));
 
-            print(canvasStaffsOnly);
-            print(staffInCanvasButNotInDatabase);
-            print(staffInDatabaseButNotInCanvas);
-
             // If new students has enrolled into subject, add into subject array
             if (studentInCanvasButNotInDatabase.isNotEmpty) {
               for (final studentID in studentInCanvasButNotInDatabase) {
