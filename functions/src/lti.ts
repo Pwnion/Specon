@@ -36,18 +36,19 @@ LTI.onConnect(async (token, _req, res) => {
   }
 
   const canvasUid: string = token.user;
+  const selectedCourseCode: string = res.locals.context!.context.label;
   if (await doesUserExist(canvasUid)) {
     const user: User = await getUser(canvasUid);
     const newAccessToken: string = await refreshAccessToken(user.refreshToken);
     await updateAccessToken(canvasUid, newAccessToken);
     await putUserInfoForLaunch(
       canvasUid,
-      res.locals.context!.context.label,
+      selectedCourseCode,
       await getCourses(user.id, newAccessToken)
     );
     return res.redirect(`/app?email=${user.email}`);
   }
-  return res.redirect(getCodeUrl(canvasUid));
+  return res.redirect(getCodeUrl(canvasUid, selectedCourseCode));
 });
 
 const setup = async () => {
