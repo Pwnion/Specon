@@ -8,8 +8,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:specon/functions.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
+import 'package:specon/models/subject_model.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';
@@ -21,7 +23,7 @@ class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
   final String role;
-  final String subjectCode;
+  final SubjectModel currentSubject;
   final void Function() incrementCounter;
   final void Function() closeSubmittedRequest;
 
@@ -30,7 +32,7 @@ class Discussion extends StatefulWidget {
     required this.currentRequest,
     required this.currentUser,
     required this.role,
-    required this.subjectCode,
+    required this.currentSubject,
     required this.incrementCounter,
     required this.closeSubmittedRequest
     }
@@ -57,7 +59,7 @@ class _DiscussionState extends State<Discussion> {
 
   double _sliderValue = 0.0;
   int daysExtending = 0;
-  bool businessDaysOnly = true; // TODO: Decided by subject coordinator
+  bool businessDaysOnly = true;
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
   static final Map<int, String> dayName = {
@@ -279,7 +281,7 @@ class _DiscussionState extends State<Discussion> {
                     children: [
                       const Text(
                         'Business Days Only: ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 18.0,
                         )
@@ -377,7 +379,6 @@ class _DiscussionState extends State<Discussion> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _initializeThread();
     _lastRequest = widget.currentRequest;
     super.initState();
@@ -404,7 +405,7 @@ class _DiscussionState extends State<Discussion> {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 0.0, left: 20),
               child: Text(
-                "${widget.subjectCode} - ${widget.currentRequest.assessment.name}",
+                "${widget.currentSubject.code} - ${widget.currentRequest.assessment.name}",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 20,
@@ -442,11 +443,19 @@ class _DiscussionState extends State<Discussion> {
                                   _sliderValue = widget.currentRequest.daysExtending.toDouble();
                                   _proposedDueDateTextController.text = dateConversionString(_sliderValue.toInt());
                                   _finalDueDateTextController.text = _proposedDueDateTextController.text;
-                                  adjustDueDatePopUp().then((value) {
+                                  adjustDueDatePopUp().then((value) async {
                                     if (value!) {
                                       acceptRequest(widget.currentRequest);
                                       updateLocalRequestState("Approved");
                                       widget.incrementCounter();
+
+                                      createAssignmentOverride(
+                                        await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
+                                        widget.currentSubject.id,
+                                        2, // TODO: Waiting for drey
+                                        dateAfterExtension(_sliderValue.toInt()),
+                                        widget.currentUser.accessToken
+                                      );
                                     }
                                   });
                                 }

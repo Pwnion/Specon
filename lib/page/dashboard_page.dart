@@ -287,7 +287,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
           currentRequest: currentRequest,
           currentUser: currentUser,
           role: role,
-          subjectCode: currentSubject.code,
+          currentSubject: currentSubject,
           incrementCounter: incrementCounter,
           closeSubmittedRequest: closeSubmittedRequest,
         ),
