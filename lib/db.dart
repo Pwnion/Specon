@@ -108,59 +108,71 @@ class DataBase {
     }
   }
 
-  Future<List<RequestType>?> importFromCanvas(String subjectCode) async {
+  Future<List<RequestType>> importFromCanvas(String subjectCode) async {
     try {
       // Get the current user's email
       String? userEmail = await getCurrentUserEmail();
       String? userID = await getDocumentIdByEmail(userEmail!);
 
       // Check if user email is available
-      if (userEmail != null) {
-        // Get the document corresponding to the user's email in the "launch" collection
-        DocumentSnapshot userDocument = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userID)
-            .collection('launch')
-            .doc('data')
-            .get();
+      // Get the document corresponding to the user's email in the "launch" collection
+      DocumentSnapshot userDocument = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .collection('launch')
+          .doc('data')
+          .get();
 
-        // Check if the document exists
-        if (userDocument.exists) {
-          // Extract the 'subjects' field
-          List<dynamic> subjects = userDocument['subjects'];
+      // Check if the document exists
+      if (userDocument.exists) {
+        // Extract the 'subjects' field
+        List<dynamic> subjects = userDocument['subjects'];
 
-          // Find the subject with the provided subject code
-          Map<String, dynamic>? matchingSubject =
-              subjects.firstWhere((subject) {
-            return subject['code'] == subjectCode;
-          }, orElse: () => null);
+        // Find the subject with the provided subject code
+        Map<String, dynamic>? matchingSubject = subjects.firstWhere((subject) {
+          return subject['code'] == subjectCode;
+        }, orElse: () => null);
 
-          if (matchingSubject != null) {
-            // Cast the 'assessments' field to List<String>
-            List<RequestType> returnList = [];
-            List<dynamic> assessments = matchingSubject['assessments'];
+        if (matchingSubject != null || matchingSubject['assessments'] == []) {
+          // Cast the 'assessments' field to List<String>
+          List<RequestType> returnList = [];
+          List<dynamic> assessments = matchingSubject['assessments'];
 
-            assessments.forEach((element) {
-              returnList.add(RequestType(
-                  name: element['name'], id: element['id'].toString()));
-            });
+          assessments.forEach((element) {
+            returnList.add(RequestType(
+                name: element['name'], id: element['id'].toString()));
+          });
 
-            return returnList;
-          } else {
-            // Print a message if the subject with the provided code is not found
-            print('Subject with code $subjectCode not found.');
-          }
+          return returnList;
         } else {
-          // Print a message if the document does not exist
-          print('User Launch Data Document does not exist.');
+          // Print a message if the subject with the provided code is not found
+          print('Subject with code $subjectCode not found.');
+          return [
+            RequestType(id: '01', name: 'Project 1'),
+            RequestType(id: '02', name: 'Project 2'),
+            RequestType(id: '03', name: 'Mid Semester Test'),
+            RequestType(id: '04', name: 'Project 3'),
+          ];
         }
       } else {
-        // Print a message if user email is not found
-        print('User email not found.');
+        // Print a message if the document does not exist
+        print('User Launch Data Document does not exist.');
+        return [
+          RequestType(id: '01', name: 'Project 1'),
+          RequestType(id: '02', name: 'Project 2'),
+          RequestType(id: '03', name: 'Mid Semester Test'),
+          RequestType(id: '04', name: 'Project 3'),
+        ];
       }
     } catch (e) {
       // Handle any errors that may occur during the process
       print('Error getting user launch data: $e');
+      return [
+        RequestType(id: '01', name: 'Project 1'),
+        RequestType(id: '02', name: 'Project 2'),
+        RequestType(id: '03', name: 'Mid Semester Test'),
+        RequestType(id: '04', name: 'Project 3'),
+      ];
     }
   }
 

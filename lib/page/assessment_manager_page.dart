@@ -100,7 +100,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                 ),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     List<RequestType> importedTypes = await test();
                     // Import assessments from Canvas.
                     // final List<RequestType> importedTypes =
@@ -234,8 +234,8 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     }
   }
 
-  Future<List<RequestType>?> test() async {
-    List<RequestType>? a = await _db.importFromCanvas(widget.subject.code);
+  Future<List<RequestType>> test() async {
+    List<RequestType> a = await _db.importFromCanvas(widget.subject.code);
     return a;
   }
 
