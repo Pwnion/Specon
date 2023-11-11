@@ -35,7 +35,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   ///
   /// [_requestTypesList] is for display purposes.
   /// [_foundRequestType] is used to update the SubjectModel.
-  final List<RequestType> _requestTypesList = RequestType.importTypes();
+  // final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
 
   final List<RequestType> _addToDb = [];
@@ -101,9 +101,10 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () {
+                    List<RequestType> importedTypes = await test();
                     // Import assessments from Canvas.
-                    final List<RequestType> importedTypes =
-                        RequestType.importTypes();
+                    // final List<RequestType> importedTypes =
+                    //     RequestType.importTypes();
                     setState(() {
                       _foundRequestType.addAll(importedTypes);
                       _addToDb.addAll(importedTypes);
@@ -233,6 +234,11 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     }
   }
 
+  Future<List<RequestType>?> test() async {
+    List<RequestType>? a = await _db.importFromCanvas(widget.subject.code);
+    return a;
+  }
+
   /// Helper function that updates the request name in real-time after an update.
   void updateRequestTypeName(String id, String newName) {
     setState(() {
@@ -331,7 +337,6 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     final assessment = RequestType(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
-      type: requestType,
     );
     setState(() {
       _foundRequestType.add(assessment);
@@ -339,17 +344,5 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
     // add to temp stack
     _addToDb.add(assessment);
-  }
-
-  void _runFilter(String enteredKeyword) {
-    final List<RequestType> results;
-    if (enteredKeyword.isEmpty) {
-      results = _requestTypesList;
-    } else {
-      results = _requestTypesList.where((item) {
-        return item.name.toLowerCase().contains(enteredKeyword.toLowerCase());
-      }).toList();
-    }
-    setState(() => _foundRequestType.addAll(results));
   }
 }

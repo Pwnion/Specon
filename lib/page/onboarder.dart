@@ -3,6 +3,7 @@ import 'package:specon/models/subject_model.dart';
 import 'assessment_manager_page.dart';
 import 'permission_manager_page.dart';
 import 'package:specon/db.dart';
+import '../models/request_type.dart';
 
 class Onboarder extends StatefulWidget {
   final SubjectModel subject;
@@ -30,8 +31,8 @@ class _OnboarderState extends State<Onboarder> {
   }
 
   void test() async {
-    List<String>? a = await _db.importFromCanvas(widget.subject.code);
-    print(a);
+    // List<RequestType>? a = await _db.importFromCanvas(widget.subject.code);
+    // print(a);
   }
 
   void _refreshFnAsmMan() {

@@ -108,7 +108,7 @@ class DataBase {
     }
   }
 
-  Future<List<String>?> importFromCanvas(String subjectCode) async {
+  Future<List<RequestType>?> importFromCanvas(String subjectCode) async {
     try {
       // Get the current user's email
       String? userEmail = await getCurrentUserEmail();
@@ -137,12 +137,15 @@ class DataBase {
 
           if (matchingSubject != null) {
             // Cast the 'assessments' field to List<String>
-            List<String> assessments =
-                List<String>.from(matchingSubject['assessments']);
+            List<RequestType> returnList = [];
+            List<dynamic> assessments = matchingSubject['assessments'];
 
-            // Print the assessments for the matching subject
-            print(assessments);
-            return assessments;
+            assessments.forEach((element) {
+              returnList.add(RequestType(
+                  name: element['name'], id: element['id'].toString()));
+            });
+
+            return returnList;
           } else {
             // Print a message if the subject with the provided code is not found
             print('Subject with code $subjectCode not found.');
@@ -231,9 +234,7 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'],
-              type: '',
-              id: request['assessment'].path);
+              name: documentSnapshot['name'], id: request['assessment'].path);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -268,9 +269,7 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'],
-              type: '',
-              id: request['assessment'].path);
+              name: documentSnapshot['name'], id: request['assessment'].path);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -344,9 +343,7 @@ class DataBase {
 
           await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
             assessmentFromDB = RequestType(
-                name: documentSnapshot['name'],
-                type: '',
-                id: request['assessment'].path);
+                name: documentSnapshot['name'], id: request['assessment'].path);
           });
 
           final timeSubmitted =
@@ -427,10 +424,8 @@ class DataBase {
     QuerySnapshot querySnapshot = await assessmentsRef.get();
 
     for (final assessment in querySnapshot.docs) {
-      assessments.add(RequestType(
-          name: assessment['name'],
-          type: '', // TODO:
-          id: assessment.reference.path));
+      assessments.add(
+          RequestType(name: assessment['name'], id: assessment.reference.path));
     }
 
     return assessments;
