@@ -5,9 +5,13 @@ import {SERVER} from "./server";
 import {createAssignmentOverride} from "./api";
 import {sendStaffEmails, sendStudentEmail} from "./mail";
 
+// Where in the world to deploy the cloud functions.
 const REGION = "australia-southeast2";
 
+// Inject the LTI Express server into our Express server as middleware.
 SERVER.use(LTI.app);
+
+// Deploy the Express server as a HTTP cloud function.
 export const lti = onRequest(
   {region: REGION, cors: true},
   SERVER
@@ -22,7 +26,7 @@ export const override = onRequest(
     const assignmentId: number = payload.assignmentId;
     const newDate: string = payload.newDate;
     const accessToken: string = payload.accessToken;
-    const response: Response = await createAssignmentOverride(
+    const result = await createAssignmentOverride(
       userId,
       courseId,
       assignmentId,
@@ -30,7 +34,7 @@ export const override = onRequest(
       accessToken
     );
     res.status(200).send({
-      data: await response.json(),
+      data: result,
     });
   }
 );

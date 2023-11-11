@@ -3,19 +3,22 @@
 class Assessment {
   id: number;
   name: string;
-
+  dueDate: string;
   constructor(
     id: number,
     name: string,
+    dueDate: string,
   ) {
     this.id = id;
     this.name = name;
+    this.dueDate = dueDate;
   }
 
   static fromAPI(data: any): Assessment {
     return new Assessment(
       data["id"] as number,
       data["name"] as string,
+      data["due_at"] as string,
     );
   }
 
@@ -23,6 +26,7 @@ class Assessment {
     return {
       id: this.id,
       name: this.name,
+      due_date: this.dueDate,
     };
   }
 }
