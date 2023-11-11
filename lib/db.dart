@@ -61,8 +61,8 @@ class DataBase {
     CollectionReference subjectRef =
         _db.doc(subjectPath).collection('assessments');
 
-    DocumentReference documentRef =
-        await subjectRef.add({'name': assessment.name, 'id': assessment.id});
+    DocumentReference documentRef = await subjectRef
+        .add({'name': assessment.name, 'id': int.parse(assessment.id)});
 
     assessment.id = documentRef.id;
   }
