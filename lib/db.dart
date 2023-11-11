@@ -326,6 +326,8 @@ class DataBase {
       for (final assessmentRef in allowedPermissions.keys.toList()) {
         final allowedRequestTypes = allowedPermissions[assessmentRef];
 
+        if(allowedRequestTypes!.isEmpty) continue;
+
         final requestListFromDB = await _db
             .doc(subject.databasePath)
             .collection('requests')
