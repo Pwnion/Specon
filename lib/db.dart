@@ -261,40 +261,56 @@ class DataBase {
   /// Function that fetches a user's enrolled subjects
   Future<List<SubjectModel>> getEnrolledSubjects() async {
     List<SubjectModel> subjects = [];
+    bool newSubjectInitialised = false;
+
+    final userRef = _db.collection('users').doc(user!.uuid);
 
     for (final subject in user!.subjects) {
       DocumentReference docRef = FirebaseFirestore.instance.doc(subject.path);
 
       final assessments = await getAssessments(subject.path);
 
-      await docRef.get().then((DocumentSnapshot documentSnapshot) {
+      await docRef.get().then((DocumentSnapshot documentSnapshot) async {
+
+        // If user is no longer enrolled in a subject, remove from array
+        if (!documentSnapshot['roles'].keys.toList().contains(user!.id)) {
+          await userRef.update({'subjects': FieldValue.arrayRemove([docRef])});
+        }
+
         subjects.add(SubjectModel(
-            name: documentSnapshot['name'],
-            code: documentSnapshot['code'],
-            roles: documentSnapshot['roles'],
-            assessments: assessments,
-            semester: documentSnapshot['semester'],
-            year: documentSnapshot['year'],
-            databasePath: subject.path));
+          id: documentSnapshot['id'],
+          name: documentSnapshot['name'],
+          code: documentSnapshot['code'],
+          roles: documentSnapshot['roles'],
+          assessments: assessments,
+          semester: documentSnapshot['semester'],
+          year: documentSnapshot['year'],
+          databasePath: subject.path));
       });
     }
 
-    // Checks if any subject is not initialised yet
-    if (subjects.length != user!.canvasData.subjects.length) {
+    // Check if a subject is being initialised or not
+    for (final subject in user!.canvasData.subjects) {
 
-      final subjectCodesInDatabase = subjects.map((subject) => subject.code).toList();
-      final subjectCodesInCanvas = user!.canvasData.subjects.map((subject) => subject['code']).toList();
+      if (subject['roles'][user!.id] != 'Subject Coordinator') break;
 
-      subjectCodesInCanvas.removeWhere((subject) => subjectCodesInDatabase.contains(subject));
+      final subjectRef = await _db.collection('subjects')
+        .where('code', isEqualTo: subject['code'])
+        .where('semester', isEqualTo: subject['term']['name'])
+        .where('year', isEqualTo: subject['term']['year']).get();
 
-      for (final subjectCode in subjectCodesInCanvas) {
+        if (subjectRef.docs.isEmpty) {
+          initialiseSubject(subject);
+          newSubjectInitialised = true;
+        }
+    }
 
-        final subjectInformation = user!.canvasData.subjects.where((element) => element['code'] == subjectCode);
-        await initialiseSubject(subjectInformation.first);
-      }
-      user = await getUserFromEmail(user!.email);
+    // Refresh with the new initialised subjects
+    if (newSubjectInitialised) {
       return getEnrolledSubjects();
     }
+
+    updateSubjectRoles(subjects);
 
     return subjects;
   }
@@ -480,41 +496,26 @@ class DataBase {
     await subjectRef.update({'roles': roles});
   }
 
-  /// Function that syncs the database with Canvas (Updates the database)
-  Future<void> syncDatabaseWithCanvas() async {
-
-    await Future.delayed(const Duration(seconds: 3)); // TODO
-  }
-
   /// Function that initialises basic information for a subject onto the database
   Future<void> initialiseSubject(Map<String, dynamic> subjectInformation) async {
 
-    final findSubjectRef = await _db.collection('subjects').where('code', isEqualTo: subjectInformation['code']).get(); // TODO: semester and year
+    Map<String, String> roles = convertRoles(subjectInformation);
 
-    Map<String, String> roles = {};
+    Map<String, String> studentAndCoordinator = {...roles};
+    Map<String, String> staff = {...roles};
 
-    for (final user in subjectInformation['roles'].keys.toList()){
-      if (subjectInformation['roles'][user] == 'Subject Coordinator') {
-        roles[user] = 'subject_coordinator';
-      }
-      else if (subjectInformation['roles'][user] == 'Student') {
-        roles[user] = 'student';
-      }
-      else {
-        roles[user] = subjectInformation['roles'][user];
-      }
-    }
-
-    if (findSubjectRef.docs.isNotEmpty) return;
+    studentAndCoordinator.removeWhere((key, value) => value != 'student' && value != 'subject_coordinator');
+    staff.removeWhere((key, value) => value == 'student' || value == 'subject_coordinator');
 
     final subjectsRef = _db.collection('subjects');
-    final subjectID = await subjectsRef.add(
-      {'name': subjectInformation['name'],
-       'code': subjectInformation['code'],
-       'semester': subjectInformation['term']['name'],
-       'year': subjectInformation['term']['year'],
-       'roles': roles}
-    );
+    final subjectID = await subjectsRef.add({
+      'name': subjectInformation['name'],
+      'code': subjectInformation['code'],
+      'semester': subjectInformation['term']['name'],
+      'year': subjectInformation['term']['year'],
+      'roles': roles,
+      'staff': staff
+    });
 
     for(final userID in subjectInformation['roles'].keys.toList()) {
 
@@ -526,6 +527,150 @@ class DataBase {
     }
     
   }
+
+  /// Function to update subject's role (In case new student has enrolled in this subject),
+  /// also updates each user's subjects array
+  Future<void> updateSubjectRoles(List<SubjectModel> subjects) async {
+
+    for (final subject in subjects) {
+
+      final subjectRef = _db.doc(subject.databasePath);
+      final subjectDoc = await subjectRef.get();
+      final Map<String, dynamic> databaseRoles = subjectDoc['roles'];
+      final Map<String, dynamic> databaseStaff = subjectDoc['staff'];
+
+      // If user is a subject coordinator, sync it with canvas
+      if (databaseRoles.keys.toList().contains(user!.id) && databaseRoles[user!.id] == 'subject_coordinator') {
+
+        for (final canvasSubject in user!.canvasData.subjects) {
+
+          if (canvasSubject['id'] == subject.id) {
+
+            final Map<String, dynamic> canvasRoles = canvasSubject['roles'];
+
+            final Map<String, dynamic> databaseStudentsOnly = {...databaseRoles};
+            databaseStudentsOnly.removeWhere((key, value) => value != 'student');
+
+            final Map<String, dynamic> canvasStudentsOnly = {...canvasRoles};
+            canvasStudentsOnly.removeWhere((key, value) => value != 'Student');
+
+            final Map<String, dynamic> canvasStaffsOnly = {...canvasRoles};
+            canvasStaffsOnly.removeWhere((key, value) => value != 'Student' || value != 'Subject Coordinator');
+
+            final List studentInDatabaseButNotInCanvas = databaseStudentsOnly.keys.toList();
+            studentInDatabaseButNotInCanvas.removeWhere((element) => canvasStudentsOnly.keys.toList().contains(element));
+
+            final List studentInCanvasButNotInDatabase = canvasStudentsOnly.keys.toList();
+            studentInCanvasButNotInDatabase.removeWhere((element) => databaseStudentsOnly.keys.toList().contains(element));
+
+            final List staffInDatabaseButNotInCanvas = canvasStaffsOnly.keys.toList();
+            staffInDatabaseButNotInCanvas.removeWhere((element) => canvasStaffsOnly.keys.toList().contains(element));
+
+            final List staffInCanvasButNotInDatabase = canvasStaffsOnly.keys.toList();
+            staffInCanvasButNotInDatabase.removeWhere((element) => databaseStaff.keys.toList().contains(element));
+
+            // If new students has enrolled into subject, add into subject array
+            if (studentInCanvasButNotInDatabase.isNotEmpty) {
+
+              for (final studentID in studentInCanvasButNotInDatabase) {
+                final studentRef = await _db.collection('users').where('id', isEqualTo: studentID).get();
+                
+                if (studentRef.docs.isEmpty) continue;
+                
+                final studentDocID = studentRef.docs[0].id;
+                
+                await _db.collection('users').doc(studentDocID).update({'subjects': FieldValue.arrayUnion([subjectDoc.reference])});
+                databaseRoles[studentID] = 'student';
+              }
+            }
+
+            // Some students unenrolled from subject, removed from subject array
+            if (studentInDatabaseButNotInCanvas.isNotEmpty) {
+              for (final studentID in studentInDatabaseButNotInCanvas) {
+                final studentRef = await _db.collection('users').where('id', isEqualTo: studentID).get();
+
+                if (studentRef.docs.isEmpty) continue;
+
+                final studentDocID = studentRef.docs[0].id;
+
+                await _db.collection('users').doc(studentDocID).update({'subjects': FieldValue.arrayRemove([subjectDoc.reference])});
+                databaseRoles.remove(studentID);
+              }
+            }
+
+            // If new staff has enrolled into subject, add into subject array
+            if (staffInCanvasButNotInDatabase.isNotEmpty) {
+
+              for (final staffID in staffInCanvasButNotInDatabase) {
+                final staffRef = await _db.collection('users').where('id', isEqualTo: staffID).get();
+
+                if (staffRef.docs.isEmpty) continue;
+
+                final staffDocID = staffRef.docs[0].id;
+
+                await _db.collection('users').doc(staffDocID).update({'subjects': FieldValue.arrayUnion([subjectDoc.reference])});
+                databaseRoles[staffID] = canvasStaffsOnly[staffID];
+              }
+            }
+
+            // Some staffs unenrolled from subject, removed from subject array
+            if (staffInDatabaseButNotInCanvas.isNotEmpty) {
+              for (final staffID in staffInDatabaseButNotInCanvas) {
+                final staffRef = await _db.collection('users').where('id', isEqualTo: staffID).get();
+
+                if (staffRef.docs.isEmpty) continue;
+
+                final staffDocID = staffRef.docs[0].id;
+
+                await _db.collection('users').doc(staffDocID).update({'subjects': FieldValue.arrayRemove([subjectDoc.reference])});
+                databaseStaff.remove(staffID);
+              }
+            }
+            
+            await subjectRef.update({'staff': databaseStaff});
+            await subjectRef.update({'roles': databaseRoles});
+            break;
+          }
+        }
+
+
+
+      }
+    }
+  }
+
+  /// Function to convert Subject Coordinator and Student roles to subject_coordinator and student
+  Map<String, String> convertRoles(Map<String, dynamic> subjectInformation) {
+
+    Map<String, String> convertedRoles = {};
+
+    for (final user in subjectInformation['roles'].keys.toList()){
+      if (subjectInformation['roles'][user] == 'Subject Coordinator') {
+        convertedRoles[user] = 'subject_coordinator';
+      }
+      else if (subjectInformation['roles'][user] == 'Student') {
+        convertedRoles[user] = 'student';
+      }
+      else {
+        convertedRoles[user] = subjectInformation['roles'][user];
+      }
+    }
+
+    return convertedRoles;
+  }
+
+  ///
+  Future<Map<String, String>> getSubjectStaff(SubjectModel subject) async {
+
+    final subjectRef = await _db.doc(subject.databasePath).get();
+
+    final Map<String, dynamic> staffDynamic = subjectRef['staff'];
+
+    final Map<String, String> staff = staffDynamic.map((key, value) => MapEntry(key, value!.toString()));
+
+    return staff;
+  }
+
 }
 
 ///

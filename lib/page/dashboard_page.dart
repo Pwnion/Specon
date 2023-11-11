@@ -16,7 +16,6 @@ import 'package:specon/page/permission_manager_page.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/widgets/spinning_syncing_icon.dart';
 
 class Dashboard extends StatefulWidget {
   final String? canvasEmail;
@@ -35,14 +34,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin {
-  SubjectModel currentSubject = SubjectModel(
-      name: '',
-      code: '',
-      assessments: [],
-      semester: '',
-      year: '',
-      databasePath: '',
-      roles: {});
+  SubjectModel currentSubject = SubjectModel.emptySubject;
 
   RequestModel currentRequest = RequestModel.emptyRequest;
   bool newRequest = false;
@@ -393,22 +385,6 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
               ),
             ),
             // Sync Button
-            if (role == 'subject_coordinator')
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Tooltip(
-                message: 'Sync with Canvas',
-                child: AnimatedSync(
-                  animation: rotateAnimation,
-                  callback: () async{
-                    controller.forward();
-                    await _database.syncDatabaseWithCanvas();
-                    controller.stop();
-                    controller.reset();
-                  },
-                ),
-              ),
-            ),
             // Assessment Manager Button
             if (role == 'subject_coordinator')
             Padding(
