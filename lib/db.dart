@@ -284,6 +284,9 @@ class DataBase {
 
     // For other roles (Determined by permissions set by subject coordinator)
     else {
+
+      if (!subject.roles.keys.toList().contains(user.id)) return [];
+
       final subjectRef = await _db.doc(subject.databasePath).get();
 
       // Get user's role in the subject
@@ -369,20 +372,12 @@ class DataBase {
     List<SubjectModel> subjects = [];
     bool newSubjectInitialised = false;
 
-    final userRef = _db.collection('users').doc(user!.uuid);
-
     for (final subject in user!.subjects) {
       DocumentReference docRef = FirebaseFirestore.instance.doc(subject.path);
 
       final assessments = await getAssessments(subject.path);
 
       await docRef.get().then((DocumentSnapshot documentSnapshot) async {
-        // If user is no longer enrolled in a subject, remove from array
-        if (!documentSnapshot['roles'].keys.toList().contains(user!.id)) {
-          await userRef.update({
-            'subjects': FieldValue.arrayRemove([docRef])
-          });
-        }
 
         subjects.add(SubjectModel(
             id: documentSnapshot['id'],

@@ -121,7 +121,12 @@ class _DashboardState extends State<Dashboard>
   /// Setter for the user's role in a subject
   void setRole(SubjectModel subject, UserModel user) async {
     setState(() {
-      role = subject.roles[user.id]!;
+      if (subject.roles.keys.toList().contains(user.id)) {
+        role = subject.roles[user.id]!;
+      }
+      else {
+        role = 'No role';
+      }
     });
 
     // If user is a student, and no student ID is found, prompt a popup
