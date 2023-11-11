@@ -105,7 +105,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                         await _db.importFromCanvas(widget.subject.code);
 
                     if (importedTypes.isEmpty) {
-                      // Show error message if no assessments to import.
+                      // Show error message if no assessments on canvas.
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -171,7 +171,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                           // Use RequestTypeItem widget here.
                           key: ValueKey(index),
                           requestType: item,
-                          onDeleteItem: _deleteRequestTypeItem,
+                          onDeleteItem: _deleteAssessment,
                           onUpdateName: updateRequestTypeName, // Add this line.
                         );
                       }).toList(),
@@ -257,6 +257,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     _updateToDb[id] = newName;
   }
 
+  /// helper function asking to add new individual assessment
   Future<void> _showAddNewItemDialog() async {
     String newItemName = '';
     String? selectedItem;
@@ -277,31 +278,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  DropdownButton<String>(
-                    value: selectedItem,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedItem = value;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'assignment extension',
-                        child: Text('Assignment Extension'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'participation waiver',
-                        child: Text('Participation Waiver'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
                   TextField(
                     onChanged: (value) {
                       newItemName = value;
                     },
                     decoration: const InputDecoration(
-                      hintText: 'Enter a new item',
+                      hintText: 'Enter a new assessment',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -318,7 +300,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                       ElevatedButton(
                         onPressed: () {
                           if (newItemName.isNotEmpty && selectedItem != null) {
-                            _addRequestTypeItem(newItemName, selectedItem!);
+                            _addAssessment(newItemName, selectedItem!);
                             Navigator.pop(context);
                           }
                         },
@@ -335,14 +317,16 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     );
   }
 
-  void _deleteRequestTypeItem(String id) {
+  /// helper function delete assessment
+  void _deleteAssessment(String id) {
     setState(() {
       _foundRequestType.removeWhere((item) => item.id == id);
     });
     _deleteToDb.add(id);
   }
 
-  void _addRequestTypeItem(String name, String requestType) {
+  /// helper function add assessment
+  void _addAssessment(String name, String requestType) {
     final assessment = RequestType(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
