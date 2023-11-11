@@ -643,6 +643,7 @@ class DataBase {
   /// Function to update subject's role (In case new student has enrolled in this subject),
   /// also updates each user's subjects array
   Future<void> updateSubjectRoles(List<SubjectModel> subjects) async {
+
     for (final subject in subjects) {
       final subjectRef = _db.doc(subject.databasePath);
       final subjectDoc = await subjectRef.get();
@@ -666,28 +667,23 @@ class DataBase {
             canvasStudentsOnly.removeWhere((key, value) => value != 'Student');
 
             final Map<String, dynamic> canvasStaffsOnly = {...canvasRoles};
-            canvasStaffsOnly.removeWhere((key, value) =>
-                value != 'Student' || value != 'Subject Coordinator');
+            canvasStaffsOnly.removeWhere((key, value) => value == 'Student' || value == 'Subject Coordinator');
 
-            final List studentInDatabaseButNotInCanvas =
-                databaseStudentsOnly.keys.toList();
-            studentInDatabaseButNotInCanvas.removeWhere((element) =>
-                canvasStudentsOnly.keys.toList().contains(element));
+            final List studentInDatabaseButNotInCanvas = databaseStudentsOnly.keys.toList();
+            studentInDatabaseButNotInCanvas.removeWhere((element) => canvasStudentsOnly.keys.toList().contains(element));
 
-            final List studentInCanvasButNotInDatabase =
-                canvasStudentsOnly.keys.toList();
-            studentInCanvasButNotInDatabase.removeWhere((element) =>
-                databaseStudentsOnly.keys.toList().contains(element));
+            final List studentInCanvasButNotInDatabase = canvasStudentsOnly.keys.toList();
+            studentInCanvasButNotInDatabase.removeWhere((element) => databaseStudentsOnly.keys.toList().contains(element));
 
-            final List staffInDatabaseButNotInCanvas =
-                canvasStaffsOnly.keys.toList();
-            staffInDatabaseButNotInCanvas.removeWhere(
-                (element) => canvasStaffsOnly.keys.toList().contains(element));
+            final List staffInDatabaseButNotInCanvas = canvasStaffsOnly.keys.toList();
+            staffInDatabaseButNotInCanvas.removeWhere((element) => canvasStaffsOnly.keys.toList().contains(element));
 
-            final List staffInCanvasButNotInDatabase =
-                canvasStaffsOnly.keys.toList();
-            staffInCanvasButNotInDatabase.removeWhere(
-                (element) => databaseStaff.keys.toList().contains(element));
+            final List staffInCanvasButNotInDatabase = canvasStaffsOnly.keys.toList();
+            staffInCanvasButNotInDatabase.removeWhere((element) => databaseStaff.keys.toList().contains(element));
+
+            print(canvasStaffsOnly);
+            print(staffInCanvasButNotInDatabase);
+            print(staffInDatabaseButNotInCanvas);
 
             // If new students has enrolled into subject, add into subject array
             if (studentInCanvasButNotInDatabase.isNotEmpty) {
@@ -742,7 +738,7 @@ class DataBase {
                 await _db.collection('users').doc(staffDocID).update({
                   'subjects': FieldValue.arrayUnion([subjectDoc.reference])
                 });
-                databaseRoles[staffID] = canvasStaffsOnly[staffID];
+                databaseStaff[staffID] = canvasStaffsOnly[staffID];
               }
             }
 
