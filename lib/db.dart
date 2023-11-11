@@ -575,14 +575,8 @@ class DataBase {
         'users': FieldValue.arrayUnion(group['users']) // TODO:
       });
 
-      for (final user in group['users']) {
-        final userRef =
-            await _db.collection('users').where('name', isEqualTo: user).get();
-
-        if (userRef.docs.isNotEmpty) {
-          final userID = userRef.docs[0]['id'];
-          roles[userID] = group['name'];
-        }
+      for (final userID in group['users']) {
+        roles[userID] = group['name'];
       }
 
       for (final assessment in group['assessments'].keys.toList()) {
@@ -788,6 +782,22 @@ class DataBase {
         staffDynamic.map((key, value) => MapEntry(key, value!.toString()));
 
     return staff;
+  }
+
+  ///
+  Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
+
+    Map<String, String> names = {};
+
+    final usersRef = await _db.collection('users').where('id', whereIn: userIDs).get();
+
+    final userDocs = usersRef.docs;
+
+    for (final user in userDocs) {
+      names[user['id']] = user['name'];
+    }
+
+    return names;
   }
 
 
