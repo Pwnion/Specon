@@ -299,7 +299,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (newItemName.isNotEmpty && selectedItem != null) {
+                          if (newItemName.isNotEmpty) {
                             _addAssessment(newItemName, selectedItem!);
                             Navigator.pop(context);
                           }

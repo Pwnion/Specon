@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:specon/models/subject_model.dart';
 import 'assessment_manager_page.dart';
 import 'permission_manager_page.dart';
-import 'package:specon/db.dart';
-import '../models/request_type.dart';
 
 class Onboarder extends StatefulWidget {
   final SubjectModel subject;
@@ -20,7 +18,6 @@ class Onboarder extends StatefulWidget {
 class _OnboarderState extends State<Onboarder> {
   bool _permanButtonEnabled = false;
   bool _finishButtonEnabled = false;
-  static final _db = DataBase();
 
   bool _isPermanButtonEnabled() {
     return _permanButtonEnabled;
@@ -28,11 +25,6 @@ class _OnboarderState extends State<Onboarder> {
 
   bool _isFinishButtonEnabled() {
     return _finishButtonEnabled;
-  }
-
-  void test() async {
-    // List<RequestType>? a = await _db.importFromCanvas(widget.subject.code);
-    // print(a);
   }
 
   void _refreshFnAsmMan() {
@@ -193,7 +185,6 @@ class _OnboarderState extends State<Onboarder> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      test();
                       setState(() {
                         Navigator.push(
                           context,
