@@ -763,6 +763,7 @@ class _SpeconFormState extends State<SpeconForm> {
     return {'Form': textFormFields, 'Attachments': attachments, 'AAP': aap};
   }
 
+  /// assign original aap file name to variable [_originalAapName]
   void initAapNames()async{
     _originalAapName = await getAapFileName(widget.currentUser.studentID);
     print("after init $_originalAapName");
@@ -903,9 +904,6 @@ class _SpeconFormState extends State<SpeconForm> {
                   // delete old AAP then upload new AAP
                   clearFolder(widget.currentUser.studentID);
                   uploadFile(widget.currentUser.studentID, _selectedAap!);
-
-                  // TODO: update aapPath for user after uploading aap
-                  //_updateUserAapPath("aRTMyP7HK7HV7RgOkMw6");
                 }
                 // clear all variables\
                 _clearFileVariables();

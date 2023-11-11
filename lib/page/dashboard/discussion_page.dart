@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
+import 'package:specon/request_state.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';
@@ -411,45 +412,53 @@ class _DiscussionState extends State<Discussion> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(
-                            onPressed: () {
-
-                              // Show due date extension pop up
-                              if (widget.currentRequest.requestType == 'Extension') {
-                                _sliderValue = widget.currentRequest.daysExtending.toDouble();
-                                _proposedDueDateTextController.text = dateConversionString(_sliderValue.toInt());
-                                _finalDueDateTextController.text = _proposedDueDateTextController.text;
-                                adjustDueDatePopUp().then((value) {
-                                  if (value!) {
-                                    acceptRequest(widget.currentRequest);
-                                    updateLocalRequestState("Approved");
-                                    widget.incrementCounter();
-                                  }
-                                });
-                              }
-                              else {
-                                acceptRequest(widget.currentRequest);
-                                updateLocalRequestState("Approved");
+                          Visibility(
+                            visible: widget.currentRequest.state != "Approved",
+                            child: TextButton(
+                              onPressed: () {
+                                // Show due date extension pop up
+                                if (widget.currentRequest.requestType == 'Extension') {
+                                  _sliderValue = widget.currentRequest.daysExtending.toDouble();
+                                  _proposedDueDateTextController.text = dateConversionString(_sliderValue.toInt());
+                                  _finalDueDateTextController.text = _proposedDueDateTextController.text;
+                                  adjustDueDatePopUp().then((value) {
+                                    if (value!) {
+                                      acceptRequest(widget.currentRequest);
+                                      updateLocalRequestState("Approved");
+                                      widget.incrementCounter();
+                                    }
+                                  });
+                                }
+                                else {
+                                  acceptRequest(widget.currentRequest);
+                                  updateLocalRequestState("Approved");
+                                  widget.incrementCounter();
+                                }
+                              },
+                              child: const Text('Accept', style: TextStyle(color: Colors.lightGreen),),
+                            ),
+                          ),
+                          Visibility(
+                            visible: widget.currentRequest.state != "Declined",
+                            child: TextButton(
+                              onPressed: () {
+                                declineRequest(widget.currentRequest);
+                                updateLocalRequestState("Declined");
                                 widget.incrementCounter();
-                              }
-                            },
-                            child: const Text('Accept'),
+                              },
+                              child: const Text('Decline', style: TextStyle(color: Colors.red)),
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              declineRequest(widget.currentRequest);
-                              updateLocalRequestState("Declined");
-                              widget.incrementCounter();
-                            },
-                            child: const Text('Decline'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              flagRequest(widget.currentRequest);
-                              updateLocalRequestState("Flagged");
-                              widget.incrementCounter();
-                            },
-                            child: const Text('Flag'),
+                          Visibility(
+                            visible: widget.currentRequest.state != "Flagged",
+                            child: TextButton(
+                              onPressed: () {
+                                flagRequest(widget.currentRequest);
+                                updateLocalRequestState("Flagged");
+                                widget.incrementCounter();
+                              },
+                              child: const Text('Flag', style: TextStyle(color: Colors.orange)),
+                            ),
                           ),
                         ],
                       ),
