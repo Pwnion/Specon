@@ -13,7 +13,7 @@ jobs:
           channel: 'stable'
       - run: flutter doctor -v
       - run: flutter pub get
-      #       - run: flutter test
+      - run: flutter test
       - run: npm install --prefix ./functions
       - run: flutter build web
 #      - run: mkdir functions/public
