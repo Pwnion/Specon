@@ -7,7 +7,7 @@
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 
 final _storage = FirebaseStorage.instance;
@@ -47,7 +47,7 @@ Future<String> getAapFileName(String dataPath) async {
     // aap should only have 1 file
     return temp.items.first.name;
   } on FirebaseException catch (e2) {
-    print("Failed with error '${e2.code}': ${e2.message}");
+    //print("Failed with error '${e2.code}': ${e2.message}");
     return "no AAP";
   }
 }
