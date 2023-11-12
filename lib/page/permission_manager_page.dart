@@ -385,30 +385,32 @@ class _PermissionManagerState extends State<PermissionManager> {
                         children: [
                           const SizedBox(height: 5.0),
                           Expanded(
-                              child: Column(children: [
-                            ...buildUserColumn(
-                                temporaryPermissionGroups[index]['users'])
-                          ])),
-                          const SizedBox(height: 5.0),
-
-                          // Plus button
-                          if (inEditMode)
-                            MaterialButton(
-                              color: Theme.of(context).colorScheme.surface,
-                              height: 1.0,
-                              minWidth: 1.0,
-                              onPressed: () {
-                                buildUserManagementDialog(index).then((value) {
-                                  setState(() {
-                                    temporaryPermissionGroups[index]['users'] =
-                                        value;
-                                    temporaryUserList = [];
-                                  });
-                                });
-                              },
-                              shape: const CircleBorder(),
-                              child: const Text('+'),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ...buildUserColumn(temporaryPermissionGroups[index]['users']),
+                                const SizedBox(height: 5.0),
+                                // Plus button
+                                if (inEditMode)
+                                  MaterialButton(
+                                    color: Theme.of(context).colorScheme.surface,
+                                    height: 1.0,
+                                    minWidth: 1.0,
+                                    onPressed: () {
+                                      buildUserManagementDialog(index).then((value) {
+                                        setState(() {
+                                          temporaryPermissionGroups[index]['users'] =
+                                              value;
+                                          temporaryUserList = [];
+                                        });
+                                      });
+                                    },
+                                    shape: const CircleBorder(),
+                                    child: const Text('+'),
+                                  )
+                              ]
                             )
+                          ),
                         ],
                       ),
                     ),
