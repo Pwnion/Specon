@@ -322,7 +322,8 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     setState(() {
       _foundRequestType.removeWhere((item) => item.databasePath == path);
     });
-    _deleteToDb.add(path);
+
+    _deleteToDb.add('${widget.subject.databasePath}/assessments/${path}');
   }
 
   /// helper function add assessment
