@@ -514,8 +514,10 @@ class _DiscussionState extends State<Discussion> {
                               child: const Text(
                                 'Approve',
                                 style: TextStyle(color: Colors.green),
-                              ),                            ),
+                              ),
+                            ),
                           ),
+                          const SizedBox(width: 5),
                           Visibility(
                             visible: widget.currentRequest.state != "Declined",
                             child: TextButton(
@@ -533,10 +535,12 @@ class _DiscussionState extends State<Discussion> {
                                 ),
                               ),
                               child: const Text(
-                                'Approve',
+                                'Reject',
                                 style: TextStyle(color: Colors.red),
-                              ),                            ),
+                              ),
+                            ),
                           ),
+                          const SizedBox(width: 5),
                           Visibility(
                             visible: widget.currentRequest.state != "Flagged",
                             child: TextButton(
@@ -554,10 +558,11 @@ class _DiscussionState extends State<Discussion> {
                                 ),
                               ),
                               child: const Text(
-                                'Approve',
+                                'Flag',
                                 style: TextStyle(color: Colors.yellow),
                               ),                            ),
                           ),
+                          const SizedBox(width: 5),
                         ],
                       ),
                     ),
