@@ -2,13 +2,8 @@ import {onRequest} from "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {LTI} from "./lti";
 import {SERVER} from "./server";
-import {
-  createAssignmentOverride,
-  getAssignmentOverrides,
-  updateAssignmentOverride,
-} from "./api";
+import {createAssignmentOverride} from "./api";
 import {sendStaffEmails, sendStudentEmail} from "./mail";
-import {AssessmentOverride} from "./models/assessment_override";
 
 // Where in the world to deploy the cloud functions.
 const REGION = "australia-southeast2";
@@ -35,31 +30,13 @@ export const override = onRequest(
     const assignmentId: number = payload.assignmentId;
     const newDate: string = payload.newDate;
     const accessToken: string = payload.accessToken;
-
-    const currAssignmentOverrides = await getAssignmentOverrides(
+    const result = await createAssignmentOverride(
+      userId,
       courseId,
       assignmentId,
+      newDate,
       accessToken
     );
-    const matchingAssignmentOverride: AssessmentOverride | null =
-      currAssignmentOverrides.findStudentOverride(userId);
-
-    let result;
-    if (matchingAssignmentOverride == null) {
-      result = await createAssignmentOverride(
-        courseId,
-        new AssessmentOverride(null, assignmentId, [userId], newDate),
-        accessToken
-      );
-    } else {
-      matchingAssignmentOverride.dueDate = newDate;
-      result = await updateAssignmentOverride(
-        courseId,
-        matchingAssignmentOverride,
-        accessToken
-      );
-    }
-
     res.status(200).send({
       data: result,
     });

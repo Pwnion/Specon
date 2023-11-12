@@ -7,10 +7,6 @@ import {
   API_CLIENT_ID,
 } from "./constants";
 import {Assessments} from "./models/assessment";
-import {
-  AssessmentOverride,
-  AssessmentOverrides,
-} from "./models/assessment_override";
 import {Courses} from "./models/course";
 import {Term} from "./models/term";
 import {cleanseRole} from "./role";
@@ -91,29 +87,6 @@ async function postEndpoint(
     }
   );
 
-  return await response.json();
-}
-
-/**
- * Make an authenticated HTTP PUT request to a Canvas API endpoint.
- *
- * @param endpointUrl - The Canvas endpoint (excluding the domain).
- * @param params - The body of the PUT request.
- * @param accessToken - The Canvas access token to authenticate the request.
- * @returns The Canvas instance's JSON response.
- */
-async function putEndpoint(
-  endpointUrl: string,
-  params: object,
-  accessToken: string
-): Promise<any> {
-  const response: Response = await fetch(
-    `${CANVAS_URL}/api/v1/${endpointUrl}`, {
-      method: "PUT",
-      headers: getAuthJsonHeaders(accessToken),
-      body: JSON.stringify(params),
-    }
-  );
   return await response.json();
 }
 
@@ -348,65 +321,31 @@ async function getCourses(
 /**
  * Override the default assignment due date for a Canvas user.
  *
+ * @param accountId - The Canvas user's account ID.
  * @param courseId - The ID of the Canvas course the assignment is in.
- * @param assignmentOverride - The assignment override object.
+ * @param assignmentId - The ID of the Canvas assignment.
+ * @param newDate - The new due date.
  * @param accessToken - A Canvas access token.
  * @returns The Canvas instance's JSON response.
  */
 async function createAssignmentOverride(
+  accountId: number,
   courseId: number,
-  assignmentOverride: AssessmentOverride,
+  assignmentId: number,
+  newDate: string,
   accessToken: string
 ): Promise<any> {
   return await postEndpoint(
     [
       `${CANVAS_URL}/api/v1/courses/${courseId}/`,
-      `assignments/${assignmentOverride.assignmentId}/overrides`,
+      `assignments/${assignmentId}/overrides`,
     ].join(""),
-    {assignment_override: assignmentOverride.data()},
-    accessToken
-  );
-}
-
-/**
- * Gets all overrides on an assignment.
- *
- * @param courseId - The ID of the Canvas course the assignment is in.
- * @param assignmentId - The ID of the Canvas assignment.
- * @param accessToken - A Canvas access token.
- * @returns The Canvas instance's JSON response.
- */
-async function getAssignmentOverrides(
-  courseId: number,
-  assignmentId: number,
-  accessToken: string
-): Promise<AssessmentOverrides> {
-  const assessmentOverrides = await getEndpoint(
-    `courses/${courseId}/assignments/${assignmentId}/overrides`,
-    accessToken
-  );
-  return AssessmentOverrides.fromAPI(assessmentOverrides);
-}
-
-/**
- * Update an assignment override.
- *
- * @param courseId - The ID of the Canvas course the assignment override is in.
- * @param newAssignmentOverride - The updated assignment override.
- * @param accessToken - A Canvas access token.
- * @returns The Canvas instance's JSON response.
- */
-async function updateAssignmentOverride(
-  courseId: number,
-  newAssignmentOverride: AssessmentOverride,
-  accessToken: string
-): Promise<any> {
-  return await putEndpoint(
-    [
-      `courses/${courseId}/assignments/${newAssignmentOverride.assignmentId}/`,
-      `overrides/${newAssignmentOverride.id}`,
-    ].join(""),
-    {assignment_override: newAssignmentOverride.data()},
+    {
+      assignment_override: {
+        student_ids: [accountId],
+        due_at: newDate,
+      },
+    },
     accessToken
   );
 }
@@ -420,6 +359,4 @@ export {
   getUserRoleInCourse,
   getCourses,
   createAssignmentOverride,
-  getAssignmentOverrides,
-  updateAssignmentOverride,
 };
