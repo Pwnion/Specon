@@ -469,7 +469,7 @@ class DataBase {
     return requestRef;
   }
 
-  ///
+  /// function that returns discussion related to the request
   Future<List<Map<String, String>>> getDiscussionThreads(
       RequestModel request) async {
     DocumentReference docRef =

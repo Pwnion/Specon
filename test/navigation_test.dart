@@ -14,7 +14,7 @@ void incrementCounter(){}
 void closeSubmittedRequest(){}
 
 void main() async{
-  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",);
+  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id", databasePath: "");
   Map<String, dynamic> roles = {"test": "test"};
 
   void setCurrentSubject(SubjectModel subjectModel){
@@ -32,7 +32,7 @@ void main() async{
       requestedBy: "test_RB",
       reason: "test_reason",
       assessedBy: "test_AB",
-      assessment: RequestType(name: "assessment_name", id: "assessment_id"),
+      assessment: RequestType(name: "assessment_name", id: "assessment_id", databasePath: ""),
       state: "Open",
       requestedByStudentID: "0000",
       databasePath: "test_path",

@@ -20,7 +20,7 @@ void main() async{
       requestedBy: "test_RB",
       reason: "test_reason",
       assessedBy: "test_AB",
-      assessment: RequestType(name: "assessment_name", id: "assessment_id"),
+      assessment: RequestType(name: "assessment_name", id: "assessment_id", databasePath: ""),
       state: "Open",
       requestedByStudentID: "0000",
       databasePath: "test_path",
@@ -28,7 +28,7 @@ void main() async{
       requestType: "test_RT",
       daysExtending: 0
   );
-  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",);
+  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id", databasePath: "");
   Map<String, dynamic> roles = {"test": "test"};
   SubjectModel subjectModel = SubjectModel(id: 0, name: "name", code: "code", assessments: [requestType], semester: "semester", year: "year", databasePath: "databasePath", roles: roles);
   UserModel currentUser = UserModel(uuid: "uuid", id: "id", name: "name", email: "email", accessToken: "accessToken", selectedSubject: "0",

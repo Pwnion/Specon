@@ -124,7 +124,6 @@ class _DiscussionState extends State<Discussion> {
                               "Student ID: ${cr.requestedByStudentID}\n"
                               "Assessment: ${cr.assessment.name}\n"
                               "Request Type: ${cr.requestType}\n"
-                              "Assessed by: ${cr.assessedBy}\n"
                               "State of Request: ${cr.state}\n\n"
                               "Reason: ${cr.reason}\n"};
     discussionThread.insert(0, info);

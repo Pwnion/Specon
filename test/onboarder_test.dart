@@ -9,7 +9,7 @@ import 'package:specon/page/onboarder.dart';
 
 
 void main(){
-  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",);
+  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",databasePath: "");
   Map<String, dynamic> roles = {"test": "test"};
   SubjectModel subjectModel = SubjectModel(id: 0, name: "name", code: "code", assessments: [requestType], semester: "semester", year: "year", databasePath: "databasePath", roles: roles);
 
