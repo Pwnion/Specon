@@ -1,20 +1,32 @@
-/// This is a test file for [discussion_page]
+/// This is a test file for [navigation_page]
 ///
 /// Author: Kuo Wei Wu
-///
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:specon/models/canvas_data_model.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'package:specon/models/user_model.dart';
-import 'package:specon/page/dashboard/discussion_page.dart';
-
+import 'package:specon/page/dashboard/navigation_page.dart';
 
 void incrementCounter(){}
 void closeSubmittedRequest(){}
 
 void main() async{
+  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",);
+  Map<String, dynamic> roles = {"test": "test"};
+
+  void setCurrentSubject(SubjectModel subjectModel){
+  }
+  void setSelectedAssessment(String string){}
+
+  void openNewRequestForm() {
+  }
+  String getSelectedAssessment(){
+    return "";
+  }
+  void setRole(SubjectModel subjectModel, UserModel userModel){}
 
   RequestModel currentRequest = RequestModel(
       requestedBy: "test_RB",
@@ -28,25 +40,23 @@ void main() async{
       requestType: "test_RT",
       daysExtending: 0
   );
-  RequestType requestType = RequestType(name: "assessment_name", id: "assessment_id",);
-  Map<String, dynamic> roles = {"test": "test"};
   SubjectModel subjectModel = SubjectModel(id: 0, name: "name", code: "code", assessments: [requestType], semester: "semester", year: "year", databasePath: "databasePath", roles: roles);
   UserModel currentUser = UserModel(uuid: "uuid", id: "id", name: "name", email: "email", accessToken: "accessToken", selectedSubject: "0",
       subjects: ["subjects"], studentID: "studentID", canvasData: CanvasData.fromDB([]));
-  Discussion discussion = Discussion(currentRequest: currentRequest, currentUser: currentUser,
-        role: "", incrementCounter: incrementCounter, currentSubject: subjectModel,
-        closeSubmittedRequest: closeSubmittedRequest);
 
-  // test starts here
-  test('discussion widget test 1', () async{
-    expect(discussion.toString(), "Discussion");
+  Navigation navigation = Navigation(openNewRequestForm: openNewRequestForm, setCurrentSubject: setCurrentSubject, subjectList: [subjectModel], currentUser: currentUser, currentSubject: subjectModel,
+    setSelectedAssessment: setSelectedAssessment, getSelectedAssessment: getSelectedAssessment, role: "role", setRole: setRole);
+
+  // test start here
+  test('Navigation widget test 1', () async{
+    expect(navigation.toString(), "Navigation");
   });
 
-  test('discussion widget test 2', () async{
-    expect(discussion.role, "");
+  test('Navigation widget test 2', () async{
+    expect(navigation.role, "role");
   });
 
-  test('discussion widget test 3', () async{
-    expect(discussion.currentSubject, subjectModel);
+  test('Navigation widget test 3', () async{
+    expect(navigation.currentUser, currentUser);
   });
 }

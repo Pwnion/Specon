@@ -1,3 +1,7 @@
+/// This is a test file for [request_model]
+///
+/// Author: Kuo Wei Wu
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/models/request_type.dart';
