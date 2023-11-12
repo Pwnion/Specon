@@ -478,7 +478,7 @@ class DataBase {
     return allDiscussions;
   }
 
-  ///
+  /// Function that add discussion text to the corresponding request
   Future<void> addNewDiscussion(
       RequestModel request, Map<String, String> newDiscussion) async {
     DocumentReference docRef =

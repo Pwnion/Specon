@@ -821,18 +821,16 @@ class _DiscussionState extends State<Discussion> {
                                         onPressed: () async {
                                           // only update database if field has any word
                                           if(_textController.value.text != ""){
+                                            Map<String, String> replyText = {
+                                              'text': "${_textController.value.text}${_selectedFileToString()}",
+                                              'submittedBy': widget.currentUser.name,
+                                              'submittedByUserID': UserTypeUtils.convertString(widget.role) == UserType.student ? widget.currentUser.studentID : widget.currentUser.id,
+                                              'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
+                                            };
                                               await _db.addNewDiscussion(widget.currentRequest,
-                                                {
-//                                                   'assessment': widget.currentRequest.assessment,
-//                                                   'reason': "${_textController.value.text}\nSubmitted file:\n$_displayFileNames",
-//                                                   'subject': discussionThread[1]['subject'],
-//                                                   'submittedBy': widget.currentUser.name,
-                                                  //'assessment': widget.currentRequest.assessment,
-                                                  'text': "${_textController.value.text}${_selectedFileToString()}",
-                                                  //'subject': discussionThread[1]['subject'],
-                                                  'submittedBy': widget.currentUser.name,
-                                                  'submittedByUserID': UserTypeUtils.convertString(widget.role) == UserType.student ? widget.currentUser.studentID : widget.currentUser.id,
-                                                  'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
+                                                replyText);
+                                              setState(() {
+                                                discussionThread.add(replyText);
                                               });
                                           }
                                           // upload document if has selected file
