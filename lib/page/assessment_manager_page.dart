@@ -217,6 +217,11 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     widget.onboardRefreshFn!();
                   }
 
+                  widget.subject.assessments.forEach((element) {
+                    print('path: ${element.dbPath}');
+                    print('dueDate: ${element.dueDate}');
+                  });
+
                   Navigator.pop(context);
                 }
               },
@@ -249,12 +254,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   }
 
   /// Helper function that updates the request name in real-time after an update.
-  void updateRequestTypeName(String id, String newName) {
+  void updateRequestTypeName(String path, String newName) {
     setState(() {
       // Find the RequestType by ID and update its name.
-      _foundRequestType.firstWhere((type) => type.id == id).name = newName;
+      _foundRequestType.firstWhere((type) => type.id == path).name = newName;
     });
-    _updateToDb[id] = newName;
+    _updateToDb[path] = newName;
   }
 
   /// helper function asking to add new individual assessment
@@ -328,9 +333,9 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   /// helper function add assessment
   void _addAssessment(String name, String requestType) {
     final assessment = RequestType(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-    );
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        dbPath: '');
     setState(() {
       _foundRequestType.add(assessment);
     });

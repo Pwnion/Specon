@@ -46,7 +46,7 @@ class RequestModel {
       requestedBy: '',
       reason: '',
       assessedBy: '',
-      assessment: RequestType(name: '', id: ''),
+      assessment: RequestType(name: '', id: '', dbPath: ''),
       state: '',
       requestedByStudentID: '',
       databasePath: '',
