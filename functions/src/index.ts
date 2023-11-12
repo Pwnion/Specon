@@ -99,11 +99,13 @@ export const student = onRequest(
   }
 );
 
-// Run a cloud function every day at 6pm to
-// send staff a summary email if they have
+// Deploy a HTTP cloud function that sends
+// staff a summary email if they have
 // open requests.
-export const staff = onSchedule(
-  "every day 18:00", async () => {
+export const staff = onRequest(
+  {region: REGION, cors: true},
+  async (_, res) => {
     await sendStaffEmails();
+    res.status(200).send({data: {}});
   }
 );

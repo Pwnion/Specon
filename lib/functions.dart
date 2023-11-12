@@ -32,3 +32,7 @@ Future<String> createAssignmentOverride(
 Future<void> sendStudentRequestConsideredEmail(final String to) async {
   await _fn.httpsCallable('student').call({'to': to});
 }
+
+Future<void> sendStaffSummaryEmails() async {
+  await _fn.httpsCallable('staff').call();
+}

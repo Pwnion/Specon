@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:specon/functions.dart';
 import 'package:specon/models/request_type.dart';
 import 'package:specon/models/subject_model.dart';
 import 'models/user_model.dart';
@@ -897,6 +898,8 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
                 // clear all variables\
                 _clearFileVariables();
+
+                sendStaffSummaryEmails();
               },
               child: const Text('Submit'),
             ),
