@@ -256,12 +256,13 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   }
 
   /// Helper function that updates the request name in real-time after an update.
-  void updateRequestTypeName(String id, String newName) {
+  void updateRequestTypeName(String path, String newName) {
     setState(() {
       // Find the RequestType by ID and update its name.
-      _foundRequestType.firstWhere((type) => type.id == id).name = newName;
+      _foundRequestType.firstWhere((type) => type.databasePath == path).name =
+          newName;
     });
-    _updateToDb[id] = newName;
+    _updateToDb[path] = newName;
   }
 
   /// helper function asking to add new individual assessment
@@ -334,10 +335,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
   /// helper function add assessment
   void _addAssessment(String name) {
-    final assessment = RequestType(
-      id: '-69',
-      name: name,
-    );
+    final assessment = RequestType(id: '-69', name: name, databasePath: '');
     setState(() {
       _foundRequestType.add(assessment);
     });

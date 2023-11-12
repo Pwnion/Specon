@@ -145,7 +145,8 @@ class DataBase {
             returnList.add(RequestType(
                 name: element['name'],
                 id: element['id'].toString(),
-                dueDate: DateTime.parse(element['due_date'])));
+                dueDate: DateTime.parse(element['due_date']),
+                databasePath: 'Drey 1'));
           });
 
           return returnList;
@@ -240,7 +241,9 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'], id: request['assessment'].path);
+              name: documentSnapshot['name'],
+              databasePath: request['assessment'].path,
+              id: 'drey 3');
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -274,7 +277,9 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'], id: request['assessment'].path);
+              name: documentSnapshot['name'],
+              databasePath: request['assessment'].path,
+              id: "drey 2");
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -351,7 +356,9 @@ class DataBase {
 
           await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
             assessmentFromDB = RequestType(
-                name: documentSnapshot['name'], id: request['assessment'].path);
+                name: documentSnapshot['name'],
+                databasePath: request['assessment'].path,
+                id: "drey 4");
           });
 
           final timeSubmitted =
@@ -438,8 +445,10 @@ class DataBase {
     QuerySnapshot querySnapshot = await assessmentsRef.get();
 
     for (final assessment in querySnapshot.docs) {
-      assessments.add(
-          RequestType(name: assessment['name'], id: assessment.reference.path));
+      assessments.add(RequestType(
+          name: assessment['name'],
+          id: "drey 5",
+          databasePath: assessment.reference.path));
     }
 
     return assessments;

@@ -131,7 +131,7 @@ class RequestTypeItem extends StatelessWidget {
                       if (newName.isNotEmpty) {
                         // Perform rename operation here
                         requestType.name = newName;
-                        onUpdateName(requestType.id, newName);
+                        onUpdateName(requestType.databasePath, newName);
 
                         Navigator.of(context).pop();
                       } else {
