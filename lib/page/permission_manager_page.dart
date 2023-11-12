@@ -697,6 +697,15 @@ class _PermissionManagerState extends State<PermissionManager> {
                 ),
                 // Rows for each permission groups
                 buildPermissionRows(),
+                // Finish button
+                const SizedBox(height: 10.0),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Finish')
+                  ),
+                ),
+                const SizedBox(height: 10.0),
               ],
             ),
           ));

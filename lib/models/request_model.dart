@@ -28,7 +28,7 @@ class RequestModel {
   Map<String, dynamic> toJson() {
     final db = FirebaseFirestore.instance;
 
-    DocumentReference docRef = db.doc(assessment.id);
+    DocumentReference docRef = db.doc(assessment.databasePath);
 
     return {
       'requested_by': requestedBy,
