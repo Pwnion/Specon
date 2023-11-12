@@ -330,6 +330,7 @@ class _DashboardState extends State<Dashboard>
             if (subject.code == user.selectedSubject) {
               currentSubject = subject;
               selectedAssessment = 'All';
+              setRole(subject, user);
               break;
             }
           }
