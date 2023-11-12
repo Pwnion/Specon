@@ -7,9 +7,8 @@ void main() async {
     RequestModel currentRequest = RequestModel(
         requestedBy: "test_RB",
         reason: "test_reason",
-        additionalInfo: "test_AI",
         assessedBy: "test_AB",
-        assessment: RequestType(name: "assessment_name", type: "assessment_type", id: "assessment_id"),
+        assessment: RequestType(name: "assessment_name", id: "assessment_id"),
         state: "Open",
         requestedByStudentID: "0000",
         databasePath: "test_path",
