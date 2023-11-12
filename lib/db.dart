@@ -239,7 +239,6 @@ class DataBase {
             requestedBy: request['requested_by'],
             requestedByStudentID: request['requested_by_student_id'],
             reason: request['reason'],
-            additionalInfo: request['additional_info'],
             assessedBy: request['assessed_by'],
             assessment: assessmentFromDB,
             state: request['state'],
@@ -273,7 +272,6 @@ class DataBase {
         requests.add(RequestModel(
             requestedBy: request['requested_by'],
             reason: request['reason'],
-            additionalInfo: request['additional_info'],
             assessedBy: request['assessed_by'],
             assessment: assessmentFromDB,
             state: request['state'],
@@ -353,7 +351,6 @@ class DataBase {
           requests.add(RequestModel(
               requestedBy: request['requested_by'],
               reason: request['reason'],
-              additionalInfo: request['additional_info'],
               assessedBy: request['assessed_by'],
               assessment: assessmentFromDB,
               state: request['state'],

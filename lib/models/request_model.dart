@@ -4,7 +4,6 @@ import 'package:specon/models/request_type.dart';
 class RequestModel {
   final String requestedBy;
   final String reason;
-  final String additionalInfo;
   final String assessedBy;
   final RequestType assessment;
   String state;
@@ -17,7 +16,6 @@ class RequestModel {
   RequestModel(
       {required this.requestedBy,
       required this.reason,
-      required this.additionalInfo,
       required this.assessedBy,
       required this.assessment,
       required this.state,
@@ -36,7 +34,6 @@ class RequestModel {
       'requested_by': requestedBy,
       'requested_by_student_id': requestedByStudentID,
       'reason': reason,
-      'additional_info': additionalInfo,
       'assessed_by': assessedBy,
       'assessment': docRef,
       'state': state,
@@ -48,7 +45,6 @@ class RequestModel {
   static final emptyRequest = RequestModel(
       requestedBy: '',
       reason: '',
-      additionalInfo: '',
       assessedBy: '',
       assessment: RequestType(name: '', id: ''),
       state: '',
