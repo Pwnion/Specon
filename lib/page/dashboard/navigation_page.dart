@@ -211,7 +211,9 @@ class _NavigationState extends State<Navigation> {
         selectedSubject = widget.currentSubject;
       }
 
-      if (widget.currentSubject.assessments.isEmpty &&
+      final hasPagePushed = Navigator.of(context).canPop();
+
+      if (!hasPagePushed && widget.currentSubject.assessments.isEmpty &&
           UserTypeUtils.convertString(widget.currentSubject.roles[widget.currentUser.id]) == UserType.subjectCoordinator) {
         Future.microtask(() => Navigator.push(
           context,
