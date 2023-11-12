@@ -350,33 +350,23 @@ class _DashboardState extends State<Dashboard>
             backgroundColor: Theme.of(context).colorScheme.primary,
             elevation: 0.0,
             // Logo
-            leading: InkWell(
-                onTap: () {},
-                child: const Center(
-                    child: Text('Specon',
-                        style: TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold)))),
+            leading: const Center(
+              child: Text('Specon',
+                style: TextStyle(
+                  fontSize: 25.0, fontWeight: FontWeight.bold
+                )
+              )
+            ),
             leadingWidth: 110.0,
             // Subject code and name title
             title: Text('${currentSubject.code} - ${currentSubject.name}',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
-                    fontSize: 20.0)),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface,
+                fontSize: 20.0
+              )
+            ),
             centerTitle: true,
             actions: [
-              // Home Button
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.home,
-                    size: 30.0,
-                  ),
-                ),
-              ),
-
-              // Sync Button
               // Assessment Manager Button
               if (role == 'subject_coordinator')
                 Padding(
@@ -426,18 +416,6 @@ class _DashboardState extends State<Dashboard>
                     ),
                   ),
                 ),
-
-              // Notification Button
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.notifications,
-                    size: 30.0,
-                  ),
-                ),
-              ),
 
               // Avatar Button
               Padding(
