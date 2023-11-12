@@ -259,39 +259,56 @@ class _DiscussionState extends State<Discussion> {
                               updateLocalRequestState("Approved");
                               widget.incrementCounter();
                             },
-                            style: const ButtonStyle(
+                            style: ButtonStyle(
+                              shape: MaterialStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5))),
                               side: MaterialStatePropertyAll(
                                 BorderSide(width: 2.0, color: Colors.green),
                               ),
                             ),
-                            child: const Text('Approve'),
+                            child: const Text(
+                              'Approve',
+                              style: TextStyle(color: Colors.green),
+                            ),
                           ),
+                          SizedBox(width: 5),
                           TextButton(
                             onPressed: () {
                               declineRequest(widget.currentRequest);
                               updateLocalRequestState("Declined");
                               widget.incrementCounter();
                             },
-                            style: const ButtonStyle(
+                            style: ButtonStyle(
+                              shape: MaterialStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5))),
                               side: MaterialStatePropertyAll(
                                 BorderSide(width: 2.0, color: Colors.red),
                               ),
                             ),
-                            child: const Text('Decline'),
+                            child: const Text('Decline',
+                                style: TextStyle(color: Colors.red)),
                           ),
+                          SizedBox(width: 5),
                           TextButton(
                             onPressed: () {
                               flagRequest(widget.currentRequest);
                               updateLocalRequestState("Flagged");
                               widget.incrementCounter();
                             },
-                            style: const ButtonStyle(
+                            style: ButtonStyle(
+                              shape: MaterialStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5))),
                               side: MaterialStatePropertyAll(
                                 BorderSide(width: 2.0, color: Colors.yellow),
                               ),
                             ),
-                            child: const Text('Flag'),
+                            child: const Text('Flag',
+                                style: TextStyle(color: Colors.yellow)),
                           ),
+                          SizedBox(width: 5),
                         ],
                       ),
                     ),
