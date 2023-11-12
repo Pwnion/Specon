@@ -468,17 +468,33 @@ class _DiscussionState extends State<Discussion> {
                                   _finalDueDateTextController.text = _proposedDueDateTextController.text;
                                   adjustDueDatePopUp().then((value) async {
                                     if (value!) {
-                                      acceptRequest(widget.currentRequest);
-                                      updateLocalRequestState("Approved");
-                                      widget.incrementCounter();
-
-                                      createAssignmentOverride(
+                                      final String result = await createAssignmentOverride(
                                         await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
                                         widget.currentSubject.id,
                                         assessmentID,
                                         dateAfterExtension(_sliderValue.toInt()),
                                         widget.currentUser.accessToken
                                       );
+
+                                      // If access token has expired, refresh
+                                      if (result.contains('error')) {
+                                        final String newRefreshToken = await refreshAccessToken(widget.currentUser.uuid);
+                                        createAssignmentOverride(
+                                          await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
+                                          widget.currentSubject.id,
+                                          assessmentID,
+                                          dateAfterExtension(_sliderValue.toInt()),
+                                          newRefreshToken
+                                        );
+                                        acceptRequest(widget.currentRequest);
+                                        updateLocalRequestState("Approved");
+                                        widget.incrementCounter();
+                                      }
+                                      else {
+                                        acceptRequest(widget.currentRequest);
+                                        updateLocalRequestState("Approved");
+                                        widget.incrementCounter();
+                                      }
                                     }
                                   });
                                 }
