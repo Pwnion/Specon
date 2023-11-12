@@ -35,7 +35,7 @@ class _PermissionManagerState extends State<PermissionManager> {
   ];
   Map<String, String> canvasUserNames = {};
   List<String> canvasUserIDs = [];
-  static late final Map<String, String> canvasUser;
+  Map<String, String> canvasUser = {};
   List<Map<String, dynamic>> permissionGroups = [];
   List<Map<String, dynamic>> temporaryPermissionGroups = [];
   List<String> temporaryUserList = [];
