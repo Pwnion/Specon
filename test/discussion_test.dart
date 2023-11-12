@@ -33,7 +33,7 @@ void main() async{
   );
 
   //UserModel currentUser = UserModel(uuid: "uuid", id: "id", name: "name", email: "email", accessToken: "accessToken",
-  //    subjects: ["subjects"], studentID: "studentID", canvasData: CanvasData.fromDB([]));
+  //   subjects: ["subjects"], studentID: "studentID", canvasData: CanvasData.fromDB([]));
   //print("out2");
 
 

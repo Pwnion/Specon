@@ -3,7 +3,7 @@ import 'package:specon/models/request_model.dart';
 import 'package:specon/models/request_type.dart';
 
 void main() async {
-  test('storage test get aap name', () async {
+  test('request model return submission time', () async {
     RequestModel currentRequest = RequestModel(
         requestedBy: "test_RB",
         reason: "test_reason",
