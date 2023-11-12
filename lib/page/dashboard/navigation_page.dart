@@ -8,7 +8,6 @@ import 'package:specon/models/user_model.dart';
 import 'package:specon/page/onboarder.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
-import 'package:specon/page/onboarder.dart';
 
 class Navigation extends StatefulWidget {
   final void Function() openNewRequestForm;
@@ -70,6 +69,7 @@ class _NavigationState extends State<Navigation> {
                 elevation: 0.0,
                 onPressed: () {
                   setState(() {
+
                     // subject coordinator initialise -> trigger onboarder
                     if (subject.assessments.isEmpty &&
                         UserTypeUtils.convertString(
@@ -110,7 +110,7 @@ class _NavigationState extends State<Navigation> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('OK'),
+                                child: const Text('OK'),
                               ),
                             ],
                           );
@@ -211,6 +211,19 @@ class _NavigationState extends State<Navigation> {
         selectedSubject = widget.currentSubject;
       }
 
+      final hasPagePushed = Navigator.of(context).canPop();
+
+      if (!hasPagePushed && widget.currentSubject.assessments.isEmpty &&
+          UserTypeUtils.convertString(widget.currentSubject.roles[widget.currentUser.id]) == UserType.subjectCoordinator) {
+        Future.microtask(() => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Onboarder(
+              subject: widget.currentSubject,
+            ),
+          )
+        ));
+      }
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

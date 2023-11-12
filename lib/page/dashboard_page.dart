@@ -7,11 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
+import 'package:specon/page/user_settings.dart';
 import 'package:specon/specon_form.dart';
 import 'package:specon/page/assessment_manager_page.dart';
 import 'package:specon/page/dashboard/navigation_page.dart';
 import 'package:specon/page/dashboard/requests_page.dart';
 import 'package:specon/page/dashboard/discussion_page.dart';
+import 'package:specon/page/user_settings.dart';
 import 'package:specon/page/permission_manager_page.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
@@ -311,6 +313,18 @@ class _DashboardState extends State<Dashboard>
     }
   }
 
+  void openUserSetting(){
+    setState(() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => UserSettings(currentUser: currentUser)
+        ),
+      );
+
+    });
+  }
+
   @override
   void initState() {
 
@@ -413,6 +427,24 @@ class _DashboardState extends State<Dashboard>
                   ),
                 ),
               ),
+            // settings button
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    //context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => UserSettings(currentUser: currentUser)
+                    ),
+                  );
+                },
+                child: const Icon(
+                  Icons.settings,
+                  size: 30.0,
+                ),
+              ),
+            ),
             // Avatar Button
             Padding(
               padding: const EdgeInsets.only(right: 10),

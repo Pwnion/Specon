@@ -494,7 +494,7 @@ class DataBase {
     return allDiscussions;
   }
 
-  ///
+  /// Function that add discussion text to the corresponding request
   Future<void> addNewDiscussion(
       RequestModel request, Map<String, String> newDiscussion) async {
     DocumentReference docRef =
@@ -625,6 +625,7 @@ class DataBase {
 
     final subjectsRef = _db.collection('subjects');
     final subjectID = await subjectsRef.add({
+      'id': subjectInformation['id'],
       'name': subjectInformation['name'],
       'code': subjectInformation['code'],
       'semester': subjectInformation['term']['name'],
@@ -812,8 +813,10 @@ class DataBase {
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
     Map<String, String> names = {};
 
-    final usersRef =
-        await _db.collection('users').where('id', whereIn: userIDs).get();
+
+    if (userIDs.isEmpty) return {};
+
+    final usersRef = await _db.collection('users').where('id', whereIn: userIDs).get();
 
     final userDocs = usersRef.docs;
 
