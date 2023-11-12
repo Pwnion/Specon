@@ -610,6 +610,7 @@ class DataBase {
 
     final subjectsRef = _db.collection('subjects');
     final subjectID = await subjectsRef.add({
+      'id': subjectInformation['id'],
       'name': subjectInformation['name'],
       'code': subjectInformation['code'],
       'semester': subjectInformation['term']['name'],
@@ -790,6 +791,8 @@ class DataBase {
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
 
     Map<String, String> names = {};
+
+    if (userIDs.isEmpty) return {};
 
     final usersRef = await _db.collection('users').where('id', whereIn: userIDs).get();
 
