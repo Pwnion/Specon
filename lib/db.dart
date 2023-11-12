@@ -243,7 +243,7 @@ class DataBase {
           assessmentFromDB = RequestType(
               name: documentSnapshot['name'],
               databasePath: request['assessment'].path,
-              id: documentSnapshot['id']);
+              id: request['assessment'].path);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -279,7 +279,7 @@ class DataBase {
           assessmentFromDB = RequestType(
               name: documentSnapshot['name'],
               databasePath: request['assessment'].path,
-              id: documentSnapshot['id']);
+              id: request['assessment'].path);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
