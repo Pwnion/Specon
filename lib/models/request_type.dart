@@ -8,13 +8,17 @@
 class RequestType {
   String name; // not final because we can change name
   String id;
+  DateTime? dueDate;
+  String databasePath;
 
-  RequestType({
-    required this.name,
-    required this.id,
-  });
+  RequestType(
+      {required this.name,
+      required this.id,
+      required this.databasePath,
+      this.dueDate});
 
-  static final emptyAssessment = RequestType(name: '', id: '');
+  static final emptyAssessment =
+      RequestType(name: '', id: '', databasePath: '');
 
   static List<String> getAssessmentNames(List<RequestType> assessments) {
     List<String> names = [];

@@ -32,19 +32,19 @@ class DataBase {
         .get();
     final List<dynamic> fetchedCanvasData =
         fetchedCanvasDataQuery.data()!['subjects'];
-    final String selectedSubject = fetchedCanvasDataQuery.data()!['selected_course'];
+    final String selectedSubject =
+        fetchedCanvasDataQuery.data()!['selected_course'];
 
     final userModel = UserModel(
-      uuid: fetchedUser.id,
-      id: fetchedUser["id"],
-      email: fetchedUser["email"],
-      accessToken: fetchedUser["access_token"],
-      name: fetchedUser["name"],
-      subjects: fetchedUser["subjects"],
-      studentID: fetchedUser["student_id"],
-      canvasData: CanvasData.fromDB(fetchedCanvasData),
-      selectedSubject: selectedSubject
-    );
+        uuid: fetchedUser.id,
+        id: fetchedUser["id"],
+        email: fetchedUser["email"],
+        accessToken: fetchedUser["access_token"],
+        name: fetchedUser["name"],
+        subjects: fetchedUser["subjects"],
+        studentID: fetchedUser["student_id"],
+        canvasData: CanvasData.fromDB(fetchedCanvasData),
+        selectedSubject: selectedSubject);
 
     user = userModel;
     return userModel;
@@ -143,7 +143,10 @@ class DataBase {
 
           assessments.forEach((element) {
             returnList.add(RequestType(
-                name: element['name'], id: element['id'].toString()));
+                name: element['name'],
+                id: element['id'].toString(),
+                dueDate: DateTime.parse(element['due_date']),
+                databasePath: ""));
           });
 
           return returnList;
@@ -177,10 +180,18 @@ class DataBase {
     CollectionReference subjectRef =
         _db.doc(subjectPath).collection('assessments');
 
-    DocumentReference documentRef = await subjectRef
-        .add({'name': assessment.name, 'id': int.parse(assessment.id)});
+    DocumentReference documentRef = await subjectRef.add({
+      'name': assessment.name,
+      'id': int.parse(assessment.id),
+      'dueDate': assessment.dueDate
+    });
 
-    assessment.id = documentRef.id;
+    DocumentReference assessmentsRef =
+        _db.doc('${subjectPath}/assessments/${documentRef.id}');
+    assessmentsRef
+        .update({'dataPath': '${subjectPath}/assessments/${documentRef.id}'});
+
+    assessment.databasePath = documentRef.id;
   }
 
   /// Function update assessment name through Assessment Manager to DB
@@ -230,7 +241,9 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'], id: request['assessment'].path);
+              name: documentSnapshot['name'],
+              databasePath: request['assessment'].path,
+              id: documentSnapshot['id']);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -264,7 +277,9 @@ class DataBase {
 
         await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
           assessmentFromDB = RequestType(
-              name: documentSnapshot['name'], id: request['assessment'].path);
+              name: documentSnapshot['name'],
+              databasePath: request['assessment'].path,
+              id: documentSnapshot['id']);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -285,7 +300,6 @@ class DataBase {
 
     // For other roles (Determined by permissions set by subject coordinator)
     else {
-
       if (!subject.roles.keys.toList().contains(user.id)) return [];
 
       final subjectRef = await _db.doc(subject.databasePath).get();
@@ -327,7 +341,7 @@ class DataBase {
       for (final assessmentRef in allowedPermissions.keys.toList()) {
         final allowedRequestTypes = allowedPermissions[assessmentRef];
 
-        if(allowedRequestTypes!.isEmpty) continue;
+        if (allowedRequestTypes!.isEmpty) continue;
 
         final requestListFromDB = await _db
             .doc(subject.databasePath)
@@ -342,7 +356,9 @@ class DataBase {
 
           await assessmentRef.get().then((DocumentSnapshot documentSnapshot) {
             assessmentFromDB = RequestType(
-                name: documentSnapshot['name'], id: request['assessment'].path);
+                name: documentSnapshot['name'],
+                databasePath: request['assessment'].path,
+                id: documentSnapshot['id']);
           });
 
           final timeSubmitted =
@@ -380,7 +396,6 @@ class DataBase {
       final assessments = await getAssessments(subject.path);
 
       await docRef.get().then((DocumentSnapshot documentSnapshot) async {
-
         subjects.add(SubjectModel(
             id: documentSnapshot['id'],
             name: documentSnapshot['name'],
@@ -392,7 +407,6 @@ class DataBase {
             databasePath: subject.path));
       });
     }
-
 
     // Check if a subject is being initialised or not
     for (final subject in user!.canvasData.subjects) {
@@ -431,8 +445,10 @@ class DataBase {
     QuerySnapshot querySnapshot = await assessmentsRef.get();
 
     for (final assessment in querySnapshot.docs) {
-      assessments.add(
-          RequestType(name: assessment['name'], id: assessment.reference.path));
+      assessments.add(RequestType(
+          name: assessment['name'],
+          id: '-404',
+          databasePath: assessment.reference.path));
     }
 
     return assessments;
@@ -594,7 +610,6 @@ class DataBase {
     await subjectRef.update({'roles': roles});
   }
 
-
   /// Function that initialises basic information for a subject onto the database
   Future<void> initialiseSubject(
       Map<String, dynamic> subjectInformation) async {
@@ -625,7 +640,6 @@ class DataBase {
 
       final userDatabasePath = userRef.docs[0].reference.path;
 
-
       await _db.doc(userDatabasePath).update({
         'subjects': FieldValue.arrayUnion([subjectID])
       });
@@ -635,7 +649,6 @@ class DataBase {
   /// Function to update subject's role (In case new student has enrolled in this subject),
   /// also updates each user's subjects array
   Future<void> updateSubjectRoles(List<SubjectModel> subjects) async {
-
     for (final subject in subjects) {
       final subjectRef = _db.doc(subject.databasePath);
       final subjectDoc = await subjectRef.get();
@@ -659,19 +672,28 @@ class DataBase {
             canvasStudentsOnly.removeWhere((key, value) => value != 'Student');
 
             final Map<String, dynamic> canvasStaffsOnly = {...canvasRoles};
-            canvasStaffsOnly.removeWhere((key, value) => value == 'Student' || value == 'Subject Coordinator');
+            canvasStaffsOnly.removeWhere((key, value) =>
+                value == 'Student' || value == 'Subject Coordinator');
 
-            final List studentInDatabaseButNotInCanvas = databaseStudentsOnly.keys.toList();
-            studentInDatabaseButNotInCanvas.removeWhere((element) => canvasStudentsOnly.keys.toList().contains(element));
+            final List studentInDatabaseButNotInCanvas =
+                databaseStudentsOnly.keys.toList();
+            studentInDatabaseButNotInCanvas.removeWhere((element) =>
+                canvasStudentsOnly.keys.toList().contains(element));
 
-            final List studentInCanvasButNotInDatabase = canvasStudentsOnly.keys.toList();
-            studentInCanvasButNotInDatabase.removeWhere((element) => databaseStudentsOnly.keys.toList().contains(element));
+            final List studentInCanvasButNotInDatabase =
+                canvasStudentsOnly.keys.toList();
+            studentInCanvasButNotInDatabase.removeWhere((element) =>
+                databaseStudentsOnly.keys.toList().contains(element));
 
-            final List staffInDatabaseButNotInCanvas = canvasStaffsOnly.keys.toList();
-            staffInDatabaseButNotInCanvas.removeWhere((element) => canvasStaffsOnly.keys.toList().contains(element));
+            final List staffInDatabaseButNotInCanvas =
+                canvasStaffsOnly.keys.toList();
+            staffInDatabaseButNotInCanvas.removeWhere(
+                (element) => canvasStaffsOnly.keys.toList().contains(element));
 
-            final List staffInCanvasButNotInDatabase = canvasStaffsOnly.keys.toList();
-            staffInCanvasButNotInDatabase.removeWhere((element) => databaseStaff.keys.toList().contains(element));
+            final List staffInCanvasButNotInDatabase =
+                canvasStaffsOnly.keys.toList();
+            staffInCanvasButNotInDatabase.removeWhere(
+                (element) => databaseStaff.keys.toList().contains(element));
 
             // If new students has enrolled into subject, add into subject array
             if (studentInCanvasButNotInDatabase.isNotEmpty) {
@@ -789,8 +811,8 @@ class DataBase {
 
   ///
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
-
     Map<String, String> names = {};
+
 
     if (userIDs.isEmpty) return {};
 
@@ -804,7 +826,6 @@ class DataBase {
 
     return names;
   }
-
 
   ///
   Future<String> getUserID(String name, String studentID) async {
