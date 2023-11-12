@@ -307,7 +307,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                       ElevatedButton(
                         onPressed: () {
                           if (newItemName.isNotEmpty) {
-                            _addAssessment(newItemName, selectedItem!);
+                            _addAssessment(newItemName);
                             Navigator.pop(context);
                           }
                         },
@@ -333,9 +333,9 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   }
 
   /// helper function add assessment
-  void _addAssessment(String name, String requestType) {
+  void _addAssessment(String name) {
     final assessment = RequestType(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: '-69',
       name: name,
     );
     setState(() {
