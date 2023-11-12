@@ -5,10 +5,13 @@ import {SERVER} from "./server";
 import {
   createAssignmentOverride,
   getAssignmentOverrides,
+  refreshAccessToken,
   updateAssignmentOverride,
 } from "./api";
 import {sendStaffEmails, sendStudentEmail} from "./mail";
 import {AssessmentOverride} from "./models/assessment_override";
+import {User} from "./models/user";
+import {getUser, updateAccessToken} from "./db";
 
 // Where in the world to deploy the cloud functions.
 const REGION = "australia-southeast2";
@@ -21,6 +24,24 @@ SERVER.use(LTI.app);
 export const lti = onRequest(
   {region: REGION, cors: true},
   SERVER
+);
+
+// Deploy a HTTP cloud function that refreshes
+// a user's access token.
+export const refresh = onRequest(
+  {region: REGION, cors: true},
+  async (req, res) => {
+    const payload = req.body.data;
+    const userUUID: string = payload.userUUID;
+    const user: User = await getUser(userUUID);
+    const newAccessToken = await refreshAccessToken(user.refreshToken);
+    await updateAccessToken(userUUID, newAccessToken);
+    res.status(200).send({
+      data: {
+        access_token: newAccessToken,
+      },
+    });
+  }
 );
 
 // Deploy a HTTP cloud function that overrides an

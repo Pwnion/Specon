@@ -4,6 +4,14 @@ final FirebaseFunctions _fn = FirebaseFunctions.instanceFor(
   region: 'australia-southeast2'
 );
 
+Future<String> refreshAccessToken(final String userUUID) async {
+  final HttpsCallableResult response = await _fn.httpsCallable('refresh').call({
+    'userUUID': userUUID
+  });
+  final data = response.data as Map<String, dynamic>;
+  return data['access_token'];
+}
+
 Future<String> createAssignmentOverride(
   final String userId,
   final int courseId,
