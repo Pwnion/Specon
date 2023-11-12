@@ -4,8 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:specon/functions.dart';
+import 'package:specon/models/user_model.dart';
 import 'package:specon/page/verify_email_page.dart';
 
+import '../../db.dart';
 import '../dashboard_page.dart';
 import 'loading_page.dart';
 import '../login_page.dart';
@@ -23,6 +26,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final _database = DataBase();
 
   late bool _canvasLogin;
 
@@ -63,6 +67,11 @@ class _LandingState extends State<Landing> {
             user.sendEmailVerification();
             return const VerifyEmail();
           }
+
+          // Refresh the user's access token when loggin in externally.
+          _database.getUserFromEmail(_auth.currentUser!.email!).then((user) {
+            refreshAccessToken(user.uuid);
+          });
 
           // Otherwise, navigate to the main dashboard.
           return const Dashboard();
