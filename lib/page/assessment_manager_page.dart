@@ -318,11 +318,11 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   }
 
   /// helper function delete assessment
-  void _deleteAssessment(String id) {
+  void _deleteAssessment(String path) {
     setState(() {
-      _foundRequestType.removeWhere((item) => item.id == id);
+      _foundRequestType.removeWhere((item) => item.databasePath == path);
     });
-    _deleteToDb.add(id);
+    _deleteToDb.add(path);
   }
 
   /// helper function add assessment

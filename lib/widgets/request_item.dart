@@ -212,7 +212,7 @@ class RequestTypeItem extends StatelessWidget {
                   onPressed: () {
                     setState(() {
                       if (typedName == requestType.name) {
-                        onDeleteItem(requestType.id);
+                        onDeleteItem(requestType.databasePath);
                         Navigator.of(context).pop();
                       } else {
                         showError = true;
