@@ -41,13 +41,6 @@ class RequestTypeItem extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
           ),
         ),
-        subtitle: Text(
-          requestType.type, // Display the request type as a subtitle
-          style: TextStyle(
-            fontSize: 14,
-            color: Theme.of(context).colorScheme.surface,
-          ),
-        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

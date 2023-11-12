@@ -13,13 +13,17 @@ import 'package:specon/models/subject_model.dart';
 class AssessmentManager extends StatefulWidget {
   final SubjectModel subject;
   final Function refreshFn;
+  final Function? onboardRefreshFn;
 
   /// Constructor for AsmManager widget.
   ///
   /// [subject] is the subject for which assessments are managed.
   /// [refreshFn] is a function to refresh the UI after updates.
   const AssessmentManager(
-      {Key? key, required this.subject, required this.refreshFn})
+      {Key? key,
+      required this.subject,
+      required this.refreshFn,
+      this.onboardRefreshFn})
       : super(key: key);
 
   @override
@@ -31,7 +35,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   ///
   /// [_requestTypesList] is for display purposes.
   /// [_foundRequestType] is used to update the SubjectModel.
-  final List<RequestType> _requestTypesList = RequestType.importTypes();
+  // final List<RequestType> _requestTypesList = RequestType.importTypes();
   final List<RequestType> _foundRequestType = [];
 
   final List<RequestType> _addToDb = [];
@@ -96,10 +100,25 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                 ),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed: () {
-                    // Import assessments from Canvas.
-                    final List<RequestType> importedTypes =
-                        RequestType.importTypes();
+                  onPressed: () async {
+                    List<RequestType> importedTypes =
+                        await _db.importFromCanvas(widget.subject.code);
+
+                    if (importedTypes.isEmpty) {
+                      // Show error message if no assessments on canvas.
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Error: No assessments to found on Canvas.',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {}
                     setState(() {
                       _foundRequestType.addAll(importedTypes);
                       _addToDb.addAll(importedTypes);
@@ -152,7 +171,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                           // Use RequestTypeItem widget here.
                           key: ValueKey(index),
                           requestType: item,
-                          onDeleteItem: _deleteRequestTypeItem,
+                          onDeleteItem: _deleteAssessment,
                           onUpdateName: updateRequestTypeName, // Add this line.
                         );
                       }).toList(),
@@ -192,6 +211,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     _pushToDB();
                   }
                   widget.refreshFn(() {});
+
+                  // if check
+                  if (widget.onboardRefreshFn != null) {
+                    widget.onboardRefreshFn!();
+                  }
+
                   Navigator.pop(context);
                 }
               },
@@ -219,7 +244,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
     // delete
     for (final assessmentPath in _deleteToDb) {
-      await _db.deleteAssessment(assessmentPath);
+      await _db.deleteAssessment(widget.subject.databasePath, assessmentPath);
     }
   }
 
@@ -232,6 +257,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     _updateToDb[id] = newName;
   }
 
+  /// helper function asking to add new individual assessment
   Future<void> _showAddNewItemDialog() async {
     String newItemName = '';
     String? selectedItem;
@@ -252,31 +278,12 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  DropdownButton<String>(
-                    value: selectedItem,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedItem = value;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'assignment extension',
-                        child: Text('Assignment Extension'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'participation waiver',
-                        child: Text('Participation Waiver'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
                   TextField(
                     onChanged: (value) {
                       newItemName = value;
                     },
                     decoration: const InputDecoration(
-                      hintText: 'Enter a new item',
+                      hintText: 'Enter a new assessment',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -292,8 +299,8 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (newItemName.isNotEmpty && selectedItem != null) {
-                            _addRequestTypeItem(newItemName, selectedItem!);
+                          if (newItemName.isNotEmpty) {
+                            _addAssessment(newItemName, selectedItem!);
                             Navigator.pop(context);
                           }
                         },
@@ -310,18 +317,19 @@ class _AssessmentManagerState extends State<AssessmentManager> {
     );
   }
 
-  void _deleteRequestTypeItem(String id) {
+  /// helper function delete assessment
+  void _deleteAssessment(String id) {
     setState(() {
       _foundRequestType.removeWhere((item) => item.id == id);
     });
     _deleteToDb.add(id);
   }
 
-  void _addRequestTypeItem(String name, String requestType) {
+  /// helper function add assessment
+  void _addAssessment(String name, String requestType) {
     final assessment = RequestType(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
-      type: requestType,
     );
     setState(() {
       _foundRequestType.add(assessment);
@@ -329,46 +337,5 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
     // add to temp stack
     _addToDb.add(assessment);
-  }
-
-  void _runFilter(String enteredKeyword) {
-    final List<RequestType> results;
-    if (enteredKeyword.isEmpty) {
-      results = _requestTypesList;
-    } else {
-      results = _requestTypesList.where((item) {
-        return item.name.toLowerCase().contains(enteredKeyword.toLowerCase());
-      }).toList();
-    }
-    setState(() => _foundRequestType.addAll(results));
-  }
-
-  /// Widget for the search box.
-  Widget searchBox() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: TextField(
-        onChanged: (value) => _runFilter(value),
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(0),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 20,
-          ),
-          prefixIconConstraints: const BoxConstraints(
-            maxHeight: 20,
-            minWidth: 25,
-          ),
-          border: InputBorder.none,
-          hintText: 'Search',
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-        ),
-      ),
-    );
   }
 }

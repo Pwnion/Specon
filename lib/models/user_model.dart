@@ -9,6 +9,7 @@ class UserModel {
   final List<dynamic> subjects;
   String studentID;
   final CanvasData canvasData;
+  final String selectedSubject;
 
   UserModel({
     required this.uuid,
@@ -18,7 +19,8 @@ class UserModel {
     required this.accessToken,
     required this.subjects,
     required this.studentID,
-    required this.canvasData
+    required this.canvasData,
+    required this.selectedSubject
   });
 
   Map<String, dynamic> toJson() {

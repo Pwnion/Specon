@@ -178,6 +178,12 @@ class _RequestsState extends State<Requests> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.background,
+                        width: 1,
+                      ),
+                    ),
                   ),
                 ),
               ),

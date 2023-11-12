@@ -7,7 +7,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:specon/canvas.dart';
+import 'package:specon/functions.dart';
 
 import '../dialog/dialog_helper.dart';
 
@@ -20,7 +20,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   static const textFormFieldWidth = 400.0;
-  
+
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -53,12 +53,9 @@ class _LoginState extends State<Login> {
   Future<void> _authenticate(String email, String password) async {
     try {
       // Attempt to sign in with an already existing account.
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password
-      );
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      switch(e.code) {
+      switch (e.code) {
         case 'invalid-email':
           setState(() {
             _emailErrorMessage = 'Please enter a valid email address';
@@ -90,15 +87,14 @@ class _LoginState extends State<Login> {
           });
           return;
         case 'user-not-found':
-          final QuerySnapshot userAlreadyExistsQuery = await userRef.where(
-            'email',
-            isEqualTo: email
-          ).get();
+          final QuerySnapshot userAlreadyExistsQuery =
+              await userRef.where('email', isEqualTo: email).get();
 
           // Ensure a new account has already signed in through Canvas before.
-          if(userAlreadyExistsQuery.docs.isEmpty) {
+          if (userAlreadyExistsQuery.docs.isEmpty) {
             setState(() {
-              _emailErrorMessage = 'Please initialise this email address through Canvas first';
+              _emailErrorMessage =
+                  'Please initialise this email address through Canvas first';
               _passwordErrorMessage = null;
             });
             return;
@@ -107,11 +103,9 @@ class _LoginState extends State<Login> {
           // Create a new Firebase Authentication account for the user.
           try {
             await _auth.createUserWithEmailAndPassword(
-              email: email,
-              password: password
-            );
+                email: email, password: password);
           } on FirebaseAuthException catch (e) {
-            if(e.code == 'weak-password') {
+            if (e.code == 'weak-password') {
               setState(() {
                 _emailErrorMessage = null;
                 _passwordErrorMessage = 'Password is too weak';
@@ -125,15 +119,9 @@ class _LoginState extends State<Login> {
 
   /// Begin the authentication flow.
   void _attemptLogin() async {
-    showLoadingDialog(
-      context,
-      'Logging in...'
-    );
+    showLoadingDialog(context, 'Logging in...');
 
-    await _authenticate(
-      _emailController.text,
-      _passwordController.text
-    );
+    await _authenticate(_emailController.text, _passwordController.text);
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -148,17 +136,12 @@ class _LoginState extends State<Login> {
         elevation: 0.0,
         title: Text(
           'Sign in',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onBackground
-          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
         ),
         centerTitle: true,
       ),
       body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20.0,
-          horizontal: 50.0
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
         child: Column(
           children: [
             const SizedBox(height: 20.0),
@@ -166,23 +149,25 @@ class _LoginState extends State<Login> {
               child: SizedBox(
                 width: textFormFieldWidth,
                 child: TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.background),
-                    errorText: _emailErrorMessage,
-                    fillColor: Theme.of(context).colorScheme.surface,
-                    filled: true,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).colorScheme.surface, width: 2.0),
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.background),
+                      errorText: _emailErrorMessage,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      filled: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.surface,
+                            width: 2.0),
+                      ),
                     ),
-                  ),
-                  onChanged: (value) {
-                    if(_emailErrorMessage != null) {
-                      setState(() => _emailErrorMessage = null);
-                    }
-                  }
-                ),
+                    onChanged: (value) {
+                      if (_emailErrorMessage != null) {
+                        setState(() => _emailErrorMessage = null);
+                      }
+                    }),
               ),
             ),
             const SizedBox(height: 20.0),
@@ -192,17 +177,20 @@ class _LoginState extends State<Login> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   hintText: 'Password',
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.background),
+                  hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.background),
                   errorText: _passwordErrorMessage,
                   fillColor: Theme.of(context).colorScheme.surface,
                   filled: true,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.surface, width: 2.0),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 2.0),
                   ),
                 ),
                 obscureText: true,
                 onChanged: (value) {
-                  if(_passwordErrorMessage != null) {
+                  if (_passwordErrorMessage != null) {
                     setState(() => _passwordErrorMessage = null);
                   }
                 },
@@ -212,10 +200,8 @@ class _LoginState extends State<Login> {
             const SizedBox(height: 20.0),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.secondary
-                )
-              ),
+                  backgroundColor: MaterialStatePropertyAll(
+                      Theme.of(context).colorScheme.secondary)),
               onPressed: () => _attemptLogin(),
               child: Text(
                 'Sign in',

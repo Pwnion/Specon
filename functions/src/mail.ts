@@ -1,56 +1,94 @@
-/* eslint-disable max-len */
+import {User} from "./models/user";
+import {Course} from "./models/course";
+import {countOpenRequests, getCourses, getUsers, sendEmail} from "./db";
 
-// getSummary(final String test) async{
-//     String number_open = await _subjectRequestSummary(['COMP10001'], true);
-//     String individualSubjectSummary = await _subjectRequestSummary(['COMP10001'], false);
-//     String summary = '''<body><h2>Summary provided by SPECON</h2>
-//                         <p>There are $number_open open requests remaining</p>
-//                         <hr>
-//                         <h4>open requests in each subject:</h4>
+/**
+ * Maps staff users to the number of open requests they have for each course.
+ *
+ * @param users - An array of users.
+ * @param courses - An array of courses.
+ * @returns A mapping of users to courses and their open request counts.
+ */
+async function getStaffRequestCounts(
+  users: Array<User>,
+  courses: Array<Course>
+): Promise<Map<User, Map<Course, number>>> {
+  const data: Map<User, Map<Course, number>> =
+    new Map<User, Map<Course, number>>();
 
-//     </body>''';
-//     return summary;
-//   }
+  for (const user of users) {
+    for (const course of courses) {
+      const roles: Map<string, string> = course.roles;
+      const role: string | undefined = roles.get(user.id);
+      if (role == null || role == "student") continue;
+      const requestCount: number = await countOpenRequests(course.uuid);
+      if (requestCount == 0) continue;
+      if (!data.has(user)) data.set(user, new Map<Course, number>());
+      data.get(user)!.set(course, requestCount);
+    }
+  }
+  return data;
+}
 
-//   Future<String> _subjectRequestSummary(List<String> subcorSubjects, bool getTotalNumber) async {
-//     String text = "";
-//     List<String> subcorSubjects = ["COMP10001"];
-//     num count = 0;
-//     final db = FirebaseFirestore.instance;
-//     final subjectsRef = db.collection("subjects");
+/**
+ * Generates a HTML summary of the number of open requests
+ * per course there are.
+ *
+ * @param courseRequestCounts - A mapping of courses to open request counts.
+ * @returns The HTML summary.
+ */
+function generateStaffSummary(
+  courseRequestCounts: Map<Course, number>
+): string {
+  return Array.from(
+    courseRequestCounts,
+    ([course, requestCount]) => {
+      return [
+        `<strong>${course.name}</strong>`,
+        `Requests Open: ${requestCount}`,
+      ].join("<br>");
+    }
+  ).join("<br><br>");
+}
 
-//     // loop through subjects
-//     for(String subject in subcorSubjects){
-//       var subjectRef = await subjectsRef.where('code', isEqualTo: subject ).get();
-//       var query = await subjectsRef.doc(subjectRef.docs[0].id).collection('requests').where('state', isEqualTo: "Open").get();
-//       text += '<p>$subject: {$query.docs.length} open requests</p>';
-//       count += query.docs.length;
-//     }
+/**
+ * Send summaries of open requests for each course
+ * to every staff member.
+ */
+async function sendStaffEmails(): Promise<void> {
+  const users: Array<User> = await getUsers();
+  const courses: Array<Course> = await getCourses();
+  const staffRequestCounts: Map<User, Map<Course, number>> =
+    await getStaffRequestCounts(users, courses);
 
-//     if(getTotalNumber){
-//       return count.toString();
-//     }
-//     return text;
-//   }
+  for (const [user, courseRequestCounts] of staffRequestCounts) {
+    await sendEmail(
+      user.email,
+      "Specon Summary",
+      "<body><h2>Specon Summary</h2><br>" +
+      [
+        `${generateStaffSummary(courseRequestCounts)}`,
+        "Visit https://special-consideration.web.app/ to review your open requests.</body>",
+      ].join("<br><br>")
+    );
+  }
+}
 
-//   requestReplyMessage(final String request) {
-//     String name = 'asdf';
-//     String status = "approved";
-//     String subject = "COMP10001";
-//     String assessment = "Project1";
-//     String reason = "uwu";
-//     String additional = "owo";
-//     String summary = '''<body><h2>Your request status has been updated</h2>
-//                         <p>Dear $name <br>
-//                         Your request's status has now been change to</p>
-//                         <h3>$status</h3>
-//                         <hr>
-//                         <h4>Your request information:</h4>
-//                         <p>Subject: $subject<br>
-//                         Assessment: $assessment<br><br>
-//                         Reason: $reason<br></p>
-//                         <p>Best regards<br>
-//                         SPECON</p>
-//     </body>''';
-//     return summary;
-//   }
+/**
+ * Send an email to a student to notify them that
+ * one of their requests has been considered.
+ *
+ * @param to - The email address of the student.
+ */
+async function sendStudentEmail(to: string): Promise<void> {
+  await sendEmail(
+    to,
+    "Specon: Request Considered",
+    [
+      "<body>One of your requests has considered.",
+      "See the result at https://special-consideration.web.app/</body>",
+    ].join(" ")
+  );
+}
+
+export {sendStaffEmails, sendStudentEmail};

@@ -62,7 +62,6 @@ class _SpeconFormState extends State<SpeconForm> {
     'Assessment',
     'Request Type',
     'Extend due date to (For extension request type only)',
-    'Additional Information',
     'Reason',
     'Attachments',
     'AAP'
@@ -71,7 +70,6 @@ class _SpeconFormState extends State<SpeconForm> {
   late Future<Map<String, dynamic>> basicForm;
 
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
-  final _additionalInformationController = TextEditingController();
   final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
   final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
@@ -713,21 +711,13 @@ class _SpeconFormState extends State<SpeconForm> {
 
       // To be filled fields
       else {
-        TextEditingController controller;
-        if (field == 'Additional Information') {
-          controller = _additionalInformationController;
-        }
-        else {
-          controller = _reasonController;
-        }
-
         textFormFields.add(
           SizedBox(
             width: 420.0,
             child: TextFormField(
               enabled: true,
               maxLines: null,
-              controller: controller,
+              controller: _reasonController,
               style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               cursorColor: Theme.of(context).colorScheme.onSecondary,
               decoration: InputDecoration(
@@ -880,7 +870,6 @@ class _SpeconFormState extends State<SpeconForm> {
                   assessedBy: '',
                   assessment: selectedAssessment,
                   reason: _reasonController.text,
-                  additionalInfo: _additionalInformationController.text,
                   state: 'Open',
                   databasePath: '',
                   timeSubmitted: DateTime.now(),

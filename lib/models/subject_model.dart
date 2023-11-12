@@ -1,6 +1,7 @@
 import 'package:specon/models/request_type.dart';
 
 class SubjectModel {
+  final int id;
   final String name; // TODO: not final because we can change name
   final String code;
   final List<RequestType> assessments;
@@ -10,17 +11,20 @@ class SubjectModel {
   final Map<String, dynamic> roles;
 
   static final emptySubject = SubjectModel(
+    id: 0,
     roles: {},
     name: '',
     code: '',
     assessments: [],
     semester: '',
     year: '',
-    databasePath: ''
+    databasePath: '',
   );
 
   SubjectModel(
-      {required this.name,
+      {
+      required this.id,
+      required this.name,
       required this.code,
       required this.assessments,
       required this.semester,

@@ -8,9 +8,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:specon/functions.dart';
 import 'package:specon/models/request_model.dart';
 import 'package:specon/db.dart';
-import 'package:specon/request_state.dart';
+import 'package:specon/models/subject_model.dart';
 import 'package:specon/user_type.dart';
 
 import '../dashboard_page.dart';
@@ -22,7 +23,7 @@ class Discussion extends StatefulWidget {
   final RequestModel currentRequest;
   final UserModel currentUser;
   final String role;
-  final String subjectCode;
+  final SubjectModel currentSubject;
   final void Function() incrementCounter;
   final void Function() closeSubmittedRequest;
 
@@ -31,7 +32,7 @@ class Discussion extends StatefulWidget {
     required this.currentRequest,
     required this.currentUser,
     required this.role,
-    required this.subjectCode,
+    required this.currentSubject,
     required this.incrementCounter,
     required this.closeSubmittedRequest
     }
@@ -44,6 +45,8 @@ class Discussion extends StatefulWidget {
 class _DiscussionState extends State<Discussion> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
+  final _finalDueDateTextController = TextEditingController();
+  final _proposedDueDateTextController = TextEditingController();
   static final _db = DataBase();
   UploadTask? _uploadTask;
   List discussionThread = [];
@@ -53,6 +56,21 @@ class _DiscussionState extends State<Discussion> {
   FilePickerResult? _selectedFiles;
   String _displayFileNames = "";
   RequestModel? _lastRequest;
+
+  double _sliderValue = 0.0;
+  int daysExtending = 0;
+  bool businessDaysOnly = true;
+  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
+  static final Map<int, String> dayName = {
+    1: 'MON',
+    2: 'TUE',
+    3: 'WED',
+    4: 'THU',
+    5: 'FRI',
+    6: 'SAT',
+    7: 'SUN'
+  };
 
   void _setDisplayFileName(String name){
     setState(() {
@@ -108,8 +126,7 @@ class _DiscussionState extends State<Discussion> {
                               "Request Type: ${cr.requestType}\n"
                               "Assessed by: ${cr.assessedBy}\n"
                               "State of Request: ${cr.state}\n\n"
-                              "Reason: ${cr.reason}\n"
-                              "Additional Info: ${cr.additionalInfo}"};
+                              "Reason: ${cr.reason}\n"};
     discussionThread.insert(0, info);
   }
 
@@ -164,6 +181,7 @@ class _DiscussionState extends State<Discussion> {
     });
   }
 
+  ///
   Future<bool?> deleteConfirmationPopUp() {
 
     return showDialog<bool>(
@@ -196,9 +214,188 @@ class _DiscussionState extends State<Discussion> {
     );
   }
 
+  ///
+  Future<bool?> adjustDueDatePopUp() {
+
+    return showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => StatefulBuilder(
+          builder: (_, setState) => AlertDialog(
+            title: Center(
+              child: Text(
+                'Please select a new due date',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface
+                )
+              ),
+            ),
+            content: SizedBox(
+              height: 150.0,
+              width: 650.0,
+              child: Column(
+                children: [
+                  Slider(
+                    value: _sliderValue,
+                    divisions: _mockMaxExtendDays,
+                    max: _mockMaxExtendDays.toDouble(),
+                    secondaryTrackValue: widget.currentRequest.daysExtending.toDouble(),
+                    label: '${_sliderValue.round().toString()} days',
+                    onChanged: (value) {
+                      setState(() {
+                        _sliderValue = value;
+                        _finalDueDateTextController.text = dateConversionString(value.toInt());
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 5.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Proposed new due date: ${_proposedDueDateTextController.text}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Final new due date: ${_finalDueDateTextController.text}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        )
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Business Days Only: ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        )
+                      ),
+                      Checkbox(
+                        value: businessDaysOnly,
+                        onChanged: (value) {
+                          setState(() {
+                            businessDaysOnly = value!;
+                            _finalDueDateTextController.text = dateConversionString(_sliderValue.toInt());
+                          });
+                        }
+                      )
+                    ]
+                  )
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Confirm'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+        )
+    );
+  }
+
+  /// Function that returns a string to display the before and after due dates
+  String dateConversionString(int daysExtended) {
+    var displayString = '';
+    var extendedDate = dateAfterExtension(daysExtended);
+
+    displayString +=
+    '${_mockAssessmentDueDate.day}-'
+        '${_mockAssessmentDueDate.month}-'
+        '${_mockAssessmentDueDate.year} '
+        '${_mockAssessmentDueDate.hour}'
+        ':'
+        '${_mockAssessmentDueDate.minute}'
+        ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+        '  -->  '
+        '${extendedDate.day}-'
+        '${extendedDate.month}-'
+        '${extendedDate.year} '
+        '${extendedDate.hour}'
+        ':'
+        '${extendedDate.minute}'
+        ' [${dayName[extendedDate.weekday]}]';
+
+    return displayString;
+  }
+
+  /// Function that calculates the date after a given number of extension days
+  DateTime dateAfterExtension(int daysExtended) {
+    int daysExcludingWeekend = 0;
+    int daysIncludingWeekend = 0;
+    final year = _mockAssessmentDueDate.year;
+    final month = _mockAssessmentDueDate.month;
+    final day = _mockAssessmentDueDate.day;
+
+    while (daysExcludingWeekend < daysExtended) {
+
+      if (DateTime(year, month, day + daysIncludingWeekend + 1).weekday <= 5) {
+        daysExcludingWeekend++;
+      }
+      daysIncludingWeekend++;
+    }
+
+    if(!businessDaysOnly) {
+      daysIncludingWeekend = daysExtended;
+    }
+
+    setState(() {
+      daysExtending = daysIncludingWeekend;
+    });
+
+    return DateTime(
+        _mockAssessmentDueDate.year,
+        _mockAssessmentDueDate.month,
+        _mockAssessmentDueDate.day + daysIncludingWeekend,
+        _mockAssessmentDueDate.hour,
+        _mockAssessmentDueDate.minute
+    );
+  }
+
+  ///
+  int? getAssessmentID() {
+
+    for(final subject in widget.currentUser.canvasData.subjects) {
+
+      if(subject['id'] == widget.currentSubject.id) {
+
+        for (final assessment in subject['assessments']) {
+
+          if (assessment['name'] == widget.currentRequest.assessment.name) {
+            return assessment['id'];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     _initializeThread();
     _lastRequest = widget.currentRequest;
     super.initState();
@@ -225,7 +422,7 @@ class _DiscussionState extends State<Discussion> {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 0.0, left: 20),
               child: Text(
-                "${widget.subjectCode} - ${widget.currentRequest.assessment.name}",
+                "${widget.currentSubject.code} - ${widget.currentRequest.assessment.name}",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 20,
@@ -258,9 +455,53 @@ class _DiscussionState extends State<Discussion> {
                             visible: widget.currentRequest.state != "Approved",
                             child: TextButton(
                               onPressed: () {
-                                acceptRequest(widget.currentRequest);
-                                updateLocalRequestState("Approved");
-                                widget.incrementCounter();
+
+                                final int? assessmentID = getAssessmentID();
+
+                                if (assessmentID == null) return;
+
+                                // Show due date extension pop up
+                                if (widget.currentRequest.requestType == 'Extension') {
+                                  _sliderValue = widget.currentRequest.daysExtending.toDouble();
+                                  _proposedDueDateTextController.text = dateConversionString(_sliderValue.toInt());
+                                  _finalDueDateTextController.text = _proposedDueDateTextController.text;
+                                  adjustDueDatePopUp().then((value) async {
+                                    if (value!) {
+                                      final String result = await createAssignmentOverride(
+                                        await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
+                                        widget.currentSubject.id,
+                                        assessmentID,
+                                        dateAfterExtension(_sliderValue.toInt()),
+                                        widget.currentUser.accessToken
+                                      );
+
+                                      // If access token has expired, refresh
+                                      if (result.contains('error')) {
+                                        final String newRefreshToken = await refreshAccessToken(widget.currentUser.uuid);
+                                        createAssignmentOverride(
+                                          await _db.getUserID(widget.currentRequest.requestedBy, widget.currentRequest.requestedByStudentID),
+                                          widget.currentSubject.id,
+                                          assessmentID,
+                                          dateAfterExtension(_sliderValue.toInt()),
+                                          newRefreshToken
+                                        );
+                                        acceptRequest(widget.currentRequest);
+                                        updateLocalRequestState("Approved");
+                                        widget.incrementCounter();
+                                      }
+                                      else {
+                                        acceptRequest(widget.currentRequest);
+                                        updateLocalRequestState("Approved");
+                                        widget.incrementCounter();
+                                      }
+                                    }
+                                  });
+                                }
+                                else {
+                                  acceptRequest(widget.currentRequest);
+                                  updateLocalRequestState("Approved");
+                                  widget.incrementCounter();
+                                }
                               },
                               style: ButtonStyle(
                                 shape: MaterialStatePropertyAll(
@@ -325,7 +566,6 @@ class _DiscussionState extends State<Discussion> {
                     if(UserTypeUtils.convertString(widget.role) == UserType.student && widget.currentRequest.state == 'Open')
                     TextButton(
                       onPressed: () {
-
                         deleteConfirmationPopUp().then((value) {
                           if(value == true){
                             _db.deleteOpenRequest(widget.currentRequest);
@@ -586,7 +826,7 @@ class _DiscussionState extends State<Discussion> {
                                                   'text': "${_textController.value.text}${_selectedFileToString()}",
                                                   //'subject': discussionThread[1]['subject'],
                                                   'submittedBy': widget.currentUser.name,
-                                                  'submittedByUserID': UserTypeUtils.convertString(widget.role) == UserType.student ? widget.currentUser.studentID! : widget.currentUser.id,
+                                                  'submittedByUserID': UserTypeUtils.convertString(widget.role) == UserType.student ? widget.currentUser.studentID : widget.currentUser.id,
                                                   'type': UserTypeUtils.convertString(widget.role) == UserType.student? 'request': 'respond',
                                               });
                                           }
