@@ -217,13 +217,6 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     widget.onboardRefreshFn!();
                   }
 
-                  widget.subject.assessments.forEach(
-                    (element) {
-                      print('asm:db ${element.databasePath}');
-                      print('asm: date${element.dueDate}');
-                    },
-                  );
-
                   Navigator.pop(context);
                 }
               },
@@ -268,7 +261,6 @@ class _AssessmentManagerState extends State<AssessmentManager> {
   /// helper function asking to add new individual assessment
   Future<void> _showAddNewItemDialog() async {
     String newItemName = '';
-    String? selectedItem;
 
     await showModalBottomSheet(
       context: context,

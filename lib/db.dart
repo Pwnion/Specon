@@ -146,7 +146,7 @@ class DataBase {
                 name: element['name'],
                 id: element['id'].toString(),
                 dueDate: DateTime.parse(element['due_date']),
-                databasePath: 'Drey 1'));
+                databasePath: ""));
           });
 
           return returnList;
@@ -243,7 +243,7 @@ class DataBase {
           assessmentFromDB = RequestType(
               name: documentSnapshot['name'],
               databasePath: request['assessment'].path,
-              id: 'drey 3');
+              id: documentSnapshot['id']);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -279,7 +279,7 @@ class DataBase {
           assessmentFromDB = RequestType(
               name: documentSnapshot['name'],
               databasePath: request['assessment'].path,
-              id: "drey 2");
+              id: documentSnapshot['id']);
         });
 
         final timeSubmitted = (request['time_submitted'] as Timestamp).toDate();
@@ -358,7 +358,7 @@ class DataBase {
             assessmentFromDB = RequestType(
                 name: documentSnapshot['name'],
                 databasePath: request['assessment'].path,
-                id: "drey 4");
+                id: documentSnapshot['id']);
           });
 
           final timeSubmitted =
@@ -447,7 +447,7 @@ class DataBase {
     for (final assessment in querySnapshot.docs) {
       assessments.add(RequestType(
           name: assessment['name'],
-          id: "drey 5",
+          id: '-404',
           databasePath: assessment.reference.path));
     }
 
