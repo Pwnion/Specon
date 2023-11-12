@@ -9,8 +9,10 @@ class RequestType {
   String name; // not final because we can change name
   String id;
   DateTime? dueDate;
+  String? databasePath;
 
-  RequestType({required this.name, required this.id, this.dueDate});
+  RequestType(
+      {required this.name, required this.id, this.databasePath, this.dueDate});
 
   static final emptyAssessment = RequestType(name: '', id: '');
 

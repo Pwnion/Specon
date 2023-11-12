@@ -217,6 +217,13 @@ class _AssessmentManagerState extends State<AssessmentManager> {
                     widget.onboardRefreshFn!();
                   }
 
+                  widget.subject.assessments.forEach(
+                    (element) {
+                      print('asm:db ${element.databasePath}');
+                      print('asm: date${element.dueDate}');
+                    },
+                  );
+
                   Navigator.pop(context);
                 }
               },

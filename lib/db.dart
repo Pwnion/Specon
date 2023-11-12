@@ -185,7 +185,12 @@ class DataBase {
       'dueDate': assessment.dueDate
     });
 
-    assessment.id = documentRef.id;
+    DocumentReference assessmentsRef =
+        _db.doc('${subjectPath}/assessments/${documentRef.id}');
+    assessmentsRef
+        .update({'dataPath': '${subjectPath}/assessments/${documentRef.id}'});
+
+    assessment.databasePath = documentRef.id;
   }
 
   /// Function update assessment name through Assessment Manager to DB
