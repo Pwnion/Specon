@@ -316,16 +316,24 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
 
-    _database
-        .getUserFromEmail(_auth.currentUser != null
-            ? _auth.currentUser!.email!
-            : widget.canvasEmail!)
+    _database.getUserFromEmail(_auth.currentUser != null
+      ? _auth.currentUser!.email!
+      : widget.canvasEmail!)
         .then((user) {
       _database.getEnrolledSubjects().then((subjects) {
         if (!mounted) return;
         setState(() {
           subjectList = subjects;
           currentUser = user;
+
+          for (final subject in subjectList) {
+            if (subject.code == user.selectedSubject) {
+              currentSubject = subject;
+              selectedAssessment = 'All';
+              break;
+            }
+          }
+
           fetchingFromDB = false;
         });
       });

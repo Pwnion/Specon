@@ -32,16 +32,19 @@ class DataBase {
         .get();
     final List<dynamic> fetchedCanvasData =
         fetchedCanvasDataQuery.data()!['subjects'];
+    final String selectedSubject = fetchedCanvasDataQuery.data()!['selected_course'];
 
     final userModel = UserModel(
-        uuid: fetchedUser.id,
-        id: fetchedUser["id"],
-        email: fetchedUser["email"],
-        accessToken: fetchedUser["access_token"],
-        name: fetchedUser["name"],
-        subjects: fetchedUser["subjects"],
-        studentID: fetchedUser["student_id"],
-        canvasData: CanvasData.fromDB(fetchedCanvasData));
+      uuid: fetchedUser.id,
+      id: fetchedUser["id"],
+      email: fetchedUser["email"],
+      accessToken: fetchedUser["access_token"],
+      name: fetchedUser["name"],
+      subjects: fetchedUser["subjects"],
+      studentID: fetchedUser["student_id"],
+      canvasData: CanvasData.fromDB(fetchedCanvasData),
+      selectedSubject: selectedSubject
+    );
 
     user = userModel;
     return userModel;
