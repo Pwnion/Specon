@@ -51,10 +51,6 @@ class _DashboardState extends State<Dashboard>
   late final List<SubjectModel> subjectList;
   bool fetchingFromDB = true;
 
-  late final AnimationController controller;
-  late final Animation colorAnimation;
-  late final Animation<double> rotateAnimation;
-
   /// Function that opens a submitted request in column 3, closes any new request form, TODO: will need to change param to RequestModel
   void openSubmittedRequest(RequestModel request) {
     setState(() {
@@ -319,9 +315,6 @@ class _DashboardState extends State<Dashboard>
 
   @override
   void initState() {
-    controller = AnimationController(
-        vsync: this, duration: const Duration(seconds: 200));
-    rotateAnimation = Tween<double>(begin: 360.0, end: 0.0).animate(controller);
 
     _database
         .getUserFromEmail(_auth.currentUser != null
