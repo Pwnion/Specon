@@ -1,5 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
+/// This is a test file for [canvas_data_model]
+///
+/// Author: Kuo Wei Wu
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:specon/models/canvas_data_model.dart';
 
 void main(){
