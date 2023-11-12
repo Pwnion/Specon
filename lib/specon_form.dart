@@ -257,6 +257,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 selectedSubject =  subjectList[subjectCodeList.indexOf(value!)];
                 assessmentList = selectedSubject.assessments;
                 assessmentNameList = RequestType.getAssessmentNames(assessmentList);
+                selectedAssessment = RequestType.emptyAssessment;
               });
             }
           ),
@@ -270,7 +271,6 @@ class _SpeconFormState extends State<SpeconForm> {
         width: 420.0,
         child: Form(
           key: _assessmentFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
               validator: (value) {
                 if (value == null) {
@@ -278,7 +278,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 }
                 return null;
               },
-              value: null, // TODO: need to change to match selected subject
+              value: selectedAssessment == RequestType.emptyAssessment ? null : selectedAssessment.name, // TODO: need to change to match selected subject
               items:
                   assessmentNameList.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -311,6 +311,7 @@ class _SpeconFormState extends State<SpeconForm> {
               ),
               onChanged: (value) {
                 setState(() {
+                  print(selectedAssessment.dueDate);
                   selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
                 });
               }),
