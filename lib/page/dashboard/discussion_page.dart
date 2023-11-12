@@ -262,8 +262,18 @@ class _DiscussionState extends State<Discussion> {
                                 updateLocalRequestState("Approved");
                                 widget.incrementCounter();
                               },
-                              child: const Text('Accept', style: TextStyle(color: Colors.lightGreen),),
-                            ),
+                              style: ButtonStyle(
+                                shape: MaterialStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5))),
+                                side: const MaterialStatePropertyAll(
+                                  BorderSide(width: 2.0, color: Colors.green),
+                                ),
+                              ),
+                              child: const Text(
+                                'Approve',
+                                style: TextStyle(color: Colors.green),
+                              ),                            ),
                           ),
                           Visibility(
                             visible: widget.currentRequest.state != "Declined",
@@ -273,8 +283,18 @@ class _DiscussionState extends State<Discussion> {
                                 updateLocalRequestState("Declined");
                                 widget.incrementCounter();
                               },
-                              child: const Text('Decline', style: TextStyle(color: Colors.red)),
-                            ),
+                              style: ButtonStyle(
+                                shape: MaterialStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5))),
+                                side: const MaterialStatePropertyAll(
+                                  BorderSide(width: 2.0, color: Colors.red),
+                                ),
+                              ),
+                              child: const Text(
+                                'Approve',
+                                style: TextStyle(color: Colors.red),
+                              ),                            ),
                           ),
                           Visibility(
                             visible: widget.currentRequest.state != "Flagged",
@@ -284,8 +304,18 @@ class _DiscussionState extends State<Discussion> {
                                 updateLocalRequestState("Flagged");
                                 widget.incrementCounter();
                               },
-                              child: const Text('Flag', style: TextStyle(color: Colors.orange)),
-                            ),
+                              style: ButtonStyle(
+                                shape: MaterialStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5))),
+                                side: const MaterialStatePropertyAll(
+                                  BorderSide(width: 2.0, color: Colors.yellow),
+                                ),
+                              ),
+                              child: const Text(
+                                'Approve',
+                                style: TextStyle(color: Colors.yellow),
+                              ),                            ),
                           ),
                         ],
                       ),
