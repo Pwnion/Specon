@@ -434,7 +434,7 @@ class DataBase {
 
     // Refresh with the new initialised subjects
     if (newSubjectInitialised) {
-      return getEnrolledSubjects();
+      return await getEnrolledSubjects();
     }
 
     await updateSubjectRoles(subjects);
