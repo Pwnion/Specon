@@ -54,7 +54,7 @@ Future<String> getAapFileName(String dataPath) async {
 
 /// apply actual download mechanism
 void _downloadFile(String url) {
-  html.AnchorElement anchorElement =  new html.AnchorElement(href: url);
+  html.AnchorElement anchorElement =  html.AnchorElement(href: url);
   anchorElement.download = url;
   anchorElement.click();
 }
@@ -127,6 +127,7 @@ void downloadFilesToDisc (String dataPath, String aapPath) async{
   for (var item in downloadList.items) {
     try {
       String url = await item.getDownloadURL();
+      await Future.delayed(const Duration(milliseconds: 250));
       _downloadFile(url);
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");

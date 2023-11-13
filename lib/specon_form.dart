@@ -107,7 +107,6 @@ class _SpeconFormState extends State<SpeconForm> {
   FilePickerResult? _selectedFiles;
   FilePickerResult? _selectedAap;
   String _displayFileNames = "no file selected";
-  //String _originalAapName = "";
   String _displayAapName = "";
   UploadTask? _uploadTask;
   late final _originalAapName;
@@ -131,9 +130,6 @@ class _SpeconFormState extends State<SpeconForm> {
     setState(() {
       _showClearButton = value;
     });
-  }
-  void _updateUserAapPath(String aapPath){
-    // TODO: u know
   }
 
   /// clear all file selections and related variables
