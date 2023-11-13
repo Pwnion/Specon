@@ -194,9 +194,9 @@ class DataBase {
     });
 
     DocumentReference assessmentsRef =
-        _db.doc('${subjectPath}/assessments/${documentRef.id}');
+        _db.doc('$subjectPath/assessments/${documentRef.id}');
     assessmentsRef
-        .update({'dataPath': '${subjectPath}/assessments/${documentRef.id}'});
+        .update({'dataPath': '$subjectPath/assessments/${documentRef.id}'});
 
     assessment.databasePath = documentRef.id;
   }
@@ -844,6 +844,23 @@ class DataBase {
 
     return userRef.docs[0]['id'];
   }
+
+  ///
+  Future<DateTime?> getAssessmentDueDate(RequestType assessment) async {
+
+    final assessmentDoc = await _db.doc(assessment.databasePath).get();
+    final assessmentFields = assessmentDoc.data();
+
+    if (assessmentFields!['dueDate'] == null) {
+      return null;
+    }
+
+    else {
+      final Timestamp timestamp = assessmentFields['dueDate'];
+      return DateTime.fromMicrosecondsSinceEpoch(timestamp.microsecondsSinceEpoch);
+    }
+  }
+
 }
 
 ///
