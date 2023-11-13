@@ -142,11 +142,18 @@ class DataBase {
           List<dynamic> assessments = matchingSubject['assessments'];
 
           assessments.forEach((element) {
-            returnList.add(RequestType(
-                name: element['name'],
-                id: element['id'].toString(),
-                dueDate: DateTime.parse(element['due_date']),
-                databasePath: ""));
+            if (element['due_date'] == null) {
+              returnList.add(RequestType(
+                  name: element['name'],
+                  id: element['id'].toString(),
+                  databasePath: ""));
+            } else {
+              returnList.add(RequestType(
+                  name: element['name'],
+                  id: element['id'].toString(),
+                  dueDate: DateTime.parse(element['due_date']),
+                  databasePath: ""));
+            }
           });
 
           return returnList;
@@ -813,10 +820,10 @@ class DataBase {
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
     Map<String, String> names = {};
 
-
     if (userIDs.isEmpty) return {};
 
-    final usersRef = await _db.collection('users').where('id', whereIn: userIDs).get();
+    final usersRef =
+        await _db.collection('users').where('id', whereIn: userIDs).get();
 
     final userDocs = usersRef.docs;
 
