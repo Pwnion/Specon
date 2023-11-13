@@ -1,5 +1,4 @@
 import {onRequest} from "firebase-functions/v2/https";
-import {onSchedule} from "firebase-functions/v2/scheduler";
 import {LTI} from "./lti";
 import {SERVER} from "./server";
 import {
