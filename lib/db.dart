@@ -845,6 +845,15 @@ class DataBase {
     return userRef.docs[0]['id'];
   }
 
+  Future<String> getEmailFromStudentID(String studentID) async {
+    final userRef = await _db
+        .collection('users')
+        .where('student_id', isEqualTo: studentID)
+        .get();
+
+    return userRef.docs[0]['email'];
+  }
+
   ///
   Future<DateTime?> getAssessmentDueDate(RequestType assessment) async {
 
