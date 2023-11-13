@@ -813,10 +813,10 @@ class DataBase {
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
     Map<String, String> names = {};
 
-
     if (userIDs.isEmpty) return {};
 
-    final usersRef = await _db.collection('users').where('id', whereIn: userIDs).get();
+    final usersRef =
+        await _db.collection('users').where('id', whereIn: userIDs).get();
 
     final userDocs = usersRef.docs;
 
@@ -836,6 +836,15 @@ class DataBase {
         .get();
 
     return userRef.docs[0]['id'];
+  }
+
+  Future<String> getEmailFromStudentID(String studentID) async {
+    final userRef = await _db
+        .collection('users')
+        .where('student_id', isEqualTo: studentID)
+        .get();
+
+    return userRef.docs[0]['email'];
   }
 }
 
