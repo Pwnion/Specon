@@ -786,7 +786,7 @@ class _SpeconFormState extends State<SpeconForm> {
     final List<Widget> textFields = form['Form'];
     final Widget attachments = form['Attachments'];
     final Widget aap = form['AAP'];
-    _displayAapName = "";
+    //_displayAapName = "";
 
 
     return Scrollbar(
