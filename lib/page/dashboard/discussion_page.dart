@@ -60,7 +60,7 @@ class _DiscussionState extends State<Discussion> {
   double _sliderValue = 0.0;
   int daysExtending = 0;
   bool businessDaysOnly = true;
-  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  DateTime? assessmentDueDate;
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
   static final Map<int, String> dayName = {
     1: 'MON',
@@ -323,13 +323,13 @@ class _DiscussionState extends State<Discussion> {
     var extendedDate = dateAfterExtension(daysExtended);
 
     displayString +=
-    '${_mockAssessmentDueDate.day}-'
-        '${_mockAssessmentDueDate.month}-'
-        '${_mockAssessmentDueDate.year} '
-        '${_mockAssessmentDueDate.hour}'
+    '${assessmentDueDate!.day}-'
+        '${assessmentDueDate!.month}-'
+        '${assessmentDueDate!.year} '
+        '${assessmentDueDate!.hour}'
         ':'
-        '${_mockAssessmentDueDate.minute}'
-        ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+        '${assessmentDueDate!.minute}'
+        ' [${dayName[assessmentDueDate!.weekday]}]'
         '  -->  '
         '${extendedDate.day}-'
         '${extendedDate.month}-'
@@ -346,9 +346,9 @@ class _DiscussionState extends State<Discussion> {
   DateTime dateAfterExtension(int daysExtended) {
     int daysExcludingWeekend = 0;
     int daysIncludingWeekend = 0;
-    final year = _mockAssessmentDueDate.year;
-    final month = _mockAssessmentDueDate.month;
-    final day = _mockAssessmentDueDate.day;
+    final year = assessmentDueDate!.year;
+    final month = assessmentDueDate!.month;
+    final day = assessmentDueDate!.day;
 
     while (daysExcludingWeekend < daysExtended) {
 
@@ -367,11 +367,11 @@ class _DiscussionState extends State<Discussion> {
     });
 
     return DateTime(
-        _mockAssessmentDueDate.year,
-        _mockAssessmentDueDate.month,
-        _mockAssessmentDueDate.day + daysIncludingWeekend,
-        _mockAssessmentDueDate.hour,
-        _mockAssessmentDueDate.minute
+        assessmentDueDate!.year,
+        assessmentDueDate!.month,
+        assessmentDueDate!.day + daysIncludingWeekend,
+        assessmentDueDate!.hour,
+        assessmentDueDate!.minute
     );
   }
 
@@ -397,6 +397,11 @@ class _DiscussionState extends State<Discussion> {
   void initState() {
     _initializeThread();
     _lastRequest = widget.currentRequest;
+    _db.getAssessmentDueDate(_lastRequest!.assessment).then((value) =>
+        setState(() {
+          assessmentDueDate = value;
+        })
+    );
     super.initState();
   }
 
@@ -407,6 +412,11 @@ class _DiscussionState extends State<Discussion> {
     if(_lastRequest != widget.currentRequest){
       _initializeThread();
       _lastRequest = widget.currentRequest;
+      _db.getAssessmentDueDate(_lastRequest!.assessment).then((value) =>
+        setState(() {
+          assessmentDueDate = value;
+        })
+      );
     }
 
     // Fetch discussions from the database
