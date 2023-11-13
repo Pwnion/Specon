@@ -34,12 +34,28 @@ class RequestTypeItem extends StatelessWidget {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         tileColor: Theme.of(context).colorScheme.background,
-        title: Text(
-          requestType.name,
-          style: TextStyle(
-            fontSize: 16,
-            color: Theme.of(context).colorScheme.surface,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              requestType.name,
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            ),
+            Text(
+              requestType.id == '-1'
+                  ? 'Not linked with Canvas'
+                  : 'Linked with Canvas',
+              style: TextStyle(
+                fontSize: 12,
+                color: requestType.id == '-1'
+                    ? Colors.orange // Change this color as needed
+                    : Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

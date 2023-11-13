@@ -328,7 +328,7 @@ class _AssessmentManagerState extends State<AssessmentManager> {
 
   /// helper function add assessment
   void _addAssessment(String name) {
-    final assessment = RequestType(id: '-69', name: name, databasePath: '');
+    final assessment = RequestType(id: '-1', name: name, databasePath: '');
     setState(() {
       _foundRequestType.add(assessment);
     });

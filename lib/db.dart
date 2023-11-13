@@ -454,7 +454,7 @@ class DataBase {
     for (final assessment in querySnapshot.docs) {
       assessments.add(RequestType(
           name: assessment['name'],
-          id: '-404',
+          id: assessment['id'].toString(),
           databasePath: assessment.reference.path));
     }
 
