@@ -330,12 +330,15 @@ class _SpeconFormState extends State<SpeconForm> {
         width: 420.0,
         child: Form(
           key: _requestTypeFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
             validator: (value) {
               if (value == null) {
                 return 'Please selected a request type';
               }
+              else if (value == 'Extension' && assessmentDueDate == null) {
+                return 'Extension is not available for this assessment';
+              }
+
               return null;
             },
             value: null,
