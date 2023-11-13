@@ -13,7 +13,6 @@ import 'package:specon/page/assessment_manager_page.dart';
 import 'package:specon/page/dashboard/navigation_page.dart';
 import 'package:specon/page/dashboard/requests_page.dart';
 import 'package:specon/page/dashboard/discussion_page.dart';
-import 'package:specon/page/user_settings.dart';
 import 'package:specon/page/permission_manager_page.dart';
 import 'package:specon/user_type.dart';
 import 'package:specon/models/subject_model.dart';
@@ -333,21 +332,26 @@ class _DashboardState extends State<Dashboard>
       : widget.canvasEmail!)
         .then((user) {
       _database.getEnrolledSubjects().then((subjects) {
-        // if (!mounted) return;
+        if (!mounted) return;
         setState(() {
           subjectList = subjects;
           currentUser = user;
 
-          for (final subject in subjectList) {
+          int counter = 0;
+
+          for (final subject in subjects) {
             if (subject.code == user.selectedSubject) {
               currentSubject = subject;
               selectedAssessment = 'All';
               setRole(subject, user);
+              fetchingFromDB = false;
               break;
             }
+            counter++;
           }
-
-          fetchingFromDB = false;
+          if (counter == subjects.length) {
+            fetchingFromDB = false;
+          }
         });
       });
     });
