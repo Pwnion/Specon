@@ -142,11 +142,18 @@ class DataBase {
           List<dynamic> assessments = matchingSubject['assessments'];
 
           assessments.forEach((element) {
-            returnList.add(RequestType(
-                name: element['name'],
-                id: element['id'].toString(),
-                dueDate: DateTime.parse(element['due_date']),
-                databasePath: ""));
+            if (element['due_date'] == null) {
+              returnList.add(RequestType(
+                  name: element['name'],
+                  id: element['id'].toString(),
+                  databasePath: ""));
+            } else {
+              returnList.add(RequestType(
+                  name: element['name'],
+                  id: element['id'].toString(),
+                  dueDate: DateTime.parse(element['due_date']),
+                  databasePath: ""));
+            }
           });
 
           return returnList;
@@ -187,9 +194,9 @@ class DataBase {
     });
 
     DocumentReference assessmentsRef =
-        _db.doc('${subjectPath}/assessments/${documentRef.id}');
+        _db.doc('$subjectPath/assessments/${documentRef.id}');
     assessmentsRef
-        .update({'dataPath': '${subjectPath}/assessments/${documentRef.id}'});
+        .update({'dataPath': '$subjectPath/assessments/${documentRef.id}'});
 
     assessment.databasePath = documentRef.id;
   }
@@ -846,6 +853,23 @@ class DataBase {
 
     return userRef.docs[0]['email'];
   }
+
+  ///
+  Future<DateTime?> getAssessmentDueDate(RequestType assessment) async {
+
+    final assessmentDoc = await _db.doc(assessment.databasePath).get();
+    final assessmentFields = assessmentDoc.data();
+
+    if (assessmentFields!['dueDate'] == null) {
+      return null;
+    }
+
+    else {
+      final Timestamp timestamp = assessmentFields['dueDate'];
+      return DateTime.fromMicrosecondsSinceEpoch(timestamp.microsecondsSinceEpoch);
+    }
+  }
+
 }
 
 ///

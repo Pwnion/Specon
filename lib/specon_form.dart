@@ -73,7 +73,7 @@ class _SpeconFormState extends State<SpeconForm> {
   final _dueDateSelectorController = TextEditingController(text: 'Use slider below');
   final _reasonController = TextEditingController();
   final _requestFromController = ScrollController();
-  final _mockAssessmentDueDate = DateTime(2023, 10, 1, 23, 59); // TODO: Get initial assessment due date from canvas
+  DateTime? assessmentDueDate;
   final _mockMaxExtendDays = 10; // TODO: Set by subject coordinator, + 2 days maybe?
   final businessDaysOnly = true; // TODO: Decided by subject coordinator
   static final List<String> requestTypes = ['Extension', 'Regrade', 'Waiver', 'Others'];
@@ -157,13 +157,13 @@ class _SpeconFormState extends State<SpeconForm> {
     var extendedDate = dateAfterExtension(daysExtended);
 
     displayString +=
-      '${_mockAssessmentDueDate.day}-'
-      '${_mockAssessmentDueDate.month}-'
-      '${_mockAssessmentDueDate.year} '
-      '${_mockAssessmentDueDate.hour}'
+      '${assessmentDueDate!.day}-'
+      '${assessmentDueDate!.month}-'
+      '${assessmentDueDate!.year} '
+      '${assessmentDueDate!.hour}'
       ':'
-      '${_mockAssessmentDueDate.minute}'
-      ' [${dayName[_mockAssessmentDueDate.weekday]}]'
+      '${assessmentDueDate!.minute}'
+      ' [${dayName[assessmentDueDate!.weekday]}]'
       '  -->  '
       '${extendedDate.day}-'
       '${extendedDate.month}-'
@@ -180,9 +180,9 @@ class _SpeconFormState extends State<SpeconForm> {
   DateTime dateAfterExtension(int daysExtended) {
     int daysExcludingWeekend = 0;
     int daysIncludingWeekend = 0;
-    final year = _mockAssessmentDueDate.year;
-    final month = _mockAssessmentDueDate.month;
-    final day = _mockAssessmentDueDate.day;
+    final year = assessmentDueDate!.year;
+    final month = assessmentDueDate!.month;
+    final day = assessmentDueDate!.day;
 
     while (daysExcludingWeekend < daysExtended) {
 
@@ -201,11 +201,11 @@ class _SpeconFormState extends State<SpeconForm> {
     });
 
     return DateTime(
-      _mockAssessmentDueDate.year,
-      _mockAssessmentDueDate.month,
-      _mockAssessmentDueDate.day + daysIncludingWeekend,
-      _mockAssessmentDueDate.hour,
-      _mockAssessmentDueDate.minute
+      assessmentDueDate!.year,
+      assessmentDueDate!.month,
+      assessmentDueDate!.day + daysIncludingWeekend,
+      assessmentDueDate!.hour,
+      assessmentDueDate!.minute
     );
   }
 
@@ -259,6 +259,7 @@ class _SpeconFormState extends State<SpeconForm> {
                 assessmentList = selectedSubject.assessments;
                 assessmentNameList = RequestType.getAssessmentNames(assessmentList);
                 selectedAssessment = RequestType.emptyAssessment;
+                assessmentDueDate = null;
               });
             }
           ),
@@ -310,10 +311,13 @@ class _SpeconFormState extends State<SpeconForm> {
                   ),
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  print(selectedAssessment.dueDate);
-                  selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
+              onChanged: (value) async {
+
+                dataBase.getAssessmentDueDate(assessmentList[assessmentNameList.indexOf(value!)]).then((value2) {
+                  setState(() {
+                    selectedAssessment =  assessmentList[assessmentNameList.indexOf(value!)];
+                    assessmentDueDate = value2;
+                  });
                 });
               }),
         ),
@@ -326,12 +330,15 @@ class _SpeconFormState extends State<SpeconForm> {
         width: 420.0,
         child: Form(
           key: _requestTypeFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: DropdownButtonFormField(
             validator: (value) {
               if (value == null) {
                 return 'Please selected a request type';
               }
+              else if (value == 'Extension' && assessmentDueDate == null) {
+                return 'Extension is not available for this assessment';
+              }
+
               return null;
             },
             value: null,
@@ -489,7 +496,7 @@ class _SpeconFormState extends State<SpeconForm> {
               max: _mockMaxExtendDays.toDouble(),
               divisions: _mockMaxExtendDays,
               label: '${_currentSliderValue.round().toString()} days',
-              onChanged: selectedAssessment.name.isNotEmpty && selectedRequestType == 'Extension' ? (double value) {
+              onChanged: selectedAssessment.name.isNotEmpty && selectedRequestType == 'Extension' && assessmentDueDate != null ? (double value) {
                 setState(() {
                   _currentSliderValue = value;
                   if (value == 0.0) {
