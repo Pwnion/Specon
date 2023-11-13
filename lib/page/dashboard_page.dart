@@ -334,13 +334,12 @@ class _DashboardState extends State<Dashboard>
       _database.getEnrolledSubjects().then((subjects) {
         if (!mounted) return;
         setState(() {
-          subjectList = subjects;
-          currentUser = user;
-
           int counter = 0;
 
           for (final subject in subjects) {
             if (subject.code == user.selectedSubject) {
+              subjectList = subjects;
+              currentUser = user;
               currentSubject = subject;
               selectedAssessment = 'All';
               setRole(subject, user);
@@ -350,6 +349,8 @@ class _DashboardState extends State<Dashboard>
             counter++;
           }
           if (counter == subjects.length) {
+            subjectList = subjects;
+            currentUser = user;
             fetchingFromDB = false;
           }
         });
