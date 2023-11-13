@@ -620,15 +620,6 @@ class DataBase {
   /// Function that initialises basic information for a subject onto the database
   Future<void> initialiseSubject(
       Map<String, dynamic> subjectInformation) async {
-    Map<String, String> roles = convertRoles(subjectInformation);
-
-    Map<String, String> studentAndCoordinator = {...roles};
-    Map<String, String> staff = {...roles};
-
-    studentAndCoordinator.removeWhere(
-        (key, value) => value != 'student' && value != 'subject_coordinator');
-    staff.removeWhere(
-        (key, value) => value == 'student' || value == 'subject_coordinator');
 
     final subjectsRef = _db.collection('subjects');
     final subjectID = await subjectsRef.add({
@@ -637,20 +628,12 @@ class DataBase {
       'code': subjectInformation['code'],
       'semester': subjectInformation['term']['name'],
       'year': subjectInformation['term']['year'],
-      'roles': studentAndCoordinator,
-      'staff': staff
+      'roles': {user!.id: 'subject_coordinator'},
+      'staff': {}
     });
 
-    for (final userID in subjectInformation['roles'].keys.toList()) {
-      final userRef =
-          await _db.collection('users').where('id', isEqualTo: userID).get();
+    await _db.collection('users').doc(user!.uuid).update({'subjects': FieldValue.arrayUnion([subjectID])});
 
-      final userDatabasePath = userRef.docs[0].reference.path;
-
-      await _db.doc(userDatabasePath).update({
-        'subjects': FieldValue.arrayUnion([subjectID])
-      });
-    }
   }
 
   /// Function to update subject's role (In case new student has enrolled in this subject),
