@@ -427,7 +427,7 @@ class DataBase {
           .get();
 
       if (subjectRef.docs.isEmpty) {
-        initialiseSubject(subject);
+        await initialiseSubject(subject);
         newSubjectInitialised = true;
       }
     }
@@ -437,7 +437,7 @@ class DataBase {
       return getEnrolledSubjects();
     }
 
-    updateSubjectRoles(subjects);
+    await updateSubjectRoles(subjects);
 
     return subjects;
   }
