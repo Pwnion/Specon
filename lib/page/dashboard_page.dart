@@ -332,7 +332,7 @@ class _DashboardState extends State<Dashboard>
       : widget.canvasEmail!)
         .then((user) {
       _database.getEnrolledSubjects().then((subjects) {
-        if (!mounted) return;
+        // if (!mounted) return;
         setState(() {
           int counter = 0;
 
