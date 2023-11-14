@@ -787,7 +787,7 @@ class DataBase {
     return convertedRoles;
   }
 
-  ///
+  /// Function that fetches a subject's staff from the database
   Future<Map<String, String>> getSubjectStaff(SubjectModel subject) async {
     final subjectRef = await _db.doc(subject.databasePath).get();
 
@@ -799,7 +799,7 @@ class DataBase {
     return staff;
   }
 
-  ///
+  /// Function that fetches the name of staff given a list of userIDs
   Future<Map<String, String>> getStaffNames(List<String> userIDs) async {
     Map<String, String> names = {};
 
@@ -817,7 +817,7 @@ class DataBase {
     return names;
   }
 
-  ///
+  /// Function that fetches a student's user ID from the database
   Future<String> getUserID(String name, String studentID) async {
     final userRef = await _db
         .collection('users')
@@ -837,7 +837,7 @@ class DataBase {
     return userRef.docs[0]['email'];
   }
 
-  ///
+  /// Function that fetches an assessment's due date from the database
   Future<DateTime?> getAssessmentDueDate(RequestType assessment) async {
 
     final assessmentDoc = await _db.doc(assessment.databasePath).get();

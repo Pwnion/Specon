@@ -161,7 +161,7 @@ class _DashboardState extends State<Dashboard>
                       if (value == null || value.isEmpty) {
                         return 'Please enter your student id';
                       } else if (value.length < minStudentIdLen) {
-                        return 'Please enter a valid student id';
+                        return 'Student ID is not 7 character';
                       }
                       return null;
                     },
@@ -312,6 +312,7 @@ class _DashboardState extends State<Dashboard>
     }
   }
 
+  /// Function that opens up the email preference setting
   void openUserSetting(){
     setState(() {
       Navigator.push(
