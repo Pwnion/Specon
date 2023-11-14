@@ -11,8 +11,6 @@ import 'package:specon/models/request_model.dart';
 
 import 'models/canvas_data_model.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 class DataBase {
   final _db = FirebaseFirestore.instance;
 
@@ -50,11 +48,8 @@ class DataBase {
     return userModel;
   }
 
-  Future<String?> getCurrentUserEmail() async {
-    // Get the current user
-    User? user = FirebaseAuth.instance.currentUser;
-
-    return user?.email;
+  String getCurrentUserEmail() {
+    return user!.email;
   }
 
   Future<String?> getDocumentIdByEmail(String email) async {
@@ -85,23 +80,17 @@ class DataBase {
   Future<String?> getUserLaunchDataPath() async {
     try {
       // Get the current user's email
-      String? userEmail = await getCurrentUserEmail();
+      String userEmail = getCurrentUserEmail();
 
-      // Check if user email is available
-      if (userEmail != null) {
-        // Get the document ID corresponding to the user's email
-        String? documentId = await getDocumentIdByEmail(userEmail);
+      // Get the document ID corresponding to the user's email
+      String? documentId = await getDocumentIdByEmail(userEmail);
 
-        // Check if document ID is available
-        if (documentId != null) {
-          // Return the combined path
-          return '/users/$documentId/launch/data';
-        } else {
-          // Return null if document ID is not found
-          return null;
-        }
+      // Check if document ID is available
+      if (documentId != null) {
+        // Return the combined path
+        return '/users/$documentId/launch/data';
       } else {
-        // Return null if user email is not found
+        // Return null if document ID is not found
         return null;
       }
     } catch (e) {
@@ -114,8 +103,8 @@ class DataBase {
   Future<List<RequestType>> importFromCanvas(String subjectCode) async {
     try {
       // Get the current user's email
-      String? userEmail = await getCurrentUserEmail();
-      String? userID = await getDocumentIdByEmail(userEmail!);
+      String userEmail = getCurrentUserEmail();
+      String? userID = await getDocumentIdByEmail(userEmail);
 
       // Check if user email is available
       // Get the document corresponding to the user's email in the "launch" collection
